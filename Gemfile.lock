@@ -2,6 +2,8 @@ PATH
   remote: lib
   specs:
     deep_import (0.0.1)
+      activerecord-import
+      colorize
 
 GEM
   remote: https://rubygems.org/
@@ -27,6 +29,8 @@ GEM
       activesupport (= 3.2.12)
       arel (~> 3.0.2)
       tzinfo (~> 0.3.29)
+    activerecord-import (0.3.1)
+      activerecord (~> 3.0)
     activeresource (3.2.12)
       activemodel (= 3.2.12)
       activesupport (= 3.2.12)
@@ -42,6 +46,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.6.2)
+    colorize (0.5.8)
     erubis (2.7.0)
     execjs (1.4.0)
       multi_json (~> 1.0)

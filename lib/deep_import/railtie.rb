@@ -1,6 +1,6 @@
 require 'deep_import'
 require 'rails'
-puts "hello"
+
 module DeepImport 
 	class Railtie < Rails::Railtie
 		railtie_name :deep_import

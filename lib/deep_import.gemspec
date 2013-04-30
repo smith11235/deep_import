@@ -8,7 +8,10 @@ Gem::Specification.new do |s|
 	s.description = "Build up many models, load them in a minimal number of transactions."
 
 	s.add_development_dependency "rspec"
+	s.add_dependency "colorize"
+	s.add_dependency "activerecord-import"
 
 	s.files        = Dir.glob("lib/deep_import/*") + %w(lib/deep_import.gemspec)
 	s.require_path = 'deep_import'
+
 end
