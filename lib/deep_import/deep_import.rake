@@ -7,17 +7,40 @@ namespace :deep_import do
 
 		def parse_roots
 			raise "Root object not a hash" unless @nests.is_a? Hash
-			@nests.each do |plural_name,info|
-				@root = plural_name
-				indent(0) do
-					raise "root definition not an Array" unless info.is_a? Array
-					info.each do |child_class|
-						puts space + "#{child_class.singularize} belongs_to #{@root}"
-						puts space + "  # #{@root} has_many #{child_class}" if child_class == child_class.pluralize
-						
-					end
+			@nests.each do |root_name,info|
+				parse_root( root_name, info )
+			end
+		end
+
+		def	parse_root( root_name, info )
+			@root = root_name
+			raise "Root not recognized as singular: #{@root}" unless @root == @root.singularize
+
+			indent(0) do
+				raise "root definition not a Hash of class names" unless info.is_a? Hash
+
+				info.each do |frozen_child_name,child_info|
+					child_name = frozen_child_name.clone
+					class_forms = { :class_string => child_name.classify, :one => child_name.singularize, :many => child_name.pluralize }
+					puts "checklist".red
+					has_type = case child_name 
+										 when class_forms[ :one ] 
+											 :one
+										 when class_forms[ :many ] 
+											 :many
+										 else
+											 raise "Unknown plurality: #{child_name}".red
+										 end
+
+					puts space + "#{class_forms[:class_string]} belongs_to #{@root}"
+					puts space + "  # #{@root} has_#{has_type} #{child_name}" 
+					puts space + "  generate model Soft#{class_forms[:class_string]} soft_id:integer"
+					puts space + " # and get the rest of it's belongs to"
 				end
 			end
+		end
+
+		def parse_child
 		end
 
 		def space
