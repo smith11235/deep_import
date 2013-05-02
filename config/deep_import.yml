@@ -1,7 +1,10 @@
 Product:
  Reviews:
+  _polymorphic: "Reviewer"
  Features:	
+  Reviews:
 
 User:
  Account:
+  _preexisting: true
  Products:

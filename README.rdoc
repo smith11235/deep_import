@@ -13,6 +13,13 @@ Deep Import:
 			- N and M are meant to be neglible compared to X
 	- (De)Serialize models for reuse
 
+
+---
+			# generate statement, new belongs_to references get appended
+			# @details[:generate][ @root_class ] ||= "model Soft#{@root} soft_id:integer"
+		 	#	"model #{class_forms[:class_string]} soft_id:integer"
+			# @details[:generate][ class_forms[:class_string] ] << " " << "Soft#{parent_class}".underscore << "_id:references"
+
 --- 
 Configuration:
 	- model map:

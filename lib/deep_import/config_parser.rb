@@ -25,7 +25,7 @@ module DeepImport
 
 			if ! @details[:roots].include? root_name 
 				@details[:roots] << root_name 
-				@details[:models][ root_name ] ||= { :belongs_to => Array.new, :has_one => Array.new, :has_many => Array.new }
+				model_defs( root_name )
 			end
 
 			parse_children( root_name, info )
@@ -33,27 +33,47 @@ module DeepImport
 
 
 		def parse_children( parent_class, children )
-			children.each do |frozen_child_name,child_info|
-				parse_child( parent_class, frozen_child_name.clone, child_info )
+			children.each do |child_name,child_info|
+				# children entries are either nested classes
+				# or meta tags on the current parent
+				puts "Examining: #{child_name}"
+				if child_name =~ /^_/
+					parse_flag( parent_class, child_name.clone, child_info )
+				else
+					parse_child( parent_class, child_name.clone, child_info )
+				end
 			end
 		end
 
+		def model_defs( class_name )
+			@details[:models][ class_name ] ||= { :flags => Hash.new,  :belongs_to => Array.new, :has_one => Array.new, :has_many => Array.new } 
+			return @details[:models][ class_name ]
+		end
+
+		def parse_flag( parent_class, flag_name, flag_info )
+			model_defs( parent_class )[ :flags ][ flag_name ] = flag_info
+		end
+
+		def class_words( input_name )
+			class_name = input_name.singularize.classify
+			class_forms = { :class_string => class_name.classify, :one => class_name.singularize, :many => class_name.pluralize }
+			class_forms
+		end
+
 		def parse_child( parent_class, child_name, child_info )
-			class_forms = { :class_string => child_name.classify, :one => child_name.singularize, :many => child_name.pluralize }
+			class_forms = class_words( child_name )
 
 			has_type = has_type( child_name, class_forms )
-
-			# generate statement, new belongs_to references get appended
-			# @details[:generate][ @root_class ] ||= "model Soft#{@root} soft_id:integer"
-		 	#	"model #{class_forms[:class_string]} soft_id:integer"
-			# @details[:generate][ class_forms[:class_string] ] << " " << "Soft#{parent_class}".underscore << "_id:references"
-			@details[:models][ class_forms[:class_string] ] ||= { :belongs_to => Array.new, :has_one => Array.new, :has_many => Array.new } 
-
-			@details[:models][ class_forms[:class_string] ][ :belongs_to ] << parent_class if ! @details[:models][ class_forms[:class_string] ][ :belongs_to ].include? parent_class 
-
 			has_type = "has_#{has_type}".to_sym
-			@details[:models][ parent_class ][ has_type ] << class_forms[:class_string] unless @details[:models][ parent_class ][ has_type ].include? class_forms[:class_string]
 
+		  model_defs = model_defs( class_forms[:class_string] )
+
+			model_defs[ :belongs_to ] << parent_class if ! model_defs[ :belongs_to ].include? parent_class 
+
+			model_defs( parent_class )[ has_type ] << class_forms[:class_string] unless model_defs( parent_class )[ has_type ].include? class_forms[:class_string]
+
+			return if child_info.nil?
+			parse_children( class_forms[:class_string], child_info ) if child_info.is_a? Hash
 		end
 
 		def has_type( child_name, class_forms )
