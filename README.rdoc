@@ -1,47 +1,55 @@
 ---
 Deep Import:
-	- Load many objects of 1 type with 1 transaction
-		- ActiveRecord Import: https://github.com/zdennis/activerecord-import/wiki
-	- Load X nested model instances from N model classess
-		- X is the large number of batch processed items
-			- relevant to database servers processing power for a single transaction
-		- in N + M transations
-			- N = number of model classes involved
-				- configuration example: 5 (classes a-f)
-			- M = number of belongs_to relationships involved
-				- configuration example: 5
-			- N and M are meant to be neglible compared to X
-	- (De)Serialize models for reuse
+	- A gem for batch data loading with Rails
+	- In big data, or at least batched loading of non trivial data:
+		- database transactions are significant 
 
+Transaction Breakdown:
+	- Standard Rails Model Instanct Creation: 
+		- 1 instance per transation
+		- Product.new.save, @product.reviews.create
+	- gem:ActiveRecord-import: 
+		- X instances per transaction for 1 model class
+		- ActiveRecord Import: https://github.com/zdennis/activerecord-import/wiki
+	- gem:DeepImport:
+		- Load X instances of M model classes
+		- in M + B transactions
+		- Where B is the number of belongs to relationships between the M model classes
+		- M and B must be neglible compared to X for benefit
+
+Features:
+	- improved efficiency when loading 'many' model instances
+	- models can have associations!
+	- models can be serialized, and reloaded to rails databases on demand
+		- a hidden 'id field' is used to preserve associations
+			- when rails id field values are still unknown
+			- this is where the B transactions come from
+				- 1 query for each belongs_to association
+
+Usage:
+	- Gemfile:  "gem: 'deep_import'"
+	- create a config/deep_import.yml
+		- with the architecture of your batched imports
+	- rake deep_import:generate_config
+	- rake deep_import:setup
+	- write code (or have it ready before hand)
 
 ---
+Setup Logic:
+	- rails generate all soft models
+		- generate migration using rails generate migration
+		- print model file custom, handle polymorphism
+
+Config File:
+	- Validate: check class names for existence/validity
+	- Generate: analyze models with ruby_erd
+
+
 			# generate statement, new belongs_to references get appended
 			# @details[:generate][ @root_class ] ||= "model Soft#{@root} soft_id:integer"
 		 	#	"model #{class_forms[:class_string]} soft_id:integer"
 			# @details[:generate][ class_forms[:class_string] ] << " " << "Soft#{parent_class}".underscore << "_id:references"
 
---- 
-Configuration:
-	- model map:
-		- yaml mapping of how you want to load the data
-			- config/deep_import.yml
-			- sample (represents singularized and pluralized forms of model names):
-				 a:					# The root class name
-					- bs: 		# A has_many Bs, B belongs_to A
-						- c 		# B has_one C, C belongs_to B 
-					- ds:     # A has_many Ds, D belongs_to A
-						- cs 		# D has_many Cs, C belongs_to D
-						- es 		# D has_many Es, E belongs_to D
-			- sample2:
-					Product:
-						Features:
-							Reviews:			# Feature has_many Reviews
-								polymorphic: "Reviewer" # Review belongs_to reviewer, type=Feature
-						Reviews:				# Product has_many Reviews
-							polymorphic: "Reviewer" # Review belongs_to reviewer, type=Product
-					  Keywords:
-							preexisting: true # use hard id assignment, soft is default
-						
 ---
 Database Id Tracking:
 	- Use id tracking models:
