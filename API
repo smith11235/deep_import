@@ -1,0 +1,20 @@
+# documents can be a collection of anything
+# for testing and benchmarks, fetch sites
+
+
+documents.each do |document|
+
+	# create a document model instance
+	# using the create method exposed by Deep Import
+	db_document = DeepImport.create_document( document.to_hash )
+
+	# alternatively:
+	- extend using after_initialize on the core classes
+
+
+	document.chapters.each do |chapter|
+		db_document.create_chapter( 
+	end
+
+
+end

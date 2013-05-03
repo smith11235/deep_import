@@ -35,16 +35,6 @@ Usage:
 	- write code (or have it ready before hand)
 
 ---
-Setup Logic:
-	- rails generate all soft models
-		- print model file custom, handle polymorphism
-			-	print sample model to see what it looks like
-			- copy form, add tweaks
-		- print generation statements to script
-		- tell user to run it, and db:migrate
-		- destroy method to remove deep import
-
----
 Generate dummy code based on config:
 	- as example load code
 
@@ -63,7 +53,6 @@ Database Id Tracking:
 				- int if hard/preexisting id assignment
 			- if polymorphic: belongs_to_<association>_type
 	- doesn't add overhead to core models
-
 
 ---
 Batch Logic:

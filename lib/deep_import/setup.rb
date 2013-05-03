@@ -9,6 +9,9 @@ module DeepImport
 			@timestamp = Time.now.utc.strftime( '%Y%m%d%H%M%S' )
 			write_models_script( :destroy )
 			write_models_script( :generate )
+			puts "- Run the above generated shell script"
+			puts "- rake db:migrate"
+			puts "- Run the above destroy shell script to remove deep import"
 		end
 
 		def write_models_script( method )

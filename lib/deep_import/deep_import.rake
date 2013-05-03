@@ -4,5 +4,6 @@ namespace :deep_import do
 	task :setup => :environment do 
 		puts "Welcome to DeepImport:".green
 		DeepImport::Setup.new
+
 	end
 end
