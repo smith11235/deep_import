@@ -1,34 +1,24 @@
 module DeepImport
 	class ConfigParser
 	
-		def initialize( nests )
-			@nests = nests
+		def initialize
+			config_file_path = File.join( Rails.root, "config", "deep_import.yml" )
+			raise "Missing Config File: #{config_file_path}".red unless File.file? config_file_path
+
+			@config = YAML::load File.open( config_file_path )
+
 			@details = { :models => Hash.new, :roots => Array.new }
-			#	, :belongs_to => Hash.new, :has_many => Hash.new, :has_one => Hash.new, :generate => Hash.new }
 			parse_roots
 		end
 
-		def tracking_model_generate_logic
-			generate_statements = Hash.new
-			@details[:roots].each do |root_name|
-				generate_statements[ root_name ] = "Soft#{root_name} soft_id:integer"
-			end
-
-			@details[:models].each do |model_name,info|
-				generate_statements[ model_name ] ||= "Soft#{model_name} soft_id:integer"
-
-				info[ :belongs_to ].each do |parent_class|
-					soft_parent_name = "Soft#{parent_class}".underscore
-					generate_statements[ model_name ] << " " << soft_parent_name << ":references" unless generate_statements[ model_name ] =~ /#{soft_parent_name}/ 
-				end
-			end
-			return generate_statements
+		def deep_import_config
+			@details
 		end
 
 		def parse_roots
 			# we expect a hash of root model names to nested model names
-			raise "Root object not a hash" unless @nests.is_a? Hash
-			@nests.each do |root_name,info|
+			raise "Root object not a hash" unless @config.is_a? Hash
+			@config.each do |root_name,info|
 				parse_root( root_name, info )
 			end
 		end
@@ -52,7 +42,6 @@ module DeepImport
 			children.each do |child_name,child_info|
 				# children entries are either nested classes
 				# or meta tags on the current parent
-				puts "Examining: #{child_name}"
 				if child_name =~ /^_/
 					parse_flag( parent_class, child_name.clone, child_info )
 				else
