@@ -1,0 +1,43 @@
+:models:
+  Product:
+    :flags: {}
+    :belongs_to:
+    - User
+    :has_one: []
+    :has_many:
+    - Review
+    - Feature
+
+
+  Review:
+    :flags:
+      _polymorphic: Reviewer
+    :belongs_to:
+    - Product
+    - Feature
+    :has_one: []
+    :has_many: []
+  Feature:
+    :flags: {}
+    :belongs_to:
+    - Product    
+		:has_one: []    
+		:has_many:    
+		- Review  
+	User:    
+		:flags: {}    
+		:belongs_to: []    
+		:has_one:    
+		- Account    
+		:has_many:    
+		- Product  
+	Account:    
+		:flags:      
+			_preexisting: true    
+		:belongs_to:    
+		- User    
+		:has_one: []    
+		:has_many: []
+:roots:
+- Product
+- User

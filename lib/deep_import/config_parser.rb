@@ -4,9 +4,25 @@ module DeepImport
 		def initialize( nests )
 			@nests = nests
 			@details = { :models => Hash.new, :roots => Array.new }
-		#	, :belongs_to => Hash.new, :has_many => Hash.new, :has_one => Hash.new, :generate => Hash.new }
+			#	, :belongs_to => Hash.new, :has_many => Hash.new, :has_one => Hash.new, :generate => Hash.new }
 			parse_roots
-			puts @details.to_yaml
+		end
+
+		def tracking_model_generate_logic
+			generate_statements = Hash.new
+			@details[:roots].each do |root_name|
+				generate_statements[ root_name ] = "Soft#{root_name} soft_id:integer"
+			end
+
+			@details[:models].each do |model_name,info|
+				generate_statements[ model_name ] ||= "Soft#{model_name} soft_id:integer"
+
+				info[ :belongs_to ].each do |parent_class|
+					soft_parent_name = "Soft#{parent_class}".underscore
+					generate_statements[ model_name ] << " " << soft_parent_name << ":references" unless generate_statements[ model_name ] =~ /#{soft_parent_name}/ 
+				end
+			end
+			return generate_statements
 		end
 
 		def parse_roots
