@@ -28,15 +28,15 @@ module DeepImport
 		def setup_deep_import_generate_model_statements
 			generate_statements = Hash.new
 			@config[:roots].each do |root_name|
-				generate_statements[ root_name ] = "Soft#{root_name} soft_id:integer"
+				generate_statements[ root_name ] = "DeepImport#{root_name} deep_import_id:integer"
 			end
 
 			@config[:models].each do |model_name,info|
-				generate_statements[ model_name ] ||= "Soft#{model_name} soft_id:integer"
+				generate_statements[ model_name ] ||= "DeepImport#{model_name} deep_import_id:integer"
 
 				info[ :belongs_to ].each do |parent_class|
-					soft_parent_name = "Soft#{parent_class}".underscore
-					generate_statements[ model_name ] << " " << soft_parent_name << ":references" unless generate_statements[ model_name ] =~ /#{soft_parent_name}/ 
+					deep_import_parent_name = "DeepImport#{parent_class}".underscore
+					generate_statements[ model_name ] << " " << deep_import_parent_name << ":references" unless generate_statements[ model_name ] =~ /#{deep_import_parent_name}/ 
 				end
 			end
 		  @generate_statements = generate_statements
