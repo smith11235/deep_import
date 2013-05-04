@@ -35,8 +35,8 @@ Usage:
 	- write code (or have it ready before hand)
 
 ---
-Generate dummy code based on config:
-	- as example load code
+Generate fake dataset using DummyModel
+	- with algorithm on it
 
 ---
 Config File:

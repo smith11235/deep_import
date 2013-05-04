@@ -1,4 +1,5 @@
 class DummyModel < ActiveRecord::Base
   belongs_to :dummy_model
-  # attr_accessible :title, :body
+	has_many :dummy_models
+  attr_accessible :name
 end
