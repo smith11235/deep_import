@@ -20,8 +20,13 @@ documents.each do |document|
 
 		- how do i inject this from the gem
 			- dump out a file with the class defs in config/initializers/deep_import/<file names>.rb
+
 			- from the rail tie, after models are loaded?, load new ruby defs dynamically generated from config
 				- no need for files? not rewriteable by usrer?
+					- module DeepImport
+						# generate class opening
+						# add after_initialization
+						- add self and deep_import id of self to commit cache
 
 
 	document.chapters.each do |chapter|
