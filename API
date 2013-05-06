@@ -4,36 +4,6 @@
 
 documents.each do |document|
 
-	# create a document model instance however you want
-	- extend using after_initialize on the core classes
-		- what does this look like
-
-			class Document < ActiveRecord::Base
-				after_initialize do
-					# construct corresponding deep_import model
-					# save both the deep import model, and original, in 
-					# a deep import hash
-					# that way a user doesnt need to ever collect things
-				end
-
-			end
-
-		- how do i inject this from the gem
-			- dump out a file with the class defs in config/initializers/deep_import/<file names>.rb
-
-			- from the rail tie, after models are loaded?, load new ruby defs dynamically generated from config
-				- no need for files? not rewriteable by usrer?
-					- module DeepImport
-						# generate class opening
-						# add after_initialization
-						- add self and deep_import id of self to commit cache
-
-
-	document.chapters.each do |chapter|
-		db_document.create_chapter( 
-	end
-
-
 end
 
 DeepImport.import

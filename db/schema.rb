@@ -11,7 +11,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130504155510) do
+ActiveRecord::Schema.define(:version => 20130506020344) do
+
+  create_table "children", :force => true do |t|
+    t.integer  "parent_id"
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "children", ["parent_id"], :name => "index_children_on_parent_id"
 
   create_table "dummy_models", :force => true do |t|
     t.integer  "dummy_model_id"
@@ -21,5 +30,20 @@ ActiveRecord::Schema.define(:version => 20130504155510) do
   end
 
   add_index "dummy_models", ["dummy_model_id"], :name => "index_dummy_models_on_dummy_model_id"
+
+  create_table "grand_children", :force => true do |t|
+    t.integer  "child_id"
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "grand_children", ["child_id"], :name => "index_grand_children_on_child_id"
+
+  create_table "parents", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
 end

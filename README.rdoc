@@ -36,7 +36,15 @@ Usage:
 
 ---
 Generate fake dataset using DummyModel
-	- with algorithm on it
+	- add cache of models created, detect and set parents
+		- maybe add accessors to structure in Config
+		- For parenting, detect parent from config, and use last saved:
+  		- Review has multiple parents, or belongs_to,
+  			- one group is reference, loaded previously, not in config
+  			- another is parent in config, look for last loaded for auto-association
+  			- relies on data being loaded linearly
+  				- parent, then children, either dfs or bfs
+  				- how to test?
 
 ---
 Config File:

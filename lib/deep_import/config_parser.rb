@@ -15,6 +15,10 @@ module DeepImport
 			@details
 		end
 
+		def models
+			@details[ :models ]
+		end
+
 		def parse_roots
 			# we expect a hash of root model names to nested model names
 			raise "Root object not a hash" unless @config.is_a? Hash
