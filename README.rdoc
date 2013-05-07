@@ -35,16 +35,13 @@ Usage:
 	- write code (or have it ready before hand)
 
 ---
-Generate fake dataset using DummyModel
-	- add cache of models created, detect and set parents
-		- maybe add accessors to structure in Config
-		- For parenting, detect parent from config, and use last saved:
-  		- Review has multiple parents, or belongs_to,
-  			- one group is reference, loaded previously, not in config
-  			- another is parent in config, look for last loaded for auto-association
-  			- relies on data being loaded linearly
-  				- parent, then children, either dfs or bfs
-  				- how to test?
+Set Parent:
+	- in after_initialize:
+		- ask Config for parents of <model class>
+		- ask Cache for last_instantiated_parent of <model class>
+			- cache needs to track creation time, and other details
+				- all soft_models should have parse_at:datetime
+			- models still need a deep_import_id field
 
 ---
 Config File:
