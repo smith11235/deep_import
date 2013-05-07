@@ -6,6 +6,13 @@ module DeepImport
 			@@model_instance_cache
 		end
 
+		def self.show_stats
+			puts "Models:"
+			DeepImport::ModelsCache.get_cache.each do |model_class,instances|
+				puts "- #{model_class}: #{instances.size}"
+			end
+		end
+
 		def initialize
 			@@model_instance_cache ||= Hash.new
 		end
