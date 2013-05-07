@@ -37,58 +37,34 @@ Usage:
 Model Rules:
 	- each model can have multiple belongs_to
 		- one 'parent' from config, auto-defined
-		- instantiate models in a DFS format with minimal syntax
-		- (todo) manual overrides
-			- belongs_to assignment
-			- DeepImport.parent( 'class_name' )
+		- instantiate models in DFS ordering with minimal syntax
+
+---
+DeepImport Models:
+setup:
+- add deep_import_id to all source models
+	- rails generate migration AddDeepImportIdTo<models>
+- Create Corresponding Deep Import Models
+initializer:
+- add attr_accessible :deep_import_id to all source models
+models_cache:
+	- construct deep import models as models added
 
 ---
 Set Parent:
 	- in after_initialize:
 		- ask Config for last parent of <model class>
-
 		- deep_import_after_initialize:
 			- ask Cache for last_instantiated_parent of <model class>
 				- needs to be fast!
 				- use config to determine the parent 
-
 ---
 Config File:
 	- Validate: check class names for existence/validity
 	- Generate: analyze models with ruby_erd
 
 ---
-Database Id Tracking:
-	- Use id tracking models:
-		- soft_<model_type_pluralized>
-			- soft_id
-			- belongs_to_<association>_id
-				- string if soft id assignment
-				- int if hard/preexisting id assignment
-			- if polymorphic: belongs_to_<association>_type
-	- doesn't add overhead to core models
-
----
-Batch Logic:
-	Creation:
-	- DeepImport.create_<model_type>( attrs = {} )
-		- for constructing a root object instance
-	- <model instance>.create_child_<model_type>( attrs = {} )
-		- for constructing a model belonging to the first
-			- extends method_missing on active record base
-
-	References:
-	- <model instance>.soft_reference( other_model_instance )
-		- for setting id's for belongs to associations beyond the primary parent
-			- extends method_missing on active record base
-	- <model instance>.hard_reference( other_model_instance )
-		- useful for aligning to existing information such as seed data
-		- set the association id based on the other models actual id
-			- extends method_missing on active record base
-
-	DeepImport:
-		- commit_model_instances: 
-			- save models to database
-			- assign all association id fields
-		- serialize: save models to marshal, json, or yaml format
-		- deserialize
+Model Flags:
+_preexisting:
+	- integer instead of string 
+_polymorphic:
