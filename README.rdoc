@@ -34,14 +34,23 @@ Usage:
 	- rake deep_import:setup
 	- write code (or have it ready before hand)
 
+Model Rules:
+	- each model can have multiple belongs_to
+		- one 'parent' from config, auto-defined
+		- instantiate models in a DFS format with minimal syntax
+		- (todo) manual overrides
+			- belongs_to assignment
+			- DeepImport.parent( 'class_name' )
+
 ---
 Set Parent:
 	- in after_initialize:
-		- ask Config for parents of <model class>
-		- ask Cache for last_instantiated_parent of <model class>
-			- cache needs to track creation time, and other details
-				- all soft_models should have parse_at:datetime
-			- models still need a deep_import_id field
+		- ask Config for last parent of <model class>
+
+		- deep_import_after_initialize:
+			- ask Cache for last_instantiated_parent of <model class>
+				- needs to be fast!
+				- use config to determine the parent 
 
 ---
 Config File:

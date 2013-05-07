@@ -24,19 +24,22 @@ module DeepImport
 			end
 		end
 
+		def new_model_string( name )
+			"DeepImport#{name} deep_import_id:string parsed_at:datetime"
+		end
 
 		def setup_deep_import_generate_model_statements
 			generate_statements = Hash.new
 			@config[:roots].each do |root_name|
-				generate_statements[ root_name ] = "DeepImport#{root_name} deep_import_id:integer"
+				generate_statements[ root_name ] = new_model_string( root_name ) 
 			end
 
 			@config[:models].each do |model_name,info|
-				generate_statements[ model_name ] ||= "DeepImport#{model_name} deep_import_id:integer"
+				generate_statements[ model_name ] ||= new_model_string( model_name )
 
 				info[ :belongs_to ].each do |parent_class|
 					deep_import_parent_name = "DeepImport#{parent_class}".underscore
-					generate_statements[ model_name ] << " " << deep_import_parent_name << ":references" unless generate_statements[ model_name ] =~ /#{deep_import_parent_name}/ 
+					generate_statements[ model_name ] << " " << deep_import_parent_name << "_id:string" unless generate_statements[ model_name ] =~ /#{deep_import_parent_name}/ 
 				end
 			end
 		  @generate_statements = generate_statements
