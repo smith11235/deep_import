@@ -41,10 +41,6 @@ Model Rules:
 
 ---
 DeepImport Models:
-setup:
-- add deep_import_id to all source models
-	- rails generate migration AddDeepImportIdTo<models>
-- Create Corresponding Deep Import Models
 initializer:
 - add attr_accessible :deep_import_id to all source models
 models_cache:

@@ -11,6 +11,9 @@ module DeepImport
 		def add_class_methods
 			# add some logic to the model class
 			@model_class.class_eval do 
+				# make the model class aware of it's deep import id
+  			attr_accessible :deep_import_id 
+
 				# give the model class a Deep Import models cache
 				@@models_cache ||= DeepImport::ModelsCache.new
 				# after each model initialization, run this method
