@@ -1,5 +1,6 @@
 module DeepImport
 	require 'colorize'
+	require 'activerecord-import'
 	require 'railtie' if defined?(Rails)
 
 	root = File.expand_path( "../deep_import", File.dirname(__FILE__) )

@@ -20,7 +20,7 @@ module DeepImport
 		def add( model_instance )
 			# ensure tracking arrays are setup
 			@@model_instance_cache[ model_instance.class ] ||= Hash.new
-			deep_model_class = "Deep#{model_instance.class}".constantize
+			deep_model_class = "DeepImport#{model_instance.class}".constantize
 			@@model_instance_cache[ deep_model_class ] ||= Hash.new
 
 			# get the new deep import id for this class

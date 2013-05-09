@@ -14,8 +14,9 @@ module DeepImport
 				# make the model class aware of it's deep import id
   			attr_accessible :deep_import_id 
 
-				# give the model class a Deep Import models cache
+				# give the model class a Deep Import models cache from this point on
 				@@models_cache ||= DeepImport::ModelsCache.new
+
 				# after each model initialization, run this method
 				# http://guides.rubyonrails.org/active_record_validations_callbacks.html#after_initialize-and-after_find
 				after_initialize :deep_import_after_initialize

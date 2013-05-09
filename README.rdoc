@@ -45,7 +45,16 @@ models_cache:
 	- construct deep import models as models added
 
 ---
+core settings should be a single source
+
+---
 rename after_initialize => ModelAddIn
+---
+rake deep_import:setup:
+	- detect script/ files
+	- run destroy
+	- remove both
+	- create new ones
 
 ---
 Set Parent:

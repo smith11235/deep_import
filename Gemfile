@@ -10,6 +10,8 @@ gem 'deep_import', :path => "lib"
 
 gem 'sqlite3'
 
+gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git'
+
 
 # Gems used only for assets and not required
 # in production environments by default.

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  deep_import_id: MyString
+  parsed_at: 2013-05-08 19:12:31
+  deep_import_parent_id: MyString
+
+two:
+  deep_import_id: MyString
+  parsed_at: 2013-05-08 19:12:31
+  deep_import_parent_id: MyString

@@ -12,7 +12,10 @@ module DeepImport
 
 			puts "ActiveRecord::import:"
 			@cache.each do |model_class,instances|
-				puts "  -	#{model_class}: #{instances.size}"	
+				puts "  -	Importing: #{model_class} - #{instances.size} instances @ #{Time.now}".yellow	
+				raise "#{model_class} does not respond to import" unless model_class.respond_to? :import, true
+				model_class.import instances.values
+				puts "  	Finished".green	
 			end
 
 			puts "Setting association ids on application models"
