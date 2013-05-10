@@ -50,7 +50,7 @@ module DeepImport
 				raise "Missing Parent Of Type: #{deep_parent_class}" if deep_parent_instance.nil?
 
 				puts "#{deep_parent_class}: #{deep_parent_instance.attributes.to_yaml}"
-				deep_model_instance.send( "#{deep_parent_class.to_s.underscore}_id", deep_parent_instance.deep_import_id )
+				deep_model_instance.send( "#{deep_parent_class.to_s.underscore}_id=", deep_parent_instance.deep_import_id )
 				puts deep_model_instance.attributes.to_yaml.yellow
 			else
 				puts "#{model_class} doesnt have a parent"
