@@ -32,29 +32,12 @@ Usage:
 		- with the architecture of your batched imports
 	- rake deep_import:generate_config
 	- rake deep_import:setup
-	- write code (or have it ready before hand)
 
 Model Rules:
 	- each model can have multiple belongs_to
 		- one 'parent' from config, auto-defined
 		- instantiate models in DFS ordering with minimal syntax
-
----
-DeepImport Models:
-models_cache:
-	- construct deep import models as models added
-
----
-core settings should be a single source
-
----
-rename after_initialize => ModelAddIn
----
-rake deep_import:setup:
-	- detect script/ files
-	- run destroy
-	- remove both
-	- create new ones
+			- see lib/deep_import/deep_import.rake, deep_import:benchmark
 
 ---
 Set Parent:
@@ -64,6 +47,27 @@ Set Parent:
 			- ask Cache for last_instantiated_parent of <model class>
 				- needs to be fast!
 				- use config to determine the parent 
+
+---
+belongs_to:
+- :before_save:
+	- for each /.*_id/ field, if ! self.<non-id>.nil?, set deep import id's accordingly
+		- # for each association
+
+---
+core settings should be a single source
+	- model prefix: DeepImport
+
+---
+rename after_initialize => ModelAddIn
+
+---
+rake deep_import:setup:
+	- detect script/ files
+	- run destroy
+	- remove both
+	- create new ones
+
 ---
 Config File:
 	- Validate: check class names for existence/validity

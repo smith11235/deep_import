@@ -15,29 +15,60 @@ module DeepImport
 
 		def initialize
 			@@model_instance_cache ||= Hash.new
+			@@last_instance_of ||= Hash.new
 		end
 
 		def add( model_instance )
-			# ensure tracking arrays are setup
-			@@model_instance_cache[ model_instance.class ] ||= Hash.new
+			# get the two relevant class names
+			model_class = model_instance.class.to_s.constantize
 			deep_model_class = "DeepImport#{model_instance.class}".constantize
+
+			# ensure tracking arrays are setup
+			@@model_instance_cache[ model_class ] ||= Hash.new
 			@@model_instance_cache[ deep_model_class ] ||= Hash.new
 
-			# get the new deep import id for this class
-			deep_import_id = @@model_instance_cache[ model_instance.class ].size.to_s
-			# set the id on the model instance
+			# get the next deep import batch id for this class
+			deep_import_id = @@model_instance_cache[ model_class ].size.to_s
+
+			# set the id on the model
 			model_instance.deep_import_id = deep_import_id
-			# create the deep model instance
+
+			# create the deep model instance, with the deep_import_id
 			deep_model_instance = deep_model_class.new( :deep_import_id => deep_import_id )
 			
-			# cache these classes
-			@@model_instance_cache[ model_instance.class ][ deep_import_id ] = model_instance
-			@@model_instance_cache[ deep_model_class ][ deep_import_id ] = deep_model_instance
+			# cache these classes for creation later
+			add_instance_to_cache( model_instance )
+			add_instance_to_cache( deep_model_instance )
 
-			# 
+			# check if it has a parent
+			parent_class = ConfigParser.parent_class_of model_class
+
+			if parent_class 
+				# only set parent information on DeepImport models
+				deep_parent_class = "DeepImport#{parent_class}".constantize
+				deep_parent_instance = last_instance_of( deep_parent_class )
+				raise "Missing Parent Of Type: #{deep_parent_class}" if deep_parent_instance.nil?
+
+				puts "#{deep_parent_class}: #{deep_parent_instance.attributes.to_yaml}"
+				deep_model_instance.send( "#{deep_parent_class.to_s.underscore}_id", deep_parent_instance.deep_import_id )
+				puts deep_model_instance.attributes.to_yaml.yellow
+			else
+				puts "#{model_class} doesnt have a parent"
+			end
+
+		end
+
+		private
+
+		def last_instance_of( model_class )
+			@@last_instance_of[ model_class ]
+		end
+
+		def add_instance_to_cache( model_instance )
+			@@model_instance_cache[ model_instance.class ][ model_instance.deep_import_id ] = model_instance
+			@@last_instance_of[ model_instance.class ] = model_instance
 		end
 
 	end
 
 end
-
