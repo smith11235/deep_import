@@ -7,6 +7,7 @@ module DeepImport
 
 		initializer "deep_import.add_model_creation_after_initialization" do
 			Config.setup
+			ModelsCache.setup
 
 			# for each model in configuration file
 			Config.models.each do |model_class,info|

@@ -3,8 +3,7 @@ module DeepImport
 	class Setup
 
 		def initialize
-			config_parser = DeepImport::ConfigParser.new
-			@config = config_parser.deep_import_config
+			@config = Config.deep_import_config
 			setup_deep_import_generate_statements
 			@timestamp = Time.now.utc.strftime( '%Y%m%d%H%M%S' )
 			write_models_script( :destroy )
@@ -29,7 +28,7 @@ module DeepImport
 		end
 
 		def add_deep_import_id_migration_string( name )
-			"migration AddDeepImportIdTo#{name.pluralize} deep_import_id:string"
+			"migration AddDeepImportIdTo#{name.to_s.pluralize} deep_import_id:string"
 		end
 
 		def setup_deep_import_generate_statements
