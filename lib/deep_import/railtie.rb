@@ -6,11 +6,11 @@ module DeepImport
 		railtie_name :deep_import
 
 		initializer "deep_import.add_model_creation_after_initialization" do
-			config = ConfigParser.new
+			Config.setup
 
 			# for each model in configuration file
-			config.models.each do |model_class,info|
-				AfterInitialize.new( model_class )
+			Config.models.each do |model_class,info|
+				ModelLogic.new(  model_class  )
 			end
 		end
 

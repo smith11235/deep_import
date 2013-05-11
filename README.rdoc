@@ -40,13 +40,14 @@ Model Rules:
 			- see lib/deep_import/deep_import.rake, deep_import:benchmark
 
 ---
-Set Parent:
-	- in after_initialize:
-		- ask Config for last parent of <model class>
-		- deep_import_after_initialize:
-			- ask Cache for last_instantiated_parent of <model class>
-				- needs to be fast!
-				- use config to determine the parent 
+refactor:
+	config object: fucked up currently, just changed type of :models
+	core settings should be a single source
+		- model prefix: DeepImport
+	rename after_initialize => ModelLogic.new(
+	add to models: 
+		def self.deep_import_initialize
+				
 
 ---
 belongs_to:
@@ -54,12 +55,6 @@ belongs_to:
 	- for each /.*_id/ field, if ! self.<non-id>.nil?, set deep import id's accordingly
 		- # for each association
 
----
-core settings should be a single source
-	- model prefix: DeepImport
-
----
-rename after_initialize => ModelAddIn
 
 ---
 rake deep_import:setup:

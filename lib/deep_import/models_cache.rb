@@ -41,19 +41,14 @@ module DeepImport
 			add_instance_to_cache( deep_model_instance )
 
 			# check if it has a parent
-			parent_class = ConfigParser.parent_class_of model_class
+			parent_class = Config.parent_class_of model_class
 
 			if parent_class 
 				# only set parent information on DeepImport models
 				deep_parent_class = "DeepImport#{parent_class}".constantize
 				deep_parent_instance = last_instance_of( deep_parent_class )
 				raise "Missing Parent Of Type: #{deep_parent_class}" if deep_parent_instance.nil?
-
-				puts "#{deep_parent_class}: #{deep_parent_instance.attributes.to_yaml}"
 				deep_model_instance.send( "#{deep_parent_class.to_s.underscore}_id=", deep_parent_instance.deep_import_id )
-				puts deep_model_instance.attributes.to_yaml.yellow
-			else
-				puts "#{model_class} doesnt have a parent"
 			end
 
 		end
