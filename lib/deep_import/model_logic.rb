@@ -24,14 +24,11 @@ module DeepImport
 				end
 
 				def self.deep_import_setup
-					@@parent = DeepImport::Config.parent_class_of self
-					puts "Setting parent of #{self} to #{@@parent}"
 					DeepImport::ModelsCache.track_model self
 				end
 
 				def self.parent_class
-					puts "Parent of #{self} is #{@@parent}".yellow
-					@@parent
+					DeepImport::Config.parent_class_of self
 				end
 
 			end

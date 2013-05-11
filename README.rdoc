@@ -40,21 +40,15 @@ Model Rules:
 			- see lib/deep_import/deep_import.rake, deep_import:benchmark
 
 ---
-refactor:
-	config object: fucked up currently, just changed type of :models
-	core settings should be a single source
-		- model prefix: DeepImport
-	rename after_initialize => ModelLogic.new(
-	add to models: 
-		def self.deep_import_initialize
-				
+set association id's from deep import models:
 
 ---
 belongs_to:
+- to allow:
+	- child.other_parent = other_parent
 - :before_save:
 	- for each /.*_id/ field, if ! self.<non-id>.nil?, set deep import id's accordingly
 		- # for each association
-
 
 ---
 rake deep_import:setup:
