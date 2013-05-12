@@ -41,15 +41,15 @@ Model Rules:
 			- see lib/deep_import/deep_import.rake, deep_import:benchmark
 
 ---
-set association id's from deep import models:
-delete deep_import_id on models
-delete deep_import* models
-validate association distribution
-
----
-update query in commit:
-- check what kind of sql is being used
-	- have queryies for each db type
+Commit:
+	- get deep_import association distribution
+	- set association id's from deep import models
+	- get and compare association distribution 
+	- delete deep_import_id on models
+	- delete deep_import* models
+	- check what kind of sql is being used
+		- raise error if not mysql
+		- have queryies for each db type
 
 ---
 gemspec:
