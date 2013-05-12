@@ -29,15 +29,18 @@ module DeepImport
 					association_table = parent_class.to_s.underscore.pluralize
 					deep_import_target_table = "deep_import_#{target_table}"
 
+					# - get count of records with each distinct deep_import belongs_to id field values
+					# puts "  - join: #{target_table}.deep_import_id = #{deep_import_target_table}.deep_import_id"
+					joins_logic = "JOIN #{deep_import_target_table} ON #{target_table}.deep_import_id = #{deep_import_target_table}.deep_import_id"
+					# puts "  - join: #{association_table}.deep_import_id = #{deep_import_target_table}.#{deep_import_target_association_id_field}"
+					joins_logic << " JOIN #{association_table} ON #{deep_import_target_table}.#{deep_import_target_association_id_field} = #{association_table}.deep_import_id"
+					puts "joins: #{joins_logic}"
 					puts "  - set: #{target_table}.#{target_association_id_field} = #{association_table}.id".yellow
-					puts "  - join: #{target_table}.deep_import_id = #{deep_import_target_table}.deep_import_id"
-					puts "  - join: #{association_table}.deep_import_id = #{deep_import_target_table}.#{deep_import_target_association_id_field}"
 
 					# - application => deep_import: <model>.deep_import_id = deep_import_<model>.deep_import_id 
 					# - find belongs_to: deep_import_<model>.deep_import_<belongs_to>_id = <belongs_to>.deep_import_id
 					# - to set: <model>.<belongs_to>_id = <belongs_to>.id
 
-					# - get count of records with each distinct deep_import belongs_to id field values
 					# - ensure uniqueness is the same on actual association fields
 					puts "  Finished".green
 				end
