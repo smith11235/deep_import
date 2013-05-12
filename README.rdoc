@@ -43,13 +43,18 @@ Model Rules:
 ---
 Commit:
 	- get deep_import association distribution
-	- set association id's from deep import models
+		- DeepImportModel.group( belongs_to_id_field ).select( count( deep_import_id ) ).order( belongs_to_id_field )
+	- * set association id's from deep import models
 	- get and compare association distribution 
+		- Model.group( belongs_to_id_field ).select( count( id ) ).order( belongs_to_id_field )
+		- is the ordering correct to do this? or should I force a group_by deep_import_belongs_to_id_field
 	- delete deep_import_id on models
+		- to flag that they are finished being loaded
 	- delete deep_import* models
-	- check what kind of sql is being used
+		- to save space on the database
+	- verify what kind of sql is being used
 		- raise error if not mysql
-		- have queryies for each db type
+		- have queryies for each db type in the future
 
 ---
 gemspec:
