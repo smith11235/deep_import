@@ -32,6 +32,7 @@ Usage:
 		- with the architecture of your batched imports
 	- rake deep_import:generate_config
 	- rake deep_import:setup
+	- example: deep_import:benchmark
 
 Model Rules:
 	- each model can have multiple belongs_to
@@ -41,6 +42,18 @@ Model Rules:
 
 ---
 set association id's from deep import models:
+delete deep_import_id on models
+delete deep_import* models
+validate association distribution
+
+---
+update query in commit:
+- check what kind of sql is being used
+	- have queryies for each db type
+
+---
+gemspec:
+- add proper dependencies, activerecord, activerecord-import, rails
 
 ---
 belongs_to:
