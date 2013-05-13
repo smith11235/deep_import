@@ -18,7 +18,17 @@ module DeepImport
 			Config.deep_import_config[:models].each do |model_class,info|
 				info[ :belongs_to ].each do |parent_class|
 					# - get count of records with each distinct deep_import belongs_to id field values
-					puts mysql_association_update_query(model_class,parent_class).green
+					# class_name.connection.update_sql()				
+					case model_class.connection_config[:adapter]
+					when "sqlite3"
+						puts sqlite_association_update_query( model_class,parent_class).green
+					when /^mysql/
+						puts mysql_association_update_query(model_class,parent_class).green
+						raise "mysql Not implemented"
+					else
+						raise "Not implemented"
+					end
+
 					# - ensure uniqueness is the same on actual association fields
 					# clear deep_import_id's everywhere
 					# delete deep_import models
@@ -27,18 +37,36 @@ module DeepImport
 			end
 		end
 
-		def mysql_association_update_query(model_class,parent_class)
-			target_table = model_class.to_s.underscore.pluralize
-			target_association_id_field = parent_class.to_s.underscore + "_id"
-			deep_import_target_association_id_field = "deep_import_" + parent_class.to_s.underscore + "_id"
-			association_table = parent_class.to_s.underscore.pluralize
-			deep_import_target_table = "deep_import_#{target_table}"
+		def model_names( model_class, parent_class )
+			{
+			:target_table => model_class.to_s.underscore.pluralize,
+			:target_association_id_field => parent_class.to_s.underscore + "_id",
+			:deep_import_target_association_id_field => "deep_import_" + parent_class.to_s.underscore + "_id",
+			:association_table => parent_class.to_s.underscore.pluralize,
+			:deep_import_target_table => "deep_import_#{model_class.to_s.underscore.pluralize}"
+			}
+		end
 
-			mysql_update_logic = "UPDATE #{target_table}"
-			mysql_update_logic << "	JOIN #{deep_import_target_table} ON #{target_table}.deep_import_id = #{deep_import_target_table}.deep_import_id"
-			mysql_update_logic << " JOIN #{association_table} ON #{deep_import_target_table}.#{deep_import_target_association_id_field} = #{association_table}.deep_import_id"
-			mysql_update_logic << " SET #{target_table}.#{target_association_id_field} = #{association_table}.id"
-			mysql_update_logic << " WHERE #{target_table}.deep_import_id IS NOT NULL"
+		def sqlite_association_update_query(model_class,parent_class)
+			names = model_names( model_class, parent_class )
+ 			query = "UPDATE #{names[:target_table]}" 
+			query << " SET #{names[:target_association_id_field]} = ("
+			query << "   	SELECT #{names[:association_table]}.id"
+			query << " 		FROM #{names[:association_table]} JOIN #{names[:deep_import_target_table]}"
+			query << " 		ON #{names[:association_table]}.deep_import_id = #{names[:deep_import_target_table]}.#{names[:deep_import_target_association_id_field]}"
+			query << "    AND #{names[:target_table]}.deep_import_id = #{names[:deep_import_target_table]}.deep_import_id"
+			query << "  )"
+			query << " WHERE #{names[:target_table]}.deep_import_id IS NOT NULL"
+			query
+		end
+
+		def mysql_association_update_query(model_class,parent_class)
+			names = model_names( model_class, parent_class )
+			mysql_update_logic = "UPDATE #{names[:target_table]}"
+			mysql_update_logic << "	JOIN #{names[:deep_import_target_table]} ON #{names[:target_table]}.deep_import_id = #{names[:deep_import_target_table]}.deep_import_id"
+			mysql_update_logic << " JOIN #{names[:association_table]} ON #{names[:deep_import_target_table]}.#{names[:deep_import_target_association_id_field]} = #{names[:association_table]}.deep_import_id"
+			mysql_update_logic << " SET #{names[:target_table]}.#{names[:target_association_id_field]} = #{names[:association_table]}.id"
+			mysql_update_logic << " WHERE #{names[:target_table]}.deep_import_id IS NOT NULL"
 			mysql_update_logic
 		end
 
