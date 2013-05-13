@@ -18,16 +18,17 @@ module DeepImport
 			Config.deep_import_config[:models].each do |model_class,info|
 				info[ :belongs_to ].each do |parent_class|
 					# - get count of records with each distinct deep_import belongs_to id field values
-					# class_name.connection.update_sql()				
 					case model_class.connection_config[:adapter]
 					when "sqlite3"
-						puts sqlite_association_update_query( model_class,parent_class).green
+						query = sqlite_association_update_query( model_class,parent_class).green
 					when /^mysql/
-						puts mysql_association_update_query(model_class,parent_class).green
+						query = mysql_association_update_query(model_class,parent_class).green
 						raise "mysql Not implemented"
 					else
 						raise "Not implemented"
 					end
+					puts "Running: #{query}".green
+					model_class.connection.update_sql(query)				
 
 					# - ensure uniqueness is the same on actual association fields
 					# clear deep_import_id's everywhere
@@ -52,11 +53,11 @@ module DeepImport
  			query = "UPDATE #{names[:target_table]}" 
 			query << " SET #{names[:target_association_id_field]} = ("
 			query << "   	SELECT #{names[:association_table]}.id"
-			query << " 		FROM #{names[:association_table]} JOIN #{names[:deep_import_target_table]}"
-			query << " 		ON #{names[:association_table]}.deep_import_id = #{names[:deep_import_target_table]}.#{names[:deep_import_target_association_id_field]}"
-			query << "    AND #{names[:target_table]}.deep_import_id = #{names[:deep_import_target_table]}.deep_import_id"
+			query << " 		FROM #{names[:association_table]} WHERE #{names[:association_table]}.deep_import_id = ("
+			query << "      SELECT #{names[:deep_import_target_table]}.#{names[:deep_import_target_association_id_field]}"
+			query << "      FROM #{names[:deep_import_target_table]} WHERE #{names[:target_table]}.deep_import_id = #{names[:deep_import_target_table]}.deep_import_id"
+			query << "    )"
 			query << "  )"
-			query << " WHERE #{names[:target_table]}.deep_import_id IS NOT NULL"
 			query
 		end
 
