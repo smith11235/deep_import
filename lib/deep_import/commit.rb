@@ -50,12 +50,13 @@ module DeepImport
 
 		def sqlite_association_update_query(model_class,parent_class)
 			names = model_names( model_class, parent_class )
- 			query = "UPDATE #{names[:target_table]}" 
+ 			query = "UPDATE #{names[:target_table]} AS target" 
 			query << " SET #{names[:target_association_id_field]} = ("
-			query << "   	SELECT #{names[:association_table]}.id"
-			query << " 		FROM #{names[:association_table]} WHERE #{names[:association_table]}.deep_import_id = ("
-			query << "      SELECT #{names[:deep_import_target_table]}.#{names[:deep_import_target_association_id_field]}"
-			query << "      FROM #{names[:deep_import_target_table]} WHERE #{names[:target_table]}.deep_import_id = #{names[:deep_import_target_table]}.deep_import_id"
+			query << "   	SELECT association.id"
+			query << " 		FROM #{names[:association_table]} AS association"
+			query << "    JOIN #{names[:deep_import_target_table]} AS deep_import"
+			query << "    ON association.deep_import_id = deep_import.#{names[:deep_import_target_association_id_field]}"
+			query << "    WHERE #{names[:target_table]}.deep_import_id = #{names[:deep_import_target_table]}.deep_import_id"
 			query << "    )"
 			query << "  )"
 			query
