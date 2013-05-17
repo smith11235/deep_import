@@ -1,18 +1,37 @@
 namespace :deep_import do 
+	require 'benchmark'
 
 	desc "Build a fake nested dataset, commit to db"
 	task :benchmark => :environment do
 		Rake::Task["db:reset"].invoke
-		(0..10).each do |parent_name|
-			parent = Parent.new( :name => parent_name.to_s )
-			(0..10).each do |child_name|
-				child = parent.children.new( :name => child_name.to_s )
-				(0..10).each do |grand_child_name|
-					grand_child = child.grand_children.new( :name => grand_child_name )
+		puts "Benchmarking Deep Import Load Logic".red
+		puts Benchmark.measure {
+			(0..9).each do |parent_name|
+				parent = Parent.new( :name => parent_name.to_s )
+				(0..9).each do |child_name|
+					child = parent.children.new( :name => child_name.to_s )
+					(0..9).each do |grand_child_name|
+						grand_child = child.grand_children.new( :name => grand_child_name )
+					end
 				end
 			end
-		end
-		DeepImport.commit
+			DeepImport.commit
+		}
+
+		puts "Benchmarking Classic Load Logic".red
+		puts Benchmark.measue {
+			ENV["disable_deep_import"] = "1" 
+			(0..9).each do |parent_name|
+				parent = Parent.create!( :name => parent_name.to_s )
+				(0..9).each do |child_name|
+					child = parent.children.create!( :name => child_name.to_s )
+					(0..9).each do |grand_child_name|
+						grand_child = child.grand_children.create!( :name => grand_child_name )
+					end
+				end
+			end
+		}
+
 	end
 
 	desc "View"
