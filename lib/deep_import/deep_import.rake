@@ -2,6 +2,7 @@ namespace :deep_import do
 
 	desc "Build a fake nested dataset, commit to db"
 	task :benchmark => :environment do
+		Rake::Task["db:reset"].invoke
 		(0..10).each do |parent_name|
 			parent = Parent.new( :name => parent_name.to_s )
 			(0..10).each do |child_name|
@@ -39,17 +40,21 @@ namespace :deep_import do
 			f.puts "end"
 		end
 		puts "Generated: #{migration_file}".yellow
+		sleep( 3 )
 	end
 
 	desc "Add Indicies"
 	task :index => :environment do 
 		DeepImport::Config.deep_import_config[:models].each do |model_class,info|
-			create_migration( "AddDeepImportIdIndexTo#{model_class.to_s.pluralize}" ) do |f|
-				f.puts "      add_index :deep_import_id, :id"
+			plural_name = model_class.to_s.pluralize
+			table_name = plural_name.underscore
+
+			create_migration( "AddDeepImportIdIndexTo#{plural_name}" ) do |f|
+				f.puts "      add_index :#{table_name}, [:deep_import_id, :id], :name => 'di_id_index'"
 			end
 			create_migration( "AddDeepImportBelongsToIndiciesToDeepImport#{model_class.to_s.pluralize}" ) do |f|
 				info[:belongs_to].each do |belongs_to|
-					f.puts "      add_index :deep_import_id, :deep_import_#{belongs_to.to_s.underscore}_id"
+					f.puts "      add_index :deep_import_#{table_name}, [:deep_import_id, :deep_import_#{belongs_to.to_s.underscore}_id], :name => 'di_#{belongs_to.to_s.underscore}'"
 				end
 			end
 		end
