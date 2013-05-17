@@ -21,7 +21,7 @@ module DeepImport
 				after_initialize :deep_import_after_initialize
 
 				def deep_import_after_initialize
-					return unless self.new_record?
+					return unless self.new_record? && self.deep_import_id.nil? && ENV["disable_deep_import"].nil?
 					DeepImport::ModelsCache.add( self )
 				end
 

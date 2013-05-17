@@ -10,6 +10,7 @@ module DeepImport
 		def initialize
 			DeepImport::ModelsCache.show_stats
 			import_models
+			DeepImport::ModelsCache.show_stats
 			set_associations	
 		end
 
