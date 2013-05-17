@@ -17,6 +17,19 @@ Transaction Breakdown:
       - Where B is the number of belongs to relationships between the M model classes
       - M and B must be neglible compared to X for benefit
 
+Benchmark:
+* Models are Parent, Child, Grandchild
+* 10 parents have 10 children each, and 10 grandchildren from each child
+* A total of 1110 objects from 3 models
+* Rake Task: deep_import:benchmark
+	* defined in lib/deep_import/deep_import.rake
+
+    deep_import:
+		  4.650000   0.070000   4.720000 (  7.043655)
+		classic:
+	    4.370000   0.260000   4.630000 (209.035913)
+
+
 Features:
 	- improved efficiency when loading 'many' model instances
 	- models can have associations!
@@ -41,6 +54,7 @@ Model Rules:
 			- see lib/deep_import/deep_import.rake, deep_import:benchmark
 
 ---
+* during save, deep import models doubling
 Commit:
 	- get deep_import association distribution
 		- DeepImportModel.group( belongs_to_id_field ).select( count( deep_import_id ) ).order( belongs_to_id_field )
@@ -57,9 +71,7 @@ Commit:
 
 ---
 indexes:
-- on source models: index on (deep_import_id, id)
-- on deep import models:
-	- index on (deep_import_id, deep_import_<belongs_to>_id)
+	- move from deep_import:index to deep_import:setup
 
 ---
 gemspec:

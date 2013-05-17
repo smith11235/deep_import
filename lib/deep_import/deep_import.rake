@@ -18,8 +18,10 @@ namespace :deep_import do
 			DeepImport.commit
 		}
 
+		Rake::Task["db:reset"].reenable
+		Rake::Task["db:reset"].invoke
 		puts "Benchmarking Classic Load Logic".red
-		puts Benchmark.measue {
+		puts Benchmark.measure {
 			ENV["disable_deep_import"] = "1" 
 			(0..9).each do |parent_name|
 				parent = Parent.create!( :name => parent_name.to_s )
