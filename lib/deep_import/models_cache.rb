@@ -45,7 +45,6 @@ module DeepImport
 			end
 
 			def add( model_instance )
-				return unless model_instance.new_record?
 				# get the two relevant class names
 				model_class = model_instance.class
 				deep_model_class = "DeepImport#{model_class}".constantize
