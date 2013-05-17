@@ -20,15 +20,20 @@ Transaction Breakdown:
 Benchmark:
 * Models are Parent, Child, Grandchild
   * defined in config/deep_import.yml (provided by application developer, not gem)
-* 10 parents have 10 children each, and 10 grandchildren from each child
-  * A total of 1110 objects from 3 models
+* X Parents have X Children each and 10 GrandChildren from each Child
+  *  1,110 objects for 10 x 10 x 10 
+	* 27,930 objects for 30 x 30 x 30
 * Rake Task: deep_import:benchmark
   * defined in lib/deep_import/deep_import.rake
-* Results:
+* Results: (the 'real' column shows the database transaction time)
     mysql running on remote server
-                 user     system      total        real
-    deep_import: 4.650000   0.070000   4.720000 (  7.043655)
-    classic: 4.370000   0.260000   4.630000 (209.035913)
+                    user     system      total        real
+    10 x 10 x 10
+     deep_import:  4.650000   0.070000   4.720000 (  7.043655)
+         classic:  4.370000   0.260000   4.630000 (209.035913)
+    30 x 30 x 30
+     deep_import:  80.770000   0.980000  81.750000 ( 97.582577)
+         classic:  120.160000   7.850000 128.010000 (5264.665823) 
 
 Features:
 - improved efficiency when loading 'many' model instances
@@ -54,17 +59,20 @@ Commit:
 	- get and compare association distribution 
 		- Model.group( belongs_to_id_field ).select( count( id ) ).order( belongs_to_id_field )
 		- is the ordering correct to do this? or should I force a group_by deep_import_belongs_to_id_field
-	- delete deep_import_id on models
+	- set deep_import_id = NULL on models
 		- to flag that they are finished being loaded
 	- delete deep_import* models
 		- to save space on the database
-	- verify what kind of sql is being used
-		- raise error if not mysql
-		- have queryies for each db type in the future
 
 ---
 indexes:
 	- move from deep_import:index to deep_import:setup
+
+---
+refactor:
+	- gemspec at root
+	- .rake in lib/tasks
+	- lib/deep_import.rb
 
 ---
 gemspec:
