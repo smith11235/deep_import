@@ -19,33 +19,31 @@ Transaction Breakdown:
 
 Benchmark:
 * Models are Parent, Child, Grandchild
+  * defined in config/deep_import.yml (provided by application developer, not gem)
 * 10 parents have 10 children each, and 10 grandchildren from each child
-* A total of 1110 objects from 3 models
+	* A total of 1110 objects from 3 models
 * Rake Task: deep_import:benchmark
 	* defined in lib/deep_import/deep_import.rake
-
+* Results:
     deep_import:
 		  4.650000   0.070000   4.720000 (  7.043655)
 		classic:
 	    4.370000   0.260000   4.630000 (209.035913)
 
-
 Features:
-	- improved efficiency when loading 'many' model instances
-	- models can have associations!
-	- models can be serialized, and reloaded to rails databases on demand
-		- a hidden 'id field' is used to preserve associations
-			- when rails id field values are still unknown
-			- this is where the B transactions come from
-				- 1 query for each belongs_to association
+- improved efficiency when loading 'many' model instances
+- models can have associations
+- models can be parsed in a DFS fashion with minimal syntax
+- setup involved 1 configuration file, 0 edits to model files
+	- and running of some rake tasks
+- models can be serialized and reloaded at need with relationships preserved
 
 Usage:
-	- Gemfile:  "gem: 'deep_import'"
-	- create a config/deep_import.yml
-		- with the architecture of your batched imports
-	- rake deep_import:generate_config
-	- rake deep_import:setup
-	- example: deep_import:benchmark
+- Gemfile:  "gem: 'deep_import', :git => 'git://github.com/smith11235/deep_import'"
+- create a config/deep_import.yml with your model architecture
+- rake deep_import:setup
+- remove all calls to saving methods 
+- add a DeepImport.commit call at the end of your loader
 
 Model Rules:
 	- each model can have multiple belongs_to
