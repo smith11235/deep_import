@@ -9,6 +9,7 @@ gem 'deep_import', :path => "lib"
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'sqlite3'
+gem 'mysql2'
 
 gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git'
 
