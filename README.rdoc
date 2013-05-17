@@ -1,10 +1,10 @@
 ---
 Deep Import:
-* A gem for loading big data with rails using your normal rails syntax
-* With standard active record methodology, batch loading becomes a bottleneck
-	* database transaction costs are significant
+* A gem for loading big data in Rails
+* allows standard active record syntax for clear and familiar code
 
 Transaction Breakdown:
+* when creating many models, database transaction costs are significant
     Standard Rails Model Instanct Creation: 
       - 1 instance per transation
       - Product.new.save, @product.reviews.create
@@ -23,13 +23,13 @@ Benchmark:
 * 10 parents have 10 children each, and 10 grandchildren from each child
 	* A total of 1110 objects from 3 models
 * Rake Task: deep_import:benchmark
-	* defined in lib/deep_import/deep_import.rake
+  * defined in lib/deep_import/deep_import.rake
 * Results:
-		mysql running on remote server
+    mysql running on remote server
     deep_import:
-		  4.650000   0.070000   4.720000 (  7.043655)
-		classic:
-	    4.370000   0.260000   4.630000 (209.035913)
+      4.650000   0.070000   4.720000 (  7.043655)
+    classic:
+      4.370000   0.260000   4.630000 (209.035913)
 
 Features:
 - improved efficiency when loading 'many' model instances
