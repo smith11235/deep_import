@@ -1,38 +1,49 @@
 namespace :deep_import do 
 	require 'benchmark'
 
+	desc "Example Deep Import"
+	task :example_deep_import => :environment do
+		range = ENV["deep_import_example_range"] || 5 
+		(0..range).each do |parent_name|
+			parent = Parent.new( :name => parent_name.to_s )
+			(0..range).each do |child_name|
+				child = parent.children.new( :name => child_name.to_s )
+				(0..range).each do |grand_child_name|
+					grand_child = child.grand_children.new( :name => grand_child_name )
+				end
+			end
+		end
+		DeepImport.commit
+	end
+
+	desc "Example Standard Syntax Import"
+	task :example_standard_import => :environment do
+		range = ENV["deep_import_example_range"] || 5 
+		ENV["disable_deep_import"] = "1" 
+		(0..range).each do |parent_name|
+			parent = Parent.create!( :name => parent_name.to_s )
+			(0..range).each do |child_name|
+				child = parent.children.create!( :name => child_name.to_s )
+				(0..range).each do |grand_child_name|
+					grand_child = child.grand_children.create!( :name => grand_child_name )
+				end
+			end
+		end
+	end
+
 	desc "Build a fake nested dataset, commit to db"
 	task :benchmark => :environment do
 		Rake::Task["db:reset"].invoke
-		x = 29
-		puts "Benchmarking Deep Import Load Logic".red
-		puts Benchmark.measure {
-			(0..x).each do |parent_name|
-				parent = Parent.new( :name => parent_name.to_s )
-				(0..x).each do |child_name|
-					child = parent.children.new( :name => child_name.to_s )
-					(0..x).each do |grand_child_name|
-						grand_child = child.grand_children.new( :name => grand_child_name )
-					end
-				end
-			end
-			DeepImport.commit
-		}
+		ENV["deep_import_example_range"] = 29
 
+		puts Benchmark.measure {
+			Rake::Task["example_deep_import"].invoke
+		}
+		# reset db so both tests have same initial starting point
 		Rake::Task["db:reset"].reenable
 		Rake::Task["db:reset"].invoke
-		puts "Benchmarking Classic Load Logic".red
 		puts Benchmark.measure {
-			ENV["disable_deep_import"] = "1" 
-			(0..x).each do |parent_name|
-				parent = Parent.create!( :name => parent_name.to_s )
-				(0..x).each do |child_name|
-					child = parent.children.create!( :name => child_name.to_s )
-					(0..x).each do |grand_child_name|
-						grand_child = child.grand_children.create!( :name => grand_child_name )
-					end
-				end
-			end
+			Rake::Task["example_standard_import"].invoke
 		}
 
 	end

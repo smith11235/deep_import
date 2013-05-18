@@ -22,7 +22,7 @@ Benchmark:
   * defined in config/deep_import.yml (provided by application developer, not gem)
 * X Parents have X Children each and 10 GrandChildren from each Child
   *  1,110 objects for 10 x 10 x 10 
-	* 27,930 objects for 30 x 30 x 30
+  * 27,930 objects for 30 x 30 x 30
 * Rake Task: deep_import:benchmark
   * defined in lib/deep_import/deep_import.rake
 * Results: (the 'real' column shows the database transaction time)
@@ -47,59 +47,6 @@ Usage:
 - Gemfile:  "gem: 'deep_import', :git => 'git://github.com/smith11235/deep_import'"
 - create a config/deep_import.yml with your model architecture
 - rake deep_import:setup
-- remove all calls to saving methods 
+- review code, use .new, .build, dont use .save, .create
+- run the generated sh script
 - add a DeepImport.commit call at the end of your loader
-
-
----
-* during save, deep import models doubling
-Commit:
-	- get deep_import association distribution
-		- DeepImportModel.group( belongs_to_id_field ).select( count( deep_import_id ) ).order( belongs_to_id_field )
-	- get and compare association distribution 
-		- Model.group( belongs_to_id_field ).select( count( id ) ).order( belongs_to_id_field )
-		- is the ordering correct to do this? or should I force a group_by deep_import_belongs_to_id_field
-	- set deep_import_id = NULL on models
-		- to flag that they are finished being loaded
-	- delete deep_import* models
-		- to save space on the database
-
----
-indexes:
-	- move from deep_import:index to deep_import:setup
-
----
-refactor:
-	- gemspec at root
-	- .rake in lib/tasks
-	- lib/deep_import.rb
-
----
-gemspec:
-- add proper dependencies, activerecord, activerecord-import, rails
-
----
-belongs_to:
-- to allow:
-	- child.other_parent = other_parent
-- :before_save:
-	- for each /.*_id/ field, if ! self.<non-id>.nil?, set deep import id's accordingly
-		- # for each association
-
----
-rake deep_import:setup:
-	- detect script/ files
-	- run destroy
-	- remove both
-	- create new ones
-
----
-Config File:
-	- Validate: check class names for existence/validity
-	- Generate: analyze models with ruby_erd
-
----
-Model Flags:
-_preexisting:
-	- integer instead of string 
-_polymorphic:
