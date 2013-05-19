@@ -37,6 +37,9 @@ class DeepImportChild < ActiveRecord::Base
 end
 
 ---
+deep_import:teardown
+
+---
 testing:
 	- config
 	- setup
