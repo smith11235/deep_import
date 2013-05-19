@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '3.2.12'
 
 # rails extension that we are developing
-gem 'deep_import', :path => "lib"
+gem 'deep_import', :path => "."
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'

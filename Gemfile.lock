@@ -7,7 +7,7 @@ GIT
       activerecord (~> 3.0)
 
 PATH
-  remote: lib
+  remote: .
   specs:
     deep_import (0.0.1)
       activerecord-import
@@ -118,7 +118,7 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.37)
-    uglifier (2.1.0)
+    uglifier (2.1.1)
       execjs (>= 0.3.0)
       multi_json (~> 1.0, >= 1.0.2)
 
