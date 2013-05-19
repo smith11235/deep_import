@@ -65,10 +65,13 @@ namespace :deep_import do
 	end
 
 	desc "Create migrations based on config/deep_import.yml"
-	task :setup => :environment do 
-		puts "Welcome to DeepImport:".green
-		DeepImport::Setup.new
+	task :setup do 
+		ENV["deep_import_disable_railtie"] = "1"
+		Rake::Task["deep_import:setup_internal"].invoke
 	end
 
+	task :setup_internal => :environment do
+		DeepImport::Setup.new
+	end
 
 end
