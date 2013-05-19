@@ -11,7 +11,26 @@ module DeepImport
 			DeepImport::ModelsCache.show_stats
 			import_models
 			DeepImport::ModelsCache.show_stats
+			# - ensure uniqueness is the same on actual association fields
 			set_associations	
+			
+			delete_deep_import_models
+			nilify_deep_import_ids
+		end
+
+		def nilify_deep_import_ids
+			Config.deep_import_config[:models].each do |model_class,info|
+				puts "  - Nilifying #{model_class}.deep_import_id" 
+				model_class.update_all( "deep_import_id = NULL", "NOT ISNULL(deep_import_id)" )
+			end
+		end
+		
+		def delete_deep_import_models
+			Config.deep_import_config[:models].each do |model_class,info|
+				deep_import_model_class = "DeepImport#{model_class}".constantize
+				puts "  - Deleting: #{deep_import_model_class}" 
+				deep_import_model_class.delete_all
+			end
 		end
 
 		def set_associations
@@ -24,9 +43,6 @@ module DeepImport
 
 					model_class.joins( "JOIN #{names[:deep_import_target_table]} ON #{names[:target_table]}.deep_import_id = #{names[:deep_import_target_table]}.deep_import_id JOIN #{names[:association_table]} ON #{names[:deep_import_target_table]}.#{names[:deep_import_target_association_id_field]} = #{names[:association_table]}.deep_import_id" ).update_all( "#{names[:target_table]}.#{names[:target_association_id_field]} = #{names[:association_table]}.id", "NOT ISNULL(#{names[:target_table]}.deep_import_id)" )
 
-					# - ensure uniqueness is the same on actual association fields
-					# clear deep_import_id's everywhere
-					# delete deep_import models
 					puts "      - Finished".green
 				end
 			end

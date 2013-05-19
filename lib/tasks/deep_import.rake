@@ -3,7 +3,8 @@ namespace :deep_import do
 
 	desc "Example Deep Import"
 	task :example_deep_import => :environment do
-		range = ENV["deep_import_example_range"] || 5 
+		range = ENV["RANGE"].to_s.to_i
+
 		(0..range).each do |parent_name|
 			parent = Parent.new( :name => parent_name.to_s )
 			(0..range).each do |child_name|
@@ -18,8 +19,9 @@ namespace :deep_import do
 
 	desc "Example Standard Syntax Import"
 	task :example_standard_import => :environment do
-		range = ENV["deep_import_example_range"] || 5 
 		ENV["disable_deep_import"] = "1" 
+		range = ENV["RANGE"].to_s.to_i
+
 		(0..range).each do |parent_name|
 			parent = Parent.create!( :name => parent_name.to_s )
 			(0..range).each do |child_name|
@@ -33,15 +35,17 @@ namespace :deep_import do
 
 	desc "Build a fake nested dataset, commit to db"
 	task :benchmark => :environment do
+		# reset database for deep import test
 		Rake::Task["db:reset"].invoke
-		ENV["deep_import_example_range"] = 29
-
+		# run deep import test
 		puts Benchmark.measure {
 			Rake::Task["example_deep_import"].invoke
 		}
-		# reset db so both tests have same initial starting point
+
+		# reset database for standard test
 		Rake::Task["db:reset"].reenable
 		Rake::Task["db:reset"].invoke
+		# run standard test
 		puts Benchmark.measure {
 			Rake::Task["example_standard_import"].invoke
 		}
@@ -54,6 +58,9 @@ namespace :deep_import do
 			puts "Parent: #{parent.id}"
 			puts "  - has children: #{parent.children.count}"
 			puts "  - has grandchildren: #{parent.grand_children.count}" 
+		end
+		%w(DeepImportParent DeepImportChild DeepImportGrandChild).each do |deep_class_name|
+			puts "#{deep_class_name}: #{deep_class_name.constantize.count}"
 		end
 	end
 

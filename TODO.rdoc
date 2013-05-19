@@ -12,16 +12,15 @@ Commit:
 		- Model.group( belongs_to_id_field ).select( count( id ) ).order( belongs_to_id_field )
 		- is the ordering correct to do this? or should I force a group_by deep_import_belongs_to_id_field
 
-
 ---
-refactor:
-	- gemspec at root
-	- .rake in lib/tasks
-	- lib/deep_import.rb
 indexes:
 	- move from deep_import:index to deep_import:setup
-tasks:
-	benchmark, old, new, compare
+
+---
+batch id:
+- get a process id
+- set deep_import_id = "#{process_id}.#{id}"
+- commit: scope all queries to this process_id prefix
 
 ---
 gemspec:
