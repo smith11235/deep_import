@@ -1,11 +1,6 @@
 ---
 * during save, deep import models doubling
 Commit:
-	- set deep_import_id = NULL on models
-		- to flag that they are finished being loaded
-	- delete deep_import* models
-		- to save space on the database
-
 	- get deep_import association distribution
 		- DeepImportModel.group( belongs_to_id_field ).select( count( deep_import_id ) ).order( belongs_to_id_field )
 	- get and compare association distribution 
@@ -13,18 +8,18 @@ Commit:
 		- is the ordering correct to do this? or should I force a group_by deep_import_belongs_to_id_field
 
 ---
+gemspec:
+- add proper dependencies, activerecord, activerecord-import, rails
+---
 indexes:
 	- move from deep_import:index to deep_import:setup
+
 
 ---
 batch id:
 - get a process id
 - set deep_import_id = "#{process_id}.#{id}"
 - commit: scope all queries to this process_id prefix
-
----
-gemspec:
-- add proper dependencies, activerecord, activerecord-import, rails
 
 ---
 belongs_to:

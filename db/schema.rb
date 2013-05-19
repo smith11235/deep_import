@@ -51,15 +51,6 @@ ActiveRecord::Schema.define(:version => 20130517185822) do
     t.datetime "updated_at",     :null => false
   end
 
-  create_table "dummy_models", :force => true do |t|
-    t.integer  "dummy_model_id"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
-    t.string   "name"
-  end
-
-  add_index "dummy_models", ["dummy_model_id"], :name => "index_dummy_models_on_dummy_model_id"
-
   create_table "grand_children", :force => true do |t|
     t.integer  "child_id"
     t.string   "name"
