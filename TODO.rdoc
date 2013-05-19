@@ -8,12 +8,41 @@ Commit:
 		- is the ordering correct to do this? or should I force a group_by deep_import_belongs_to_id_field
 
 ---
-gemspec:
-- add proper dependencies, activerecord, activerecord-import, rails
----
-indexes:
-	- move from deep_import:index to deep_import:setup
+deep_import:setup
+	- for each model: (generate statements)
+		- migration only for existing models:
+    		add_column :parents, :deep_import_id, :string
+      	add_index :parents, [:deep_import_id, :id], :name => 'di_id_index'
+		- migration and model file for deep_import models
+class AddDeepImportIdToParents < ActiveRecord::Migration
+  def change
+    create_table :deep_import_parents do |t|
+      t.string :deep_import_id
+      t.datetime :parsed_at
 
+		# for each belongs to
+      t.string :deep_import_parent_id
+
+      t.timestamps
+    end
+		# for each belongs to
+    add_index :deep_import_children, [:deep_import_id, :deep_import_parent_id], :name => 'di_parent'
+  end
+end
+
+class DeepImportChild < ActiveRecord::Base
+  attr_accessible :deep_import_id, :parsed_at
+	# for each belongs_to
+	attr_accessible :deep_import_parent_id
+end
+
+---
+testing:
+	- config
+	- setup
+	- cache
+	- commit
+				
 ---
 batch id:
 - get a process id
