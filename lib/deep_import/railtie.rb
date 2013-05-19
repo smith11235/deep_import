@@ -20,7 +20,7 @@ module DeepImport
 		end
 
 		rake_tasks do
-			# load "lib/tasks/deep_import.rake"
+			load "deep_import/deep_import.rake"
 		end
 	end
 end
