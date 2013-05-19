@@ -14,7 +14,6 @@ gemspec:
 indexes:
 	- move from deep_import:index to deep_import:setup
 
-
 ---
 batch id:
 - get a process id
