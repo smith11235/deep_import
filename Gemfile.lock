@@ -10,8 +10,10 @@ PATH
   remote: .
   specs:
     deep_import (0.0.1)
+      activerecord
       activerecord-import
       colorize
+      rails
 
 GEM
   remote: https://rubygems.org/

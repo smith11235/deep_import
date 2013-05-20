@@ -1,6 +1,0 @@
-rails generate migration AddDeepImportIdToParents deep_import_id:string
-rails generate model DeepImportParent deep_import_id:string parsed_at:datetime
-rails generate migration AddDeepImportIdToChildren deep_import_id:string
-rails generate model DeepImportChild deep_import_id:string parsed_at:datetime deep_import_parent_id:string
-rails generate migration AddDeepImportIdToGrandChildren deep_import_id:string
-rails generate model DeepImportGrandChild deep_import_id:string parsed_at:datetime deep_import_child_id:string

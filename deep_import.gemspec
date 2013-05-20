@@ -10,6 +10,8 @@ Gem::Specification.new do |s|
 	s.add_development_dependency "rspec"
 	s.add_dependency "colorize"
 	s.add_dependency "activerecord-import"
+	s.add_dependency "activerecord"
+	s.add_dependency "rails"
 
 	s.files        = Dir.glob("lib/deep_import/*") + %w(lib/deep_import.rb)
 	s.require_path = 'lib'

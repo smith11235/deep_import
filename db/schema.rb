@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130517185822) do
+ActiveRecord::Schema.define(:version => 20130519235030) do
 
   create_table "children", :force => true do |t|
     t.integer  "parent_id"
@@ -27,9 +27,9 @@ ActiveRecord::Schema.define(:version => 20130517185822) do
   create_table "deep_import_children", :force => true do |t|
     t.string   "deep_import_id"
     t.datetime "parsed_at"
-    t.string   "deep_import_parent_id"
     t.datetime "created_at",            :null => false
     t.datetime "updated_at",            :null => false
+    t.string   "deep_import_parent_id"
   end
 
   add_index "deep_import_children", ["deep_import_id", "deep_import_parent_id"], :name => "di_parent"
@@ -37,9 +37,9 @@ ActiveRecord::Schema.define(:version => 20130517185822) do
   create_table "deep_import_grand_children", :force => true do |t|
     t.string   "deep_import_id"
     t.datetime "parsed_at"
-    t.string   "deep_import_child_id"
     t.datetime "created_at",           :null => false
     t.datetime "updated_at",           :null => false
+    t.string   "deep_import_child_id"
   end
 
   add_index "deep_import_grand_children", ["deep_import_id", "deep_import_child_id"], :name => "di_child"
