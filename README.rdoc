@@ -1,5 +1,5 @@
 ---
-bold: Deep Import:
+*Deep Import*::
 * A gem for loading big data in Rails
 * allows standard active record syntax for clear and familiar code
 
@@ -16,7 +16,7 @@ Transaction Breakdown:
       - Where B is the number of belongs to relationships between the M model classes
       - M and B must be neglible compared to X for benefit
 
-Benchmark:
+*Benchmark*::
 * Models are Parent, Child, Grandchild
   * defined in config/deep_import.yml (provided by application developer, not gem)
 * X Parents have X Children each and 10 GrandChildren from each Child
@@ -34,7 +34,7 @@ Benchmark:
      deep_import:  80.770000   0.980000  81.750000 ( 97.582577)
          classic:  120.160000   7.850000 128.010000 (5264.665823) 
 
-Features:
+*Features*::
 - improved efficiency when loading 'many' model instances
 - models can have associations
 - models can be parsed in a DFS fashion with minimal syntax
@@ -42,7 +42,7 @@ Features:
   - and running of some rake tasks
 - models can be serialized and reloaded at need with relationships preserved
 
-Usage:
+*Usage*::
 - Gemfile:  "gem: 'deep_import', :git => 'git://github.com/smith11235/deep_import'"
 - create a config[https://github.com/smith11235/deep_import/blob/master/config/deep_import.yml] with your model architecture
 - rake deep_import:setup # to load the config and generate model enhancements
