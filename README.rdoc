@@ -1,5 +1,5 @@
 ---
-Deep Import:
+bold: Deep Import:
 * A gem for loading big data in Rails
 * allows standard active record syntax for clear and familiar code
 
