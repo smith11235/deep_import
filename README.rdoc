@@ -44,9 +44,9 @@ Features:
 
 Usage:
 - Gemfile:  "gem: 'deep_import', :git => 'git://github.com/smith11235/deep_import'"
-- create a config[config/deep_import.yml] with your model architecture
-- rake deep_import:setup
-- rake db:migrate
-- rake deep_import:benchmark:deep_import
+- create a config[https://github.com/smith11235/deep_import/blob/master/config/deep_import.yml] with your model architecture
+- rake deep_import:setup # to load the config and generate model enhancements
+- rake db:migrate # to load the model enhancements to your database
+- rake deep_import:benchmark:deep_import[https://github.com/smith11235/deep_import/blob/master/lib/deep_import/deep_import.rake] # for sample batch load code
   - review code, use .new, .build, dont use .save, .create
   - add a DeepImport.commit call at the end of your loader
