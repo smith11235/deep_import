@@ -1,5 +1,4 @@
 ---
-* during save, deep import models doubling
 Commit:
 	- get deep_import association distribution
 		- DeepImportModel.group( belongs_to_id_field ).select( count( deep_import_id ) ).order( belongs_to_id_field )
@@ -8,10 +7,8 @@ Commit:
 		- is the ordering correct to do this? or should I force a group_by deep_import_belongs_to_id_field
 
 ---
-deep_import:setup
-
----
-deep_import:teardown
+activerecord-import:
+	- check for errors
 
 ---
 testing:
@@ -35,19 +32,10 @@ belongs_to:
 		- # for each association
 
 ---
-rake deep_import:setup:
-	- detect script/ files
-	- run destroy
-	- remove both
-	- create new ones
-
----
 Config File:
 	- Validate: check class names for existence/validity
 	- Generate: analyze models with ruby_erd
 
 ---
 Model Flags:
-_preexisting:
-	- integer instead of string 
 _polymorphic:
