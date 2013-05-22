@@ -5,10 +5,8 @@ Commit:
 	- get and compare association distribution 
 		- Model.group( belongs_to_id_field ).select( count( id ) ).order( belongs_to_id_field )
 		- is the ordering correct to do this? or should I force a group_by deep_import_belongs_to_id_field
-
----
-activerecord-import:
-	- check for errors
+	activerecord-import:
+		- check for errors
 
 ---
 testing:
@@ -18,18 +16,25 @@ testing:
 	- commit
 				
 ---
-batch id:
+batch id as part of deep_import_id field:
 - get a process id
 - set deep_import_id = "#{process_id}.#{id}"
 - commit: scope all queries to this process_id prefix
 
 ---
-belongs_to:
-- to allow:
-	- child.other_parent = other_parent
-- :before_save:
-	- for each /.*_id/ field, if ! self.<non-id>.nil?, set deep import id's accordingly
-		- # for each association
+belongs_to helpers:
+	- allow: child.other_association = other_parent
+		- implicit from parent.children.create with dfs creation orderin
+	- option a: tweak rails: http://errtheblog.com/posts/18-accessor-missing
+		- define in model_logic
+			- Config.models[ self ].belongs_to.each do 
+				- alias_method :active_record_<belongs_to>, :<belongs_to>
+				- model_class.class_def
+				- def <belongs_to>=( target )
+						ModelsCache.set_association( instance, target )
+					end
+			- metaprogramming: http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/
+
 
 ---
 Config File:
