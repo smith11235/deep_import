@@ -1,4 +1,27 @@
 ---
+testing:
+	- rspec:
+		- ./spec/
+	- components to test:
+		- config
+		- setup
+		- cache
+		- commit
+	- parent:
+		- valid save method:
+			- new and build are allowed
+			- save, create: raise hell
+		- post sample load:
+			- expected number of parents
+			- has expected number of children
+			- deep_import_id is null
+
+	- notes: "
+		Build the rails app and use that to test the gem.
+		Add tests to Parent, Child, GrandChild
+	"
+				
+---
 Commit:
 	- get deep_import association distribution
 		- DeepImportModel.group( belongs_to_id_field ).select( count( deep_import_id ) ).order( belongs_to_id_field )
@@ -9,13 +32,6 @@ Commit:
 		- check for errors
 
 ---
-testing:
-	- config
-	- setup
-	- cache
-	- commit
-				
----
 batch id as part of deep_import_id field:
 - get a process id
 - set deep_import_id = "#{process_id}.#{id}"
@@ -23,8 +39,11 @@ batch id as part of deep_import_id field:
 
 ---
 belongs_to helpers:
+	- implicit assignment from <owner>.<has_*class>.create 
+		- following creation ordering with dfs creation orderin
+			- fix this, override has_one/has_many to call DeepImport.parent( model )
 	- allow: child.other_association = other_parent
-		- implicit from parent.children.create with dfs creation orderin
+	- really need to do meta programming
 	- option a: tweak rails: http://errtheblog.com/posts/18-accessor-missing
 		- define in model_logic
 			- Config.models[ self ].belongs_to.each do 

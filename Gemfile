@@ -10,6 +10,7 @@ gem 'deep_import', :path => "."
 
 gem 'sqlite3'
 gem 'mysql2'
+gem 'rspec'
 
 gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git'
 
