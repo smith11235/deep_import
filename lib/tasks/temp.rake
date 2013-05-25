@@ -5,13 +5,9 @@ end
 
 desc "View"
 task :view => :environment do
-	Parent.all.each do |parent|
-		puts "Parent: #{parent.id}"
-		puts "  - has children: #{parent.children.count}"
-		puts "  - has grandchildren: #{parent.grand_children.count}" 
-	end
-	%w(DeepImportParent DeepImportChild DeepImportGrandChild).each do |deep_class_name|
-		puts "#{deep_class_name}: #{deep_class_name.constantize.count}"
+	puts "Index: #{ActiveRecord::Base.connection.index_exists? :parents, [:deep_import_id, :id], :name => "di_id_index"}"
+	[Parent,Child,GrandChild,DeepImportParent,DeepImportChild,DeepImportGrandChild].each do |class_name|
+		puts "#{class_name}: #{class_name.count}"
 	end
 end
 
