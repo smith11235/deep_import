@@ -2,19 +2,41 @@
 testing:
 	- components to test:
 		- config
-			- all class references in details should be constants
+			- test for invalid config files
+			- test for missing config file
+
 		- setup
-		- cache
-		- commit
-	- parent:
-		- valid save method:
+			- test that models are configured correctly
+				- deep_import_id and index on base models
+				- deep_import_* classes, with proper associations
+
+		- model_logic:
+			- valid save method:
 			- new and build are allowed
 			- save, create: raise hell
-		- post sample load:
-			- expected number of parents
-			- has expected number of children
-			- deep_import_id is null
+
+		- cache:
+			- all models enabled for tracking
+				- source and deep import
+			- deep import and source models aligned 		 
+			- equal numbers of models
+			- parent setting?
+			- deep_import disabled:
+				- nothing should be tracked
+
+		- commit
+			- post sample load:
+				- expected number of parents
+				- has expected number of children
+				- deep_import_id is null
+				- no deep_import models
 				
+---
+Teardown:
+	- revert migrations before deleting files:
+		- deep_import_id, index on base models
+		- deep_import_* tables
+
 ---
 Commit:
 	- get deep_import association distribution

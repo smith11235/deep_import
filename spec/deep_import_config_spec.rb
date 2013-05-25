@@ -6,7 +6,13 @@ describe "DeepImport::Config" do
 		describe "Included Models" do
 			[Parent,Child,GrandChild].each do |member|
 				it "has #{member}" do
-					DeepImport::Config.models.keys.include?(member).should be(true)
+					DeepImport::Config.models.should include(member)
+				end
+				{ :flags => Hash, :belongs_to => Array, :has_one => Array, :has_many => Array }.each do |component,type|
+					it "has a #{component} of type #{type}" do
+						DeepImport::Config.models[ member ].should have_key(component)
+						DeepImport::Config.models[ member ][component].should be_instance_of(type)
+					end
 				end
 			end
 		end
