@@ -49,9 +49,15 @@ describe "DeepImport::Config" do
 		}.each do |association_type,model_map|
 			describe "#{association_type.to_s.titleize} Associations Of" do
 				model_map.each do |model,associations|
+					actual_associations = config[:models][model][association_type]
 					describe "#{model}" do
-						it "has #{associations.size} of an expected #{config[:models][model][association_type].size}" do
-							config[:models][model][association_type].size.should eq(associations.size)
+						it "has #{associations.size} of an expected #{actual_associations.size}" do
+							actual_associations.size.should eq(associations.size)
+						end
+						associations.each do |association|
+							it "includes #{association}" do
+								actual_associations.should include(association)
+							end
 						end
 					end
 				end

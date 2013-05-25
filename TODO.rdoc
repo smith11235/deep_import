@@ -1,9 +1,8 @@
 ---
 testing:
-	- rspec:
-		- ./spec/
 	- components to test:
 		- config
+			- all class references in details should be constants
 		- setup
 		- cache
 		- commit
@@ -15,11 +14,6 @@ testing:
 			- expected number of parents
 			- has expected number of children
 			- deep_import_id is null
-
-	- notes: "
-		Build the rails app and use that to test the gem.
-		Add tests to Parent, Child, GrandChild
-	"
 				
 ---
 Commit:

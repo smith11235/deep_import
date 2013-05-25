@@ -1,9 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.12'
+gemspec
 
-# rails extension that we are developing
-gem 'deep_import', :path => "."
+gem 'rails', '3.2.12'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'

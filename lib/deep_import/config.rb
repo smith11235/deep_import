@@ -38,23 +38,23 @@ module DeepImport
 			end
 
 			def	parse_root( root_name, info )
-				raise "Root not recognized as singular: #{root_name}" unless root_name == root_name.singularize
-				raise "root definition not a Hash of class names" unless info.is_a? Hash
+				root_class = class_for root_name
+				raise "Root model not in singular class name form: Parsed(#{root_name}) vs Expected(#{root_class})" if root_name != root_class.to_s
+				raise "root definition expected as a Hash, not a #{info.class}" unless info.is_a? Hash
 
-				root_name = root_name.classify
-
-				if ! @details[:roots].include? root_name 
-					@details[:roots] << root_name.constantize
-					model_defs( root_name )
+				if ! @details[:roots].include? root_class
+					@details[:roots] << root_class # add this to the roots tracker
+					model_defs( root_class ) # setup a models entry for this root
 				end
 
-				parse_children( root_name, info )
+				parse_children( root_class, info )
 			end
 
 			def parse_children( parent_class, children )
 				children.each do |child_name,child_info|
 					# children entries are either nested classes
 					# or meta tags on the current parent
+					# meta tags are flagged by a leading _
 					if child_name =~ /^_/
 						parse_flag( parent_class, child_name.clone, child_info )
 					else
@@ -63,12 +63,12 @@ module DeepImport
 				end
 			end
 
-			def model_class( model_name )
-				Kernel.const_get( model_name.classify )
+			def class_for( model_name )
+				model_name.to_s.singularize.classify.constantize
 			end
 
 			def model_defs( class_name )
-				model_class = model_class( class_name )
+				model_class = class_for( class_name )
 				@details[:models][ model_class ] ||= { :flags => Hash.new,  :belongs_to => Array.new, :has_one => Array.new, :has_many => Array.new } 
 				return @details[:models][ model_class ]
 			end
@@ -77,40 +77,36 @@ module DeepImport
 				model_defs( parent_class )[ :flags ][ flag_name ] = flag_info
 			end
 
-			def class_words( input_name )
-				class_name = input_name.singularize.classify
-				class_forms = { :class_string => class_name.classify, :one => class_name.singularize, :many => class_name.pluralize }
-				class_forms
+			def set_parent_of( child_class, parent_class )
+				@details[ :parent_class_of ][ child_class ] = parent_class
 			end
 
 			def parse_child( parent_class, child_name, child_info )
-				class_forms = class_words( child_name )
+				raise "details of #{child_name} expected as a Hash or nil, not a #{child_info.class}" unless child_info.nil? || child_info.is_a?(Hash)
+				child_class = class_for( child_name ) # get class constant
 
-				has_type = has_type( child_name, class_forms )
-				has_type = "has_#{has_type}".to_sym
+				set_parent_of( child_class, parent_class )
 
-				model_defs = model_defs( class_forms[:class_string] )
+				model_defs = model_defs( child_class ) # get definition to populate with details
 
-				model_defs[ :belongs_to ] << parent_class if ! model_defs[ :belongs_to ].include? parent_class 
+				# previous existence chack it to allow multiple model trees
+				model_defs[ :belongs_to ] << parent_class if ! model_defs[ :belongs_to ].include? parent_class
 
-				# track the parent
-				@details[ :parent_class_of ][ class_forms[ :class_string ].constantize ] = parent_class.constantize
+				has_type = has_type( child_name ) # is this a :has_one or :has_many relation to the parent class
+				model_defs( parent_class )[ has_type ] << child_class unless model_defs( parent_class )[ has_type ].include? child_class
 
-				# track the parents children
-				model_defs( parent_class )[ has_type ] << class_forms[:class_string] unless model_defs( parent_class )[ has_type ].include? class_forms[:class_string]
-
-				return if child_info.nil?
-				parse_children( class_forms[:class_string], child_info ) if child_info.is_a? Hash
+				return if child_info.nil? # if we're on a simple leaf node
+				parse_children( child_class, child_info )
 			end
 
-			def has_type( child_name, class_forms )
+			def has_type( child_name )
 				case child_name 
-				when class_forms[ :one ] 
-					:one
-				when class_forms[ :many ] 
-					:many
+				when child_name.singularize 
+					:has_one
+				when child_name.pluralize 
+					:has_many
 				else
-					raise "Unknown plurality: #{child_name}".red
+					raise "Unknown plurality: #{child_name}, Expecting #{child_name.singularize} or #{child_name.pluralize}".red
 				end
 			end
 
