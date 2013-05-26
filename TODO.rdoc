@@ -1,18 +1,16 @@
 ---
-testing:
-	- components to test:
-		- config
-			- test for invalid config files
-			- test for missing config file
+break lib/deep_import/deep_import.rake up:
+	- lib/tasks/benchmark.rake
+		- application examples
+		- original: deep_import tasks only
 
-		- setup
-			- test that models are configured correctly
-				- deep_import_id and index on base models
-				- deep_import_* classes, with proper associations
+---
+testing:
+		- setup: in progress
 
 		- model_logic:
-			- valid save method:
-			- new and build are allowed
+ 		  - valid save method:
+		  - new and build are allowed
 			- save, create: raise hell
 
 		- cache:
@@ -30,6 +28,9 @@ testing:
 				- has expected number of children
 				- deep_import_id is null
 				- no deep_import models
+		- config
+			- test for invalid config files
+			- test for missing config file
 				
 ---
 Teardown:

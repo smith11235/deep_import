@@ -11,6 +11,10 @@ describe "DeepImport::Setup" do
 
 		DeepImport::Config.models.keys.each do |model_class|
 			describe "#{model_class}" do
+				it "should have one and only one migration file" do
+					migration_name = "AddDeepImportIdTo#{model_class.to_s.pluralize}".underscore
+					Dir.glob( File.join( Rails.root, "db", "migrate", "*_#{migration_name}.rb" ) ).size.should eq(1)
+				end
 				it "should have deep_import_id" do
 					ActiveRecord::Base.connection.should be_column_exists( model_class.to_s.tableize, :deep_import_id, :string )
 				end
@@ -39,6 +43,7 @@ describe "DeepImport::Setup" do
 				describe "Model Class" do
 					# model file exists
 					# - responds to fields
+					# - whatever else it has
 				end
 
 			end
