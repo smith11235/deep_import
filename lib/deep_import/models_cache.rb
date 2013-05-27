@@ -13,6 +13,10 @@ module DeepImport
 			end
 		end
 
+		def self.cached_instances( model_class )
+			@@cache.raw_cache[ model_class ].values
+		end
+
 		def self.setup
 			@@cache = Cache.new
 		end

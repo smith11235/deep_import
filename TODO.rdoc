@@ -7,9 +7,8 @@ break lib/deep_import/deep_import.rake up:
 ---
 testing:
 		- model_logic:
- 		  - valid save method:
-		  - new and build are allowed
-			- save, create: raise hell
+			- deep_import_id on source models
+			- responds to: :deep_import_after_initialize
 
 		- cache:
 			- all models enabled for tracking
@@ -37,6 +36,10 @@ Teardown:
 		- deep_import_id, index on base models
 		- deep_import_* tables
 	- add spec
+
+---
+model logic:
+	- disable create, save
 
 ---
 Commit:

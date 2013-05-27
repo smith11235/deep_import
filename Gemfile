@@ -10,6 +10,7 @@ gem 'rails', '3.2.12'
 gem 'sqlite3'
 gem 'mysql2'
 gem 'rspec-rails'
+gem 'rspec_candy' # for extra fun testing helpers
 
 gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git'
 
