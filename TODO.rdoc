@@ -6,8 +6,6 @@ break lib/deep_import/deep_import.rake up:
 
 ---
 testing:
-		- setup: in progress
-
 		- model_logic:
  		  - valid save method:
 		  - new and build are allowed
@@ -28,6 +26,7 @@ testing:
 				- has expected number of children
 				- deep_import_id is null
 				- no deep_import models
+
 		- config
 			- test for invalid config files
 			- test for missing config file
@@ -37,6 +36,7 @@ Teardown:
 	- revert migrations before deleting files:
 		- deep_import_id, index on base models
 		- deep_import_* tables
+	- add spec
 
 ---
 Commit:
