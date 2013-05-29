@@ -11,17 +11,19 @@ module DeepImport
 		end
 
 		def add_class_methods
-			# add some logic to the model class
 			@model_class.class_eval do 
-				# make the model class aware of it's deep import id
-  			attr_accessible :deep_import_id 
-			
+				attr_accessible :deep_import_id # expose the deep import id
+
 				# after each model initialization, run this method
 				# http://guides.rubyonrails.org/active_record_validations_callbacks.html#after_initialize-and-after_find
 				after_initialize :deep_import_after_initialize
 
 				def deep_import_after_initialize
-					return unless self.new_record? && self.deep_import_id.nil? && ENV["disable_deep_import"].nil?
+					# this is called after new and find, we want to check if this really is new
+					return unless self.new_record? # if its a preexisting model
+					return unless self.deep_import_id.nil? # if it already has a deep import id
+					return unless ENV["disable_deep_import"].nil? # if deep_import functionality is disabled
+
 					DeepImport::ModelsCache.add( self )
 				end
 

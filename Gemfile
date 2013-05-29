@@ -1,16 +1,16 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.12'
+gemspec
 
-# rails extension that we are developing
-gem 'deep_import', :path => "."
+gem 'rails', '3.2.12'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'sqlite3'
 gem 'mysql2'
-gem 'rspec'
+gem 'rspec-rails'
+gem 'rspec_candy' # for extra fun testing helpers
 
 gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git'
 

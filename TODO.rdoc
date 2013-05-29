@@ -1,26 +1,46 @@
 ---
-testing:
-	- rspec:
-		- ./spec/
-	- components to test:
-		- config
-		- setup
-		- cache
-		- commit
-	- parent:
-		- valid save method:
-			- new and build are allowed
-			- save, create: raise hell
-		- post sample load:
-			- expected number of parents
-			- has expected number of children
-			- deep_import_id is null
+break lib/deep_import/deep_import.rake up:
+	- lib/tasks/benchmark.rake
+		- application examples
+		- original: deep_import tasks only
 
-	- notes: "
-		Build the rails app and use that to test the gem.
-		Add tests to Parent, Child, GrandChild
-	"
+---
+testing:
+		- model_logic:
+			- deep_import_id on source models
+			- responds to: :deep_import_after_initialize
+
+		- cache:
+			- all models enabled for tracking
+				- source and deep import
+			- deep import and source models aligned 		 
+			- equal numbers of models
+			- parent setting?
+			- deep_import disabled:
+				- nothing should be tracked
+
+		- commit
+			- post sample load:
+				- expected number of parents
+				- has expected number of children
+				- deep_import_id is null
+				- no deep_import models
+
+		- config
+			- test for invalid config files
+			- test for missing config file
 				
+---
+Teardown:
+	- revert migrations before deleting files:
+		- deep_import_id, index on base models
+		- deep_import_* tables
+	- add spec
+
+---
+model logic:
+	- disable create, save
+
 ---
 Commit:
 	- get deep_import association distribution
