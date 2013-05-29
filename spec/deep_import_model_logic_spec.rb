@@ -32,33 +32,34 @@ describe "DeepImport::ModelLogic" do
 	end
 
 	describe "Model creation tracking" do
-		# only test the root here as a basic sanity check
-		root_class = DeepImport::Config.deep_import_config[:roots][0]
-		root_instance = root_class.new
-		it "should be the last instance in the cache" do
-			DeepImport::ModelsCache.cached_instances( root_class ).last.should be(root_instance)
+		let( :root_class ){ DeepImport::Config.deep_import_config[:roots][0] }
+		describe "should save" do
+			# only test the root here as a basic sanity check
+			it "should be the last instance in the cache" do
+				root_instance = root_class.new #after creation
+				DeepImport::ModelsCache.cached_instances( root_class ).last.should be(root_instance)
+			end
+		end
+
+		describe "should not save" do
+			it "environmental disabling should block the queue" do
+				ENV["disable_deep_import"] = "disabled"
+				env_model = root_class.new 
+				ENV["disable_deep_import"] = nil
+				DeepImport::ModelsCache.cached_instances( root_class ).should_not include(env_model)
+			end
+
+			it "preexisting import id blocks the queue" do
+				preexisting_model = root_class.new( :deep_import_id => "test id" )
+				DeepImport::ModelsCache.cached_instances( root_class ).should_not include(preexisting_model)
+			end
 		end
 	end
 
-	describe "Model Tracking Blocks" do
-		root_class = DeepImport::Config.deep_import_config[:roots][0]
-		let( :model ) { # create with env var
-		}
-			# cache shouldnt grow
-		let( :model2 ) { # create with deep_import_id => "dummy"
-		}
-			# cache shouldnt grow
-		# save model, find it, cache shouldnt grow
-	end
 =begin
 			- disabled testing:
-				- does not run after_initialize
-					- if env var set
-						- new.save
 					-	if not a new record
 						- find the one we just made
-					-	if deep_import_id is set
-						- create with this set
 					- cache does not grow
 
 =end
