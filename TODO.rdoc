@@ -6,18 +6,12 @@ break lib/deep_import/deep_import.rake up:
 
 ---
 testing:
-		- model_logic:
-			- deep_import_id on source models
-			- responds to: :deep_import_after_initialize
-
 		- cache:
 			- all models enabled for tracking
 				- source and deep import
 			- deep import and source models aligned 		 
-			- equal numbers of models
+				- equal numbers of models
 			- parent setting?
-			- deep_import disabled:
-				- nothing should be tracked
 
 		- commit
 			- post sample load:
@@ -25,6 +19,9 @@ testing:
 				- has expected number of children
 				- deep_import_id is null
 				- no deep_import models
+				- validate with:
+					- id distribution: fast
+					- exact verification: slow
 
 		- config
 			- test for invalid config files
@@ -40,6 +37,7 @@ Teardown:
 ---
 model logic:
 	- disable create, save
+	- 
 
 ---
 Commit:
@@ -69,6 +67,7 @@ belongs_to helpers:
 			- Config.models[ self ].belongs_to.each do 
 				- alias_method :active_record_<belongs_to>, :<belongs_to>
 				- model_class.class_def
+				- define_method :method_name_sym, ...
 				- def <belongs_to>=( target )
 						ModelsCache.set_association( instance, target )
 					end
