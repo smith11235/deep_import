@@ -31,37 +31,41 @@ describe "DeepImport::ModelLogic" do
 		end
 	end
 
-	describe "Model creation tracking" do
+	def set_env( var, value = nil, &block )
+		var = var.to_s
+		original_value = ENV[var]
+		ENV[var] = ( value.nil? ? nil : value.to_s )
+		rval = block.call
+		ENV[var] = original_value
+		rval # return the block result
+	end
+		
+
+	describe "Creation Tracking" do
 		let( :root_class ){ DeepImport::Config.deep_import_config[:roots][0] }
-		describe "should save" do
-			# only test the root here as a basic sanity check
-			it "should be the last instance in the cache" do
-				root_instance = root_class.new #after creation
-				DeepImport::ModelsCache.cached_instances( root_class ).last.should be(root_instance)
-			end
+
+		it "should be in the cache" do
+			tracked_model = root_class.new 
+			DeepImport::ModelsCache.cached_instances( root_class ).last.should be(tracked_model)
 		end
 
-		describe "should not save" do
-			it "environmental disabling should block the queue" do
-				ENV["disable_deep_import"] = "disabled"
-				env_model = root_class.new 
-				ENV["disable_deep_import"] = nil
-				DeepImport::ModelsCache.cached_instances( root_class ).should_not include(env_model)
-			end
+		it "shouldnt add to the cache when found" do
+			# after_initialize is called after new and find
+			saved_model = root_class.create # load it, set the id
+			size_before_find = DeepImport::ModelsCache.cached_instances( root_class ).size
+			found_model = root_class.find( saved_model.id )
+			DeepImport::ModelsCache.cached_instances( root_class ).size.should eq( size_before_find )
+		end
 
-			it "preexisting import id blocks the queue" do
-				preexisting_model = root_class.new( :deep_import_id => "test id" )
-				DeepImport::ModelsCache.cached_instances( root_class ).should_not include(preexisting_model)
-			end
+		it "environmental disabling should block the queue" do
+			untracked_env_model = set_env("disable_deep_import", "disabled") { root_class.new }
+			DeepImport::ModelsCache.cached_instances( root_class ).should_not include(untracked_env_model)
+		end
+
+		it "preexisting import id blocks the queue" do
+			preexisting_id_model = root_class.new( :deep_import_id => "test_id" ) 
+			DeepImport::ModelsCache.cached_instances( root_class ).should_not include(preexisting_id_model)
 		end
 	end
-
-=begin
-			- disabled testing:
-					-	if not a new record
-						- find the one we just made
-					- cache does not grow
-
-=end
 
 end
