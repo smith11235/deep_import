@@ -29,12 +29,21 @@ module DeepImport
 			@@cache.track_model( model_class )
 		end
 
+		def self.clear
+			@@cache.clear
+		end
+
 		private
 
 		class Cache
 			def initialize
 				@@model_instance_cache ||= Hash.new
 				@@last_instance_of ||= Hash.new
+			end
+
+			def clear
+				@@model_instance_cache = Hash.new
+				@@last_instance_of = Hash.new
 			end
 
 			def track_model( model_class )
