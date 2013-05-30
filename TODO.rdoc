@@ -6,12 +6,8 @@ break lib/deep_import/deep_import.rake up:
 
 ---
 testing:
-		- cache:
-			- all models enabled for tracking
-				- source and deep import
-			- deep import and source models aligned 		 
-				- equal numbers of models
-			- parent setting?
+	- SPec Setup:
+		- individual rake tests should be runnable
 
 		- commit
 			- post sample load:
