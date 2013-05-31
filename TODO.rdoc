@@ -9,6 +9,10 @@ testing:
 	- SPec Setup:
 		- individual rake tests should be runnable
 
+		- cache/commit:
+			#- assign values such that we know who the parent should be
+			#	- Child.name = "parent=X"
+
 		- commit
 			- post sample load:
 				- expected number of parents

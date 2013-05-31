@@ -42,7 +42,7 @@ module DeepImport
 			end
 
 			def clear
-				@@model_instance_cache = Hash.new
+				@@model_instance_cache.keys.each {|model_class| @@model_instance_cache[model_class] = Hash.new  }
 				@@last_instance_of = Hash.new
 			end
 
@@ -86,7 +86,6 @@ module DeepImport
 				add_instance_to_cache( model_instance )
 				add_instance_to_cache( deep_model_instance )
 			end
-
 
 			private
 
