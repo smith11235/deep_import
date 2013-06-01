@@ -1,10 +1,5 @@
 ---
 testing:
-		- cache/commit:
-			# - assign values such that we know who the parent should be
-			#		- Child.name = "parent=X"
-			# - check that they are properly aligned through deep_import tracking
-
 		- commit
 			- load models like in cache
 			- run commit:
