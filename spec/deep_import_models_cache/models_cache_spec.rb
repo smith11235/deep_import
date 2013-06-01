@@ -6,10 +6,15 @@ describe "DeepImport::ModelsCache" do
 		DeepImport::ModelsCache.get_cache.should be_an_instance_of( Hash )
 	end
 
-	it "should be clearable" 
-	# create a root instance
-	# clear
-	# size = 0
+	it "should be clearable" do
+		root_class = DeepImport::Config.deep_import_config[:roots][0]
+		root_class.new # create a root instance, should be in cache
+		DeepImport::ModelsCache.clear
+		DeepImport::Config.models.keys.each do |model_class|
+			DeepImport::ModelsCache.cached_instances( model_class ).should have(0).items
+			DeepImport::ModelsCache.cached_instances( "DeepImport#{model_class}".constantize ).should have(0).items
+		end
+	end
 
 	describe "tracked models" do
 		DeepImport::Config.models.keys.each do |model_class|
