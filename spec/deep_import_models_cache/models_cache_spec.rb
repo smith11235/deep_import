@@ -30,12 +30,14 @@ describe "DeepImport::ModelsCache" do
 	describe "Model Creation Tracking" do
 		before( :all ) do
 			DeepImport::ModelsCache.clear
-			(0..1).each do
-				parent = Parent.new
-				(0..1).each do
-					child = parent.children.build
-					(0..1).each do
-						grandchild = child.grand_children.build
+			# use the 'name' attribute as a second layer of validation for the 
+			# deep_import id tracking
+			(0..1).each do |parent_number|
+				parent = Parent.new( :name => parent_number )
+				(0..1).each do |child_number|
+					child = parent.children.build( :name => "#{child_number},#{parent_number}" )
+					(0..1).each do |grand_child_number|
+						grandchild = child.grand_children.build( :name => "#{grand_child_number},#{child_number}" )
 					end
 				end
 			end
@@ -85,32 +87,49 @@ describe "DeepImport::ModelsCache" do
 			DeepImport::Config.models.each do |model_class,info|
 				describe "for #{model_class}" do
 					info[:belongs_to].each do |belongs_to_class|
-						let( :belongs_to_reference_ids ){
-							belongs_to_reference_ids = Hash.new
-							DeepImport::ModelsCache.cached_instances( "DeepImport#{model_class}".constantize ).each {|instance| 
-								belongs_to_reference_ids[instance.send( "deep_import_#{belongs_to_class.to_s.underscore}_id" )] ||= 0
-								belongs_to_reference_ids[instance.send( "deep_import_#{belongs_to_class.to_s.underscore}_id" )] += 1
+						describe "associated to #{belongs_to_class}" do
+							let( :models ){ DeepImport::ModelsCache.cached_instances( model_class ) }
+							let( :deep_models ){ DeepImport::ModelsCache.cached_instances( "DeepImport#{model_class}".constantize ) }
+							let( :belongs_to_models ){ DeepImport::ModelsCache.cached_instances( belongs_to_class ) }
+							let( :belongs_to_reference_ids ){
+								belongs_to_reference_ids = Hash.new
+								deep_models.each do |instance| 
+									belongs_to_reference_ids[instance.send( "deep_import_#{belongs_to_class.to_s.underscore}_id" )] ||= 0
+									belongs_to_reference_ids[instance.send( "deep_import_#{belongs_to_class.to_s.underscore}_id" )] += 1
+								end
+								belongs_to_reference_ids
 							}
-							belongs_to_reference_ids
-						}
-						let( :belongs_to_model_ids ){
-							DeepImport::ModelsCache.cached_instances( belongs_to_class ).collect {|instance| instance.deep_import_id}
-						}
-						it "should not have nil in the reference ids" do
-							belongs_to_reference_ids.keys.should_not include(nil)
-						end
-						it "should have all the belongs_to model ids and no more" do
-							belongs_to_model_ids.should == belongs_to_reference_ids.keys.uniq 
-						end
-						it "should have the right counts for each reference id" do
-							belongs_to_reference_ids.values.uniq.should == [2]
+							let( :belongs_to_model_ids ){
+								belongs_to_models.collect {|instance| instance.deep_import_id}
+							}
+
+							it "should not have nil in the reference ids" do
+								belongs_to_reference_ids.keys.should_not include(nil)
+							end
+							it "should have all the belongs_to model ids and no more" do
+								belongs_to_model_ids.should == belongs_to_reference_ids.keys.uniq 
+							end
+							it "should have the right counts for each reference id" do
+								belongs_to_reference_ids.values.uniq.should == [2]
+							end
+
+							it "should have 1 belongs_to instance with the correct name for each source class" do
+								models.each_with_index do |model,index| 
+									expected_belongs_to_name = model.name.split(',')[1]
+									deep_model = deep_models[index] # these are spec'd to be in the same order
+									deep_import_belongs_to_id = deep_model.send( "deep_import_#{belongs_to_class.to_s.underscore}_id" )
+									belongs_to_model_candidates = belongs_to_models.select do |belongs_to_model| 
+										belongs_to_model.deep_import_id == deep_import_belongs_to_id
+									end
+									belongs_to_candidates.should have(1).item
+									belongs_to_candidates[0].name.should eq( expected_belongs_to_name )
+								end
+							end
 						end
 					end
 				end
 			end
 		end
 
-		it "should have strictly validated belongs_to associations"
-		# ensure the name= values on the models match up logically
 	end
 end
