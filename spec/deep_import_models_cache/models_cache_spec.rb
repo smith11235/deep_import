@@ -33,7 +33,7 @@ describe "DeepImport::ModelsCache" do
 			# use the 'name' attribute as a second layer of validation for the 
 			# deep_import id tracking
 			(0..1).each do |parent_number|
-				parent = Parent.new( :name => parent_number )
+				parent = Parent.new( :name => parent_number.to_s )
 				(0..1).each do |child_number|
 					child = parent.children.build( :name => "#{child_number},#{parent_number}" )
 					(0..1).each do |grand_child_number|
@@ -121,8 +121,8 @@ describe "DeepImport::ModelsCache" do
 									belongs_to_model_candidates = belongs_to_models.select do |belongs_to_model| 
 										belongs_to_model.deep_import_id == deep_import_belongs_to_id
 									end
-									belongs_to_candidates.should have(1).item
-									belongs_to_candidates[0].name.should eq( expected_belongs_to_name )
+									belongs_to_model_candidates.should have(1).item
+									belongs_to_model_candidates[0].name.split(',')[0].should eq( expected_belongs_to_name )
 								end
 							end
 						end
