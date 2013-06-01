@@ -1,9 +1,0 @@
-# documents can be a collection of anything
-# for testing and benchmarks, fetch sites
-
-
-documents.each do |document|
-
-end
-
-DeepImport.import

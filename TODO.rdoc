@@ -4,11 +4,12 @@ break lib/deep_import/deep_import.rake up:
 		- application examples
 		- original: deep_import tasks only
 
----
-testing:
 	- SPec Setup:
 		- individual rake tests should be runnable
 
+
+---
+testing:
 		- cache/commit:
 			#- assign values such that we know who the parent should be
 			#	- Child.name = "parent=X"
@@ -32,12 +33,12 @@ Teardown:
 	- revert migrations before deleting files:
 		- deep_import_id, index on base models
 		- deep_import_* tables
-	- add spec
+	- add spec for it
 
 ---
 model logic:
-	- disable create, save
-	- 
+	- disable save: raise error or pring warning
+	- reroute create through build
 
 ---
 Commit:
