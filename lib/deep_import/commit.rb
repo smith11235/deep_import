@@ -17,6 +17,7 @@ module DeepImport
 			puts "DeepImport.commit: Associations - #{Benchmark.measure { set_associations }}"
 			puts "DeepImport.commit:     Deleting - #{Benchmark.measure { delete_deep_import_models }}"
 			puts "DeepImport.commit:       Nilify - #{Benchmark.measure { nilify_deep_import_ids }}"
+			DeepImport::ModelsCache.clear
 		end
 
 		def nilify_deep_import_ids
