@@ -1,33 +1,29 @@
 ---
-break lib/deep_import/deep_import.rake up:
-	- lib/tasks/benchmark.rake
-		- application examples
-		- original: deep_import tasks only
-
-	- SPec Setup:
-		- individual rake tests should be runnable
-
-
----
 testing:
 		- cache/commit:
-			#- assign values such that we know who the parent should be
-			#	- Child.name = "parent=X"
+			# - assign values such that we know who the parent should be
+			#		- Child.name = "parent=X"
+			# - check that they are properly aligned through deep_import tracking
 
 		- commit
-			- post sample load:
-				- expected number of parents
-				- has expected number of children
+			- load models like in cache
+			- run commit:
+				- cache should be size=0
+				- models should be accessible through 'find'
+				- use names to ensure everyone is properly associated
 				- deep_import_id is null
 				- no deep_import models
-				- validate with:
-					- id distribution: fast
-					- exact verification: slow
 
 		- config
 			- test for invalid config files
 			- test for missing config file
 				
+---
+Commit: id distribution check
+	- pre-commit: group by deep_import_model.each_reference_id, count( deep_import_id )
+	- post-commit, pre-deep-model-deletion: group by each source_model.deep_import_reference_id, count( deep_import_id )
+	- check that counts match up
+
 ---
 Teardown:
 	- revert migrations before deleting files:
