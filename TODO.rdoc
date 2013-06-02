@@ -1,17 +1,8 @@
 ---
 testing:
-		- commit
-			- load models like in cache
-			- run commit:
-				- cache should be size=0
-				- models should be accessible through 'find'
-				- use names to ensure everyone is properly associated
-				- deep_import_id is null
-				- no deep_import models
-
-		- config
-			- test for invalid config files
-			- test for missing config file
+	- config
+		- test for invalid config files
+		- test for missing config file
 				
 ---
 Commit: id distribution check

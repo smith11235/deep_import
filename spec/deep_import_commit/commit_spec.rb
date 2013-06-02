@@ -49,7 +49,6 @@ describe "DeepImport::Commit" do
 									model_class.group( belongs_to_id_field ).select( "#{belongs_to_id_field}, COUNT(id) AS num_belonging" ).each do |instance|
 										belongs_to_reference_ids[ instance.send( belongs_to_id_field ) ] = instance.num_belonging
 									end
-									puts belongs_to_reference_ids.to_yaml
 									belongs_to_reference_ids
 								}
 								let( :belongs_to_model_ids ){
@@ -66,8 +65,13 @@ describe "DeepImport::Commit" do
 									belongs_to_reference_ids.values.uniq.should == [2]
 								end
 
-								it "should have 1 belongs_to instance with the correct name for each source class" do
-
+								it "should have correctly named #{belongs_to_class} for each instance" do
+									models.each do |model| 
+										expected_belongs_to_name = model.name.split(',')[1]
+										belongs_to_instance = belongs_to_class.find( model.send( belongs_to_id_field ) )
+										belongs_to_instance.should_not eq(nil)
+										belongs_to_instance.name.split(',')[0].should eq( expected_belongs_to_name )
+									end
 								end
 							end
 						end
