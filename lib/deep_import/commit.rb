@@ -1,7 +1,6 @@
 module DeepImport
 
 	def self.commit
-
 		Commit.new
 	end
 
@@ -59,7 +58,11 @@ module DeepImport
 
 			cache.each do |model_class,instances|
 				raise "#{model_class} does not respond to import" unless model_class.respond_to? :import, true
-				model_class.import instances.values
+				results = model_class.import instances.values
+				# todo: num_inserts might be useful to output to log
+				if results.failed_instances.size > 0
+					raise "Error Inserting #{model_class}, #{results.failed_instances.size}/#{instances.size} failures. Failed Instances: #{results.failed_instances.to_yaml}"
+				end
 			end
 		end
 
