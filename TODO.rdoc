@@ -1,42 +1,49 @@
 ---
-testing:
-	- config
-		- test for invalid config files
-		- test for missing config file
-				
+Commit:
+	activerecord-import:
+	- check for errors
+		- import returns object with:
+			- failed_instances => array of failed models
+			- num_inserts => number of inserts to load the data
+
+	id distribution check:
+	- post-commit, pre-deletes:
+		- for each model, for each belongs_to
+
+			- deep import association distribution:
+				- belongs_to_id_field = "deep_import_#{belongs_to_class.to_s.underscore}_id"
+				- DeepImport*.group( belongs_to_id_field )
+					.select( "#{belongs_to_id_field} AS deep_import_id, count( id ) AS references" )
+					.order( belongs_to_id_field )
+
+			- source model association distribution:
+				- model_table = model_class.to_s.underscore
+				- belongs_to_table = belongs_to_class.to_s.underscore
+				- Source.joins( belongs_to_table.to_sym ) 
+				 	.group( "#{belongs_to_table}.id}" ) 
+					.select( "#{belongs_to_table}.deep_import_id, count( #{models_table}.id ) AS references" )
+					.order( "#{belongs_to_table}.deep_import_id" )
+
+			- compare to pre-association setting
+				- results should have equal sizes
+				- for each result:
+					- id's should be in order
+					- counts should be equal
+
 ---
-Commit: id distribution check
-	- pre-commit: group by deep_import_model.each_reference_id, count( deep_import_id )
-	- post-commit, pre-deep-model-deletion: group by each source_model.deep_import_reference_id, count( deep_import_id )
-	- check that counts match up
+Output:
+	- move from stdout to rails log
 
 ---
 Teardown:
+	- make a standalone task
+
 	- revert migrations before deleting files:
 		- deep_import_id, index on base models
 		- deep_import_* tables
-	- add spec for it
 
----
-model logic:
-	- disable save: raise error or pring warning
-	- reroute create through build
+	- add specs for it
 
----
-Commit:
-	- get deep_import association distribution
-		- DeepImportModel.group( belongs_to_id_field ).select( count( deep_import_id ) ).order( belongs_to_id_field )
-	- get and compare association distribution 
-		- Model.group( belongs_to_id_field ).select( count( id ) ).order( belongs_to_id_field )
-		- is the ordering correct to do this? or should I force a group_by deep_import_belongs_to_id_field
-	activerecord-import:
-		- check for errors
-
----
-batch id as part of deep_import_id field:
-- get a process id
-- set deep_import_id = "#{process_id}.#{id}"
-- commit: scope all queries to this process_id prefix
 
 ---
 belongs_to helpers:
@@ -55,13 +62,23 @@ belongs_to helpers:
 						ModelsCache.set_association( instance, target )
 					end
 			- metaprogramming: http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/
-
+---
+model logic:
+	- disable save: raise error or pring warning
+	- reroute create through build
 
 ---
-Config File:
-	- Validate: check class names for existence/validity
-	- Generate: analyze models with ruby_erd
+batch id as part of deep_import_id field:
+- get a process id
+- set deep_import_id = "#{process_id}.#{id}"
+- commit: scope all queries to this process_id prefix
 
 ---
 Model Flags:
 _polymorphic:
+
+---
+Config File:
+	- spec: 
+		- test for invalid config files
+		- test for missing config file
