@@ -1,20 +1,9 @@
 ---
 Commit:
-	activerecord-import:
-	- check for errors
-		- import returns object with:
-			- failed_instances => array of failed models
-			- num_inserts => number of inserts to load the data
-
 	id distribution check:
 	- post-commit, pre-deletes:
 		- for each model, for each belongs_to
 
-			- deep import association distribution:
-				- belongs_to_id_field = "deep_import_#{belongs_to_class.to_s.underscore}_id"
-				- DeepImport*.group( belongs_to_id_field )
-					.select( "#{belongs_to_id_field} AS deep_import_id, count( id ) AS references" )
-					.order( belongs_to_id_field )
 
 			- source model association distribution:
 				- model_table = model_class.to_s.underscore

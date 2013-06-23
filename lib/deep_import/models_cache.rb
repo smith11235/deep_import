@@ -6,11 +6,12 @@ module DeepImport
 			@@cache.raw_cache
 		end
 
-		def self.show_stats
-			puts "Models:"
+		def self.stats
+			stats = Hash.new
 			DeepImport::ModelsCache.get_cache.each do |model_class,instances|
-				puts "- #{model_class}: #{instances.size}"
+				stats[model_class] = instances.size
 			end
+			stats
 		end
 
 		def self.cached_instances( model_class )
