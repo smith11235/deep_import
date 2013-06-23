@@ -12,8 +12,13 @@ gem 'mysql2'
 gem 'rspec-rails'
 gem 'rspec_candy' # for extra fun testing helpers
 
-gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git'
+group :development, :test do
+  gem 'rb-fsevent', :require => false if RUBY_PLATFORM =~ /darwin/i
+  gem 'guard-rspec'
+  gem 'guard-livereload'
+end
 
+gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git'
 
 # Gems used only for assets and not required
 # in production environments by default.

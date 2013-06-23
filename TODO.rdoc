@@ -1,9 +1,18 @@
 ---
 Teardown:
-	- make a standalone task
-	- revert migrations before deleting files:
-		- deep_import_id, index on base models
-		- deep_import_* tables
+	- add guard
+
+	- setup:
+		- print out each file that needs to be added
+		- make X migrations into 1
+			- easily revertable
+
+	- make two cleaner tasks for setup/teardown
+
+	- detect migration name
+		- revert migration
+		- remove migration file
+		- remove model files
 
 	- add specs for it
 
