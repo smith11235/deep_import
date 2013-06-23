@@ -10,7 +10,7 @@ module DeepImport
 		end
 
 		rake_tasks do
-			load "deep_import/deep_import.rake"
+			load "deep_import/tasks.rake"
 		end
 
 	end

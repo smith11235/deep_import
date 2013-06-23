@@ -1,27 +1,7 @@
 ---
-Commit:
-	id distribution check:
-	- post-commit, pre-deletes:
-		- for each model, for each belongs_to
-
-
-			- source model association distribution:
-				- model_table = model_class.to_s.underscore
-				- belongs_to_table = belongs_to_class.to_s.underscore
-				- Source.joins( belongs_to_table.to_sym ) 
-				 	.group( "#{belongs_to_table}.id}" ) 
-					.select( "#{belongs_to_table}.deep_import_id, count( #{models_table}.id ) AS references" )
-					.order( "#{belongs_to_table}.deep_import_id" )
-
-			- compare to pre-association setting
-				- results should have equal sizes
-				- for each result:
-					- id's should be in order
-					- counts should be equal
-
----
-Output:
-	- move from stdout to rails log
+rake deep_import:show_log
+	- display deep import messages within the log
+	
 
 ---
 Teardown:
