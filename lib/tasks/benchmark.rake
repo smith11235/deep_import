@@ -14,7 +14,7 @@ end
 namespace :benchmark do
 	desc "Example Data Set Creation With Deep Import"
 	task :deep_import => :environment do
-		range = ENV["RANGE"].to_s.to_i
+		range = ( ENV["RANGE"] || "1" ).to_i
 
 		(0..range).each do |parent_name|
 			parent = Parent.new( :name => parent_name.to_s ) # new, or build, not create
@@ -31,7 +31,7 @@ namespace :benchmark do
 	desc "Example Rails Standard Syntax Import Without Deep Import"
 	task :standard_import => :environment do
 		ENV["disable_deep_import"] = "1" 
-		range = ENV["RANGE"].to_s.to_i
+		range = ( ENV["RANGE"] || "1" ).to_i
 
 		(0..range).each do |parent_name|
 			parent = Parent.create!( :name => parent_name.to_s ) # create instead of build

@@ -1,49 +1,11 @@
 ---
-Commit:
-	activerecord-import:
-	- check for errors
-		- import returns object with:
-			- failed_instances => array of failed models
-			- num_inserts => number of inserts to load the data
-
-	id distribution check:
-	- post-commit, pre-deletes:
-		- for each model, for each belongs_to
-
-			- deep import association distribution:
-				- belongs_to_id_field = "deep_import_#{belongs_to_class.to_s.underscore}_id"
-				- DeepImport*.group( belongs_to_id_field )
-					.select( "#{belongs_to_id_field} AS deep_import_id, count( id ) AS references" )
-					.order( belongs_to_id_field )
-
-			- source model association distribution:
-				- model_table = model_class.to_s.underscore
-				- belongs_to_table = belongs_to_class.to_s.underscore
-				- Source.joins( belongs_to_table.to_sym ) 
-				 	.group( "#{belongs_to_table}.id}" ) 
-					.select( "#{belongs_to_table}.deep_import_id, count( #{models_table}.id ) AS references" )
-					.order( "#{belongs_to_table}.deep_import_id" )
-
-			- compare to pre-association setting
-				- results should have equal sizes
-				- for each result:
-					- id's should be in order
-					- counts should be equal
-
----
-Output:
-	- move from stdout to rails log
-
----
 Teardown:
 	- make a standalone task
-
 	- revert migrations before deleting files:
 		- deep_import_id, index on base models
 		- deep_import_* tables
 
 	- add specs for it
-
 
 ---
 belongs_to helpers:
@@ -62,6 +24,7 @@ belongs_to helpers:
 						ModelsCache.set_association( instance, target )
 					end
 			- metaprogramming: http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/
+
 ---
 model logic:
 	- disable save: raise error or pring warning

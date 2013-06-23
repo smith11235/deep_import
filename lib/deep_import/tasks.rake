@@ -1,5 +1,11 @@
 namespace :deep_import do 
 
+	desc "Show Deep Import Messages within the log"
+	task :show_log do
+		puts "Warning: this is a hack".yellow
+		puts `grep -P 'DeepImport' log/#{Rails.env}.log`
+	end
+
 	desc "Create migrations based on config/deep_import.yml"
 	task :setup do 
 		ENV["deep_import_disable_railtie"] = "1"
