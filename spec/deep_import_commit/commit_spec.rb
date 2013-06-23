@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe "DeepImport::Commit" do
 	before( :all ) do
+		[Parent,Child,GrandChild].each {|model_class| model_class.delete_all }
+
 		DeepImport::ModelsCache.clear
 		# use the 'name' attribute as a second layer of validation for the 
 		# deep_import id tracking

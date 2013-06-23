@@ -1,13 +1,9 @@
 ---
 Teardown:
-	- add guard
-
 	- setup:
 		- print out each file that needs to be added
 		- make X migrations into 1
 			- easily revertable
-
-	- make two cleaner tasks for setup/teardown
 
 	- detect migration name
 		- revert migration
