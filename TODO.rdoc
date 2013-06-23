@@ -1,18 +1,11 @@
 ---
-rake deep_import:show_log
-	- display deep import messages within the log
-	
-
----
 Teardown:
 	- make a standalone task
-
 	- revert migrations before deleting files:
 		- deep_import_id, index on base models
 		- deep_import_* tables
 
 	- add specs for it
-
 
 ---
 belongs_to helpers:
@@ -31,6 +24,7 @@ belongs_to helpers:
 						ModelsCache.set_association( instance, target )
 					end
 			- metaprogramming: http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/
+
 ---
 model logic:
 	- disable save: raise error or pring warning
