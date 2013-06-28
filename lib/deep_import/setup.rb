@@ -5,29 +5,54 @@ module DeepImport
 		def initialize
 			@config = Config.deep_import_config
 
-			enhance_models
-			add_deep_import_models
+			# populate these
+			@migration_name = "AddDeepImportEnhancements"
+			@migration_logic = Array.new
+			@generated_files = Array.new
 
-			puts "- " + "git add .".red + "# to add all new generated migration and model files"
+			add_source_model_schema_changes
+			add_deep_import_model_schema_changes
+			add_deep_import_model_definitions
+
+			create_migration
+
+			puts "Generated Files".green
+			puts @generated_files.to_yaml
 			puts "- " "rake db:migrate".red
 		end
 
-		def enhance_models 
+		def add_source_model_changes
 			@config[:models].each do |model_class,info|
-				plural_name = model_class.to_s.pluralize
 				table_name = plural_name.underscore
-				name = "AddDeepImportIdTo#{plural_name}"
-
-				create_migration( name ) do |f|
-					f.puts "    add_column :#{table_name}, :deep_import_id, :string"
-					f.puts "    add_index :#{table_name}, [:deep_import_id, :id], :name => 'di_id_index'"
-				end
+				@migration_logic << "add_column :#{table_name}, :deep_import_id, :string"
+				@migration_logic << "add_index :#{table_name}, [:deep_import_id, :id], :name => 'di_id_index'"
 			end
 		end
 
-		def add_deep_import_models
+		def add_deep_import_model_schema_changes
 			@config[:models].each do |model_class,info|
-				generate_deep_import_model_migration( model_class, info )
+				add_deep_import_model_migration( model_class, info )
+			end
+		end
+
+		def add_deep_import_model_migration( model_class, info )
+			plural_name = model_class.to_s.pluralize
+			table_name = plural_name.underscore
+			@migration_logic <<  "create_table :deep_import_#{table_name} do |t|"
+			@migration_logic <<  "  t.string :deep_import_id"
+			@migration_logic <<  "  t.datetime :parsed_at"
+			@migration_logic <<  "  t.timestamps"
+			info[:belongs_to].each do |belongs_to|
+				@migration_logic <<  "  t.string :deep_import_#{belongs_to.to_s.underscore}_id"
+			end
+			@migration_logic <<  "end"
+			info[:belongs_to].each do |belongs_to|
+				@migration_logic <<  "add_index :deep_import_#{table_name}, [:deep_import_id, :deep_import_#{belongs_to.to_s.underscore}_id], :name => 'di_#{belongs_to.to_s.underscore}'"
+			end
+		end
+
+		def add_deep_import_model_definitions
+			@config[:models].each do |model_class,info|
 				generate_deep_import_model_definition( model_class, info )
 			end
 		end
@@ -37,47 +62,30 @@ module DeepImport
 			raise "Model File Already Exists: #{model_file}" if File.file? model_file
 			File.open( model_file, "w" ) do |f|
 				f.puts "class DeepImport#{model_class} < ActiveRecord::Base"
-  			f.puts "  attr_accessible :deep_import_id, :parsed_at"
+				f.puts "  attr_accessible :deep_import_id, :parsed_at"
 				info[:belongs_to].each do |belongs_to|
 					f.puts "  attr_accessible :deep_import_#{belongs_to.to_s.underscore}_id"
 				end
 				f.puts "end"
 			end
-			puts "Generated: #{model_file}".green
+			@generated_files << model_file
 		end
 
-		def generate_deep_import_model_migration( model_class, info )
-			plural_name = model_class.to_s.pluralize
-			table_name = plural_name.underscore
-			name = "CreateDeepImport#{plural_name}"
 
-			create_migration( name ) do |f|
-				f.puts "    create_table :deep_import_#{table_name} do |t|"
-				f.puts "      t.string :deep_import_id"
-				f.puts "      t.datetime :parsed_at"
-				f.puts "      t.timestamps"
-				info[:belongs_to].each do |belongs_to|
-					f.puts "      t.string :deep_import_#{belongs_to.to_s.underscore}_id"
-				end
-				f.puts "    end"
-				info[:belongs_to].each do |belongs_to|
-					f.puts "    add_index :deep_import_#{table_name}, [:deep_import_id, :deep_import_#{belongs_to.to_s.underscore}_id], :name => 'di_#{belongs_to.to_s.underscore}'"
-				end
-			end
-		end
-
-		def create_migration( name )
-			raise "Already a migration named: #{name}, suggest: rm db/migrate/*deep_import*" if Dir.glob( "db/migrate/*_#{name.underscore}.rb" ).size > 0
-			sleep( 1 ) # ensure unique timestamp
-			migration_file = "db/migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_#{name.underscore}.rb"
+		def create_migration
+			raise "Already a migration named: #{@migration_name}, run deep_import:teardown" if Dir.glob( "db/migrate/*_#{@migration_name.underscore}.rb" ).size > 0
+			migration_file = "db/migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_#{@migration_name.underscore}.rb"
 			File.open( migration_file, "w" ) do |f|
-				f.puts "class #{name} < ActiveRecord::Migration"
+				f.puts "class #{@migration_name} < ActiveRecord::Migration"
 				f.puts "  def change"
-				yield f
+				@migration_logic.each do |line|
+					f.puts "    #{line}"
+				end
 				f.puts "  end"
 				f.puts "end"
 			end
-			puts "Generated: #{migration_file}".green
+			raise "Unable to create migration file: #{migration_file}" unless File.file? migration_file
+			@generated_files << migration_file
 		end
 
 	end

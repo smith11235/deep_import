@@ -1,0 +1,9 @@
+git rm  app/models/deep_import_parent.rb
+git rm  app/models/deep_import_child.rb
+git rm  app/models/deep_import_grand_child.rb
+git rm  db/migrate/20130519235025_add_deep_import_id_to_parents.rb
+git rm  db/migrate/20130519235026_add_deep_import_id_to_children.rb
+git rm  db/migrate/20130519235027_add_deep_import_id_to_grand_children.rb
+git rm  db/migrate/20130519235028_create_deep_import_parents.rb
+git rm  db/migrate/20130519235029_create_deep_import_children.rb
+git rm  db/migrate/20130519235030_create_deep_import_grand_children.rb
