@@ -6,7 +6,7 @@ module DeepImport
 			@config = Config.deep_import_config
 
 			# populate these
-			@migration_name = "AddDeepImportEnhancements"
+			@migration_name = DeepImport.settings[ :migration_name ]
 			@migration_logic = Array.new
 			@generated_files = Array.new
 
@@ -16,14 +16,14 @@ module DeepImport
 
 			create_migration
 
-			puts "Generated Files".green
+			puts "Generated Files, Add To Revision Control".green
 			puts @generated_files.to_yaml
 			puts "- " "rake db:migrate".red
 		end
 
-		def add_source_model_changes
+		def add_source_model_schema_changes
 			@config[:models].each do |model_class,info|
-				table_name = plural_name.underscore
+				table_name = model_class.to_s.underscore
 				@migration_logic << "add_column :#{table_name}, :deep_import_id, :string"
 				@migration_logic << "add_index :#{table_name}, [:deep_import_id, :id], :name => 'di_id_index'"
 			end

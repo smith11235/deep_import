@@ -1,15 +1,9 @@
 ---
 Teardown:
-	- setup:
-		- print out each file that needs to be added
-		- make X migrations into 1
-			- easily revertable
+ task_remove_migration:
+	- revert migration
 
-	- detect migration name
-		- revert migration
-		- remove migration file
-		- remove model files
-
+	- test benchmark tasks
 	- add specs for it
 
 ---

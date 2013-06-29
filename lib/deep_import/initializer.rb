@@ -4,7 +4,7 @@ module DeepImport
 		def self.setup
 			# complete removal of deep_import background logic logic
 			if ENV["deep_import_disable_railtie"] # if it's defined to anything, we dont do anything
-				puts "DeepImport: ENV[deep_import_disable_railtie] is set, exiting without loading deep_import".red
+				puts "(#{DateTime.now}) DeepImport: ENV[deep_import_disable_railtie] is set, exiting without loading deep_import".red
 				return
 			end
 
@@ -37,7 +37,7 @@ module DeepImport
 					[ model_class.to_s, "DeepImport#{model_class}" ].collect do |class_name|
 						next if Object.const_defined? class_name # adds true to the exists array
 						DeepImport.logger.error "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv".black.on_red
-						DeepImport.logger.error "Deep Import Railtie Error".black.on_red
+						DeepImport.logger.error "(#{DateTime.now}) Deep Import Railtie Error".black.on_red
 						DeepImport.logger.error "#{model_class} is not available:".black.on_red
 						if model_class =~ /^DeepImport/
 							DeepImport.logger.error "- #{model_class} is supposed to have been a generated model".black.on_red 
