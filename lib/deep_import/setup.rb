@@ -18,7 +18,6 @@ module DeepImport
 
 			puts "Generated Files, Add To Revision Control".green
 			puts @generated_files.to_yaml
-			puts "- " "rake db:migrate".red
 		end
 
 		def add_source_model_schema_changes
