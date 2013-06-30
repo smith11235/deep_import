@@ -23,7 +23,7 @@ module DeepImport
 
 		def add_source_model_schema_changes
 			@config[:models].each do |model_class,info|
-				table_name = model_class.to_s.underscore
+				table_name = model_class.to_s.underscore.pluralize
 				@migration_logic << "add_column :#{table_name}, :deep_import_id, :string"
 				@migration_logic << "add_index :#{table_name}, [:deep_import_id, :id], :name => 'di_id_index'"
 			end

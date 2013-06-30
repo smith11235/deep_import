@@ -35,7 +35,10 @@ module DeepImport
 				# check if the environment is complete
 				exists = Config.models.collect do |model_class,info|
 					[ model_class.to_s, "DeepImport#{model_class}" ].collect do |class_name|
-						next if Object.const_defined? class_name # adds true to the exists array
+						
+						next unless class_name.safe_constantize.nil? # adds true to the exists array
+						# but if hte class doesnt exist we have a problem
+
 						DeepImport.logger.error "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv".black.on_red
 						DeepImport.logger.error "(#{DateTime.now}) Deep Import Railtie Error".black.on_red
 						DeepImport.logger.error "#{model_class} is not available:".black.on_red

@@ -14,6 +14,7 @@ end
 namespace :benchmark do
 	desc "Example Data Set Creation With Deep Import"
 	task :deep_import => :environment do
+		DeepImport.logger = Logger.new(STDOUT)
 		range = ( ENV["RANGE"] || "1" ).to_i
 
 		(0..range).each do |parent_name|
