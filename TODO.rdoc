@@ -1,18 +1,24 @@
 ---
-Teardown:
- task_remove_migration:
-	- revert migration
-
-	- test benchmark tasks
-	- add specs for it
-
----
 belongs_to helpers:
 	- implicit assignment from <owner>.<has_*class>.create 
 		- following creation ordering with dfs creation orderin
 			- fix this, override has_one/has_many to call DeepImport.parent( model )
-	- allow: child.other_association = other_parent
-	- really need to do meta programming
+	- api: 
+		- nested construction:
+			- child = parent.children.build
+				- set corresponding deep_import_child.deep_import_parent_id = parent.deep_import_id
+				- hook into the 'association' call, set some meta flag
+			- child = parent.children.create 
+				- call build
+					- override method definition on model
+
+		- random assignment:
+			- child.parent = random_parent 
+				- set corresponding deep_import_child.deep_import_parent_id = parent.deep_import_id
+				- hook into the 'association' call
+		
+		- save: raise error, or print warning silently depending on setting
+
 	- option a: tweak rails: http://errtheblog.com/posts/18-accessor-missing
 		- define in model_logic
 			- Config.models[ self ].belongs_to.each do 
@@ -25,9 +31,8 @@ belongs_to helpers:
 			- metaprogramming: http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/
 
 ---
-model logic:
-	- disable save: raise error or pring warning
-	- reroute create through build
+Teardown:
+	- add specs for it
 
 ---
 batch id as part of deep_import_id field:
