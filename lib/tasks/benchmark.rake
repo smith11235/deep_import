@@ -16,8 +16,7 @@ task :associations => :environment do
 		grand_child
 	end
 
-	puts children.to_yaml.yellow
-
+	puts DeepImport::ModelsCache.get_cache[ DeepImportChild ].to_yaml.yellow
 	# save
 
 end

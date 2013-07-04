@@ -39,8 +39,11 @@ module DeepImport
 
 			def	setup_belongs_to_association_logic
 				DeepImport::Config.models[ self ][:belongs_to].each do |belongs_to_class|
-					# override the setter to allow deep_import to track all belongs_to relations
+					override_active_record_belongs_to_setter belongs_to_class
+				end
+			end
 
+			def override_active_record_belongs_to_setter( belongs_to_class )
 					# get the setter name, and the new name for the setter
 					belongs_to_method = "#{belongs_to_class.to_s.underscore}=".to_sym
 					inner_belongs_to_method = "original_active_record_#{belongs_to_method}=".to_sym
@@ -48,12 +51,11 @@ module DeepImport
 					# copy the standard method to the new name so that we can redefine the standard method
 			  	send :alias_method, inner_belongs_to_method, belongs_to_method 
 
+					# define the new logic with deep import intercept
 				 	send :define_method, belongs_to_method do |belongs_to_instance|
-						puts "Setting #{belongs_to_instance.class} on #{self.class}"
-						# ModelsCache.set_association( belongs_to_instance, self )
+						DeepImport::ModelsCache.set_association_on( self, belongs_to_instance )
 						send inner_belongs_to_method, belongs_to_instance
 					end
-				end
 			end
 
 			def setup_after_initialization_callback 
