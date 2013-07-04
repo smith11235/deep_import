@@ -5,7 +5,6 @@ belongs_to helpers:
   - get associations task working
 
 	- api: 
-
 		- random assignment:
 			- child.parent = random_parent 
 				- set corresponding deep_import_child.deep_import_parent_id = parent.deep_import_id

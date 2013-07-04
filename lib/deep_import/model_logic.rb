@@ -1,9 +1,11 @@
 module DeepImport 
+=begin
+	meta-programming reference: http://www.vitarara.org/cms/ruby_metaprogamming_declaratively_adding_methods_to_a_class
+	on tweaking rails: http://errtheblog.com/posts/18-accessor-missing
+	on rails model callbacks: http://guides.rubyonrails.org/active_record_validations_callbacks.html#after_initialize-and-after_find
+=end
 
 	def self.add_model_logic_to( model_class )
-		# meta-programming reference: http://www.vitarara.org/cms/ruby_metaprogamming_declaratively_adding_methods_to_a_class
-		# on tweaking rails: http://errtheblog.com/posts/18-accessor-missing
-		# on rails model callbacks: http://guides.rubyonrails.org/active_record_validations_callbacks.html#after_initialize-and-after_find
 		model_class.class_eval do
 			# pull in the deep import logic
 			include DeepImport::ModelLogicEnhancements 
@@ -32,6 +34,26 @@ module DeepImport
 
 				setup_after_initialization_callback
 
+				setup_belongs_to_association_logic
+			end
+
+			def	setup_belongs_to_association_logic
+				DeepImport::Config.models[ self ][:belongs_to].each do |belongs_to_class|
+					# override the setter to allow deep_import to track all belongs_to relations
+
+					# get the setter name, and the new name for the setter
+					belongs_to_method = "#{belongs_to_class.to_s.underscore}=".to_sym
+					inner_belongs_to_method = "original_active_record_#{belongs_to_method}=".to_sym
+
+					# copy the standard method to the new name so that we can redefine the standard method
+			  	send :alias_method, inner_belongs_to_method, belongs_to_method 
+
+				 	send :define_method, belongs_to_method do |belongs_to_instance|
+						puts "Setting #{belongs_to_instance.class} on #{self.class}"
+						# ModelsCache.set_association( belongs_to_instance, self )
+						send inner_belongs_to_method, belongs_to_instance
+					end
+				end
 			end
 
 			def setup_after_initialization_callback 
