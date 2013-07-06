@@ -18,6 +18,7 @@ task :associations => :environment do
 
 	puts DeepImport::ModelsCache.get_cache[ DeepImportChild ].to_yaml.yellow
 	# save
+	DeepImport.commit # save all models to database
 
 end
 

@@ -5,26 +5,42 @@ belongs_to helpers:
   - get associations task working
 
 	- api: 
-		- random assignment:
-			- child.parent = random_parent 
-				- set corresponding deep_import_child.deep_import_parent_id = parent.deep_import_id
-				- hook into the 'association' call
-					- based on behavior of belongs_to
-			- define in model_logic:
-				Config.models[ self ].belongs_to.each do |belongs_to_class|
-					# preserve the currently configured functionality under a new method name
-					# tweak rails: http://errtheblog.com/posts/18-accessor-missing
-					belongs_to_method = "#{belongs_to_class.to_s.underscore}=".to_sym
-					inner_belongs_to_method = "active_record_#{belongs_to_method}".to_sym
-			  	send :alias_method, inner_belongs_to_method, belongs_to_method 
+		- child.parent = random_parent
+			- benchmark/associations
+			- add commit to benchmark/associations
 
-					# http://www.vitarara.org/cms/ruby_metaprogamming_declaratively_adding_methods_to_a_class
-				 	send :define_method, belongs_to_method do |belongs_to_instance| :
-						ModelsCache.set_association( belongs_to_instance, self )
-						send inner_belongs_to_method, belongs_to_instance
-					end
-		
+			- options:
+				- :after_add => :method_name callback
+
+				- for all generated methods:
+					- override it and call super, test in place of alias
+
+					- For each model with belongs_to or has_one 
+						- other=
+						- build_other( attributes = {} )
+						- create_other( attributes = {} )
+						- create_other!( attributes = {} )
+
+					- for each model with has_many:
+						- others=(other,other,...)
+						- others<<
+						- others.push
+						- others.concat
+						- others.build
+						- others.create
+						- others.create!
+
+						- disable:
+							- other_ids= # disable
+							- .clear
+							- .delete
+							- .delete_all
+							- .destroy
+							- .destroy_all
+							- .reset
+
 		- save: raise error, or print warning silently depending on setting
+
 
 		- nested construction:
 			- child = parent.children.build
