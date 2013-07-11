@@ -34,28 +34,56 @@ module DeepImport
 
 				setup_after_initialization_callback
 
-				setup_belongs_to_association_logic
+				setup_association_logic
 			end
 
-			def	setup_belongs_to_association_logic
+			def setup_association_logic
 				DeepImport::Config.models[ self ][:belongs_to].each do |belongs_to_class|
-					override_active_record_belongs_to_setter belongs_to_class
+					setup_belongs_to_association( belongs_to_class )
+				end
+				DeepImport::Config.models[ self ][:has_one].each do |has_one_class|
+					setup_has_one_association( has_one_class )
+				end
+				DeepImport::Config.models[ self ][:has_many].each do |has_many_class|
+					setup_has_many_association( has_many_class )
 				end
 			end
 
-			def override_active_record_belongs_to_setter( belongs_to_class )
-					# get the setter name, and the new name for the setter
-					belongs_to_method = "#{belongs_to_class.to_s.underscore}=".to_sym
-					inner_belongs_to_method = "original_active_record_#{belongs_to_method}=".to_sym
+			def setup_has_many_association( has_many_class )
+				puts "Setup #{self}.has_many #{has_many_class}".yellow
+			end
 
-					# copy the standard method to the new name so that we can redefine the standard method
-			  	send :alias_method, inner_belongs_to_method, belongs_to_method 
+			def	setup_has_one_association( has_one_class )
+				override_active_record_singular_association has_one_class
+			end
 
-					# define the new logic with deep import intercept
-				 	send :define_method, belongs_to_method do |belongs_to_instance|
-						DeepImport::ModelsCache.set_association_on( self, belongs_to_instance )
-						send inner_belongs_to_method, belongs_to_instance
-					end
+			def	setup_belongs_to_association( belongs_to_class )
+				override_active_record_singular_association belongs_to_class
+			end
+
+=begin
+- warning: should i reverse the models cache call for the has_one direction
+	- so that the ids get set on the correct class
+
+- add in logic for:
+						- other=  # done
+						- build_other( attributes = {} )
+						- create_other( attributes = {} )
+						- create_other!( attributes = {} )
+=end
+			def override_active_record_singular_association( model_class )
+				# get the setter name, and the new name for the setter
+				model_method = "#{model_class.to_s.underscore}=".to_sym
+				inner_model_method = "original_active_record_#{model_method}=".to_sym
+
+				# copy the standard method to the new name so that we can redefine the standard method
+				send :alias_method, inner_model_method, model_method 
+
+				# define the new logic with deep import intercept
+				send :define_method, model_method do |belongs_to_instance|
+					DeepImport::ModelsCache.set_association_on( self, belongs_to_instance )
+					send inner_model_method, belongs_to_instance
+				end
 			end
 
 			def setup_after_initialization_callback 
