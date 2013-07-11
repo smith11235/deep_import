@@ -27,7 +27,10 @@ module DeepImport
 				ModelsCache.setup # create model tracking structures
 
 				Config.models.each do |model_class,info|
-					ModelLogic.new(  model_class  ) # add deep import logic to that model class
+					# add it to the deep import models cache
+					DeepImport::ModelsCache.track_model( model_class )
+					# enhance the model definition
+					DeepImport.add_model_logic_to(  model_class  ) # add deep import logic to that model class
 				end
 			end
 

@@ -34,6 +34,10 @@ module DeepImport
 			@@cache.clear
 		end
 
+		def self.set_association_on( instance, belongs_to_instance )
+			@@cache.set_association_on( instance, belongs_to_instance )
+		end
+
 		private
 
 		class Cache
@@ -56,6 +60,17 @@ module DeepImport
 
 			def raw_cache
 				@@model_instance_cache
+			end
+
+			def set_association_on( instance, belongs_to_instance )
+				model_class = instance.class
+
+				deep_import_model_class = "DeepImport#{model_class}".constantize
+
+				deep_import_belongs_to_field_setter = "deep_import_#{belongs_to_instance.class.to_s.underscore}_id="
+
+				deep_instance = @@model_instance_cache[ deep_import_model_class ][ instance.deep_import_id ]
+				deep_instance.send( deep_import_belongs_to_field_setter, belongs_to_instance.deep_import_id )
 			end
 
 			def add( model_instance )

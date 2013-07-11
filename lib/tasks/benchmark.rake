@@ -1,5 +1,27 @@
 require 'benchmark'
 
+desc "Associations Examples"
+task :associations => :environment do
+
+	parents = (0..1).collect {|i| Parent.new( :name => "#{i}" ) }
+	children = (0..3).collect do |i| 
+		child = Child.new( :name => "#{i}" )
+		child.parent = parents[ i % 2 ]
+		child
+	end
+
+	grand_children = (0..7).collect do |i|
+		grand_child = GrandChild.new( :name => "#{i}" ) 
+		grand_child.child = children[ i % 4 ]
+		grand_child
+	end
+
+	puts DeepImport::ModelsCache.get_cache[ DeepImportChild ].to_yaml.yellow
+	# save
+	DeepImport.commit # save all models to database
+
+end
+
 desc "Build a fake dataset with and without deep_import"
 task :benchmark => :environment do
 	ENV["RANGE"] ||= "4" # creates range * range * range models

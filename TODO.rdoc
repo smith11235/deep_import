@@ -1,33 +1,68 @@
+rails g controller family index
+- develop app/views/faimily/index.html.erb
+ rails g controller family index
+ app/views/family/index.html.erb
+ - table:
+ 	- parents.each:
+		- table: 
+			- children.each:
+				- table:
+					- grandchildren.each
+
 ---
 belongs_to helpers:
-	- implicit assignment from <owner>.<has_*class>.create 
-		- following creation ordering with dfs creation orderin
-			- fix this, override has_one/has_many to call DeepImport.parent( model )
+- *** remove dfs logic
+	- start with parent method
+  - get associations task working
+
 	- api: 
+		- child.parent = random_parent
+			- benchmark/associations
+			- add commit to benchmark/associations
+
+			- options:
+				- :after_add => :method_name callback
+
+				- for all generated methods:
+					- override it and call super, test in place of alias
+
+					- For each model with belongs_to or has_one 
+						- other=
+						- build_other( attributes = {} )
+						- create_other( attributes = {} )
+						- create_other!( attributes = {} )
+
+					- for each model with has_many:
+						- others=(other,other,...)
+						- others<<
+						- others.push
+						- others.concat
+						- others.build
+						- others.create
+						- others.create!
+
+						- disable:
+							- other_ids= # disable
+							- .clear
+							- .delete
+							- .delete_all
+							- .destroy
+							- .destroy_all
+							- .reset
+
+		- save: raise error, or print warning silently depending on setting
+
+
 		- nested construction:
 			- child = parent.children.build
-				- set corresponding deep_import_child.deep_import_parent_id = parent.deep_import_id
-				- hook into the 'association' call, set some meta flag
+				- hook into has_many/one association helpers
+				- call belongs_to logic
+
 			- child = parent.children.create 
 				- call build
 					- override method definition on model
 
-		- random assignment:
-			- child.parent = random_parent 
-				- set corresponding deep_import_child.deep_import_parent_id = parent.deep_import_id
-				- hook into the 'association' call
-		
-		- save: raise error, or print warning silently depending on setting
-
-	- option a: tweak rails: http://errtheblog.com/posts/18-accessor-missing
-		- define in model_logic
-			- Config.models[ self ].belongs_to.each do 
-				- alias_method :active_record_<belongs_to>, :<belongs_to>
-				- model_class.class_def
-				- define_method :method_name_sym, ...
-				- def <belongs_to>=( target )
-						ModelsCache.set_association( instance, target )
-					end
+			- http://errtheblog.com/posts/18-accessor-missing
 			- metaprogramming: http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/
 
 ---
