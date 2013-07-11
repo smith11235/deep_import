@@ -1,3 +1,14 @@
+rails g controller family index
+- develop app/views/faimily/index.html.erb
+ rails g controller family index
+ app/views/family/index.html.erb
+ - table:
+ 	- parents.each:
+		- table: 
+			- children.each:
+				- table:
+					- grandchildren.each
+
 ---
 belongs_to helpers:
 - *** remove dfs logic
