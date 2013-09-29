@@ -8,14 +8,11 @@ This means anything supporting:
 - has_one
 - belongs_to
 
-For the examples, consider the example models:
+For the method listings below consider the following models:
 - Parent
 	- has_many: Children
 - Child
 	- belongs_to: Parent
-
-Functionality is developed with TDD using RSpec.
-Specs can be found in the usual place, spec/**
 
 Goals
 -----
@@ -24,6 +21,8 @@ The goal of Deep Import is a seemless integration with the standard Rails/Active
 By integrating within the Association logic we eliminate the need for a developer to learn a new pattern or new API.
 Code that utilizes the Deep Import functionality will be easily understood by any Rails developer.
 In some scenarios, an existing codebase could theorhetically utilize Deep Import without any modifications.
+
+What has been developed has been in conjunction with RSpec examples, in the standard spec/ location.
 
 Supported Usage
 ---------------
@@ -42,6 +41,7 @@ has_one And belongs_to
 - create_other( attributes = {} ) # disabled
 - create_other!( attributes = {} ) # disabled
 
+These are overridden by calling 'method_override' and redefining the methods.
 
 has_many
 --------
