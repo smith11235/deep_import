@@ -4,35 +4,33 @@ The deep_import modifications to Rails are based on [this](http://api.rubyonrail
 
 Generally covered are the methods ActiveReocrd provides for associations.
 This means anything for:
-* has_many
-* has_one
-* belongs_to
+- has_many
+- has_one
+- belongs_to
+
+For the examples, consider the models:
+* Parent
+- has_many: :children
 
 has_many
----
-	endable:
-	- others.build  
-	- others.create(!) # use build
-	- others.push 
+--------
+* supported
+- parent.children.build  
 
-	- others<< 
-	- others.concat 
+* saddly still unsupported
+- parent.childrens.create(!): redirect through build
+- parent.childrens.push: add support logic
+- parent.childrens<<: add support logic
+- parent.childrens.concat: add support logic
+- parent.childrens=(other,other,...): add support logic
+- parent.children_ids=   
+- parent.children.clear 
+- parent.children.delete 
+- parent.children.delete_all 
+- parent.children.destroy
+- parent.children.destroy_all
+- parent.children.reset
 
-	- others=(other,other,...) 
-
-	disable: # this is a load environment, these are disabled, learn to use it, see docs
-	- other_ids=   
-	- clear 
-	- delete 
-	- delete_all 
-	- destroy
-	- destroy_all
-	- reset
-
-=begin
-	helper methods for has_many associations
-=end
-=begin
 has_one AND belongs_to
 	endabled:
 	- other= instance # done
