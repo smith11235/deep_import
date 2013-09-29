@@ -1,9 +1,7 @@
 API (How Rails Is Modified)
 ===========================
-> The modifications to the Rails framework have been
-> guided by the Associations documentation.
-
-> The documentation is [HERE](http://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html)
+The deep_import modifications to Rails are based on the following 
+[DOCUMENTATION](http://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html)
 
 
 # has_many, has_one, belongs_to association methods
