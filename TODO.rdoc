@@ -1,48 +1,21 @@
-rails g controller family index
-- develop app/views/faimily/index.html.erb
- rails g controller family index
- app/views/family/index.html.erb
- - table:
- 	- parents.each:
-		- table: 
-			- children.each:
-				- table:
-					- grandchildren.each
-
 ---
 belongs_to helpers:
 - *** remove dfs logic
 	- start with parent method
-  - get associations task working
 
 	- api: 
 		- child.parent = random_parent
 			- benchmark/associations
-			- add commit to benchmark/associations
-
-			- options:
-				- :after_add => :method_name callback
-
-				- for all generated methods:
-					- override it and call super, test in place of alias
-
-					- For each model with belongs_to or has_one 
-						- other=
-						- build_other( attributes = {} )
-						- create_other( attributes = {} )
-						- create_other!( attributes = {} )
-
 					- for each model with has_many:
-						- others=(other,other,...)
-						- others<<
-						- others.push
-						- others.concat
-						- others.build
-						- others.create
-						- others.create!
-
+						- others<< 
+						- others.push  
+						- others.concat 
+						- others.build  
+						- others.create # use build
+						- others.create! # use build
 						- disable:
-							- other_ids= # disable
+							- others=(other,other,...) # not implemented yet
+							- other_ids=  # not relevant with deep_import
 							- .clear
 							- .delete
 							- .delete_all
@@ -51,7 +24,6 @@ belongs_to helpers:
 							- .reset
 
 		- save: raise error, or print warning silently depending on setting
-
 
 		- nested construction:
 			- child = parent.children.build

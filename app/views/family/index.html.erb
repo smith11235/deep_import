@@ -1,0 +1,45 @@
+<h1>Family#index</h1>
+
+<h1>Current Families</h1>
+<table border="1" >
+	<tr>
+		<th>Parent</th>
+		<th>Children</th>
+	</tr>
+	<% Parent.all.each_with_index do |parent,p| %>
+		<tr>
+			<td style="background-color:<%= p % 2 == 0 ?  'red' : 'green' %>" >
+				<%= parent.name %>
+			</td>
+			<td>
+				<table border="1" >
+					<tr>
+						<th>Child</th>
+						<th>GrandChildren</th>
+					</tr>
+					<% parent.children.each_with_index do |child,c| %>
+						<tr>
+							<td style="background-color:<%= c % 2 == 0 ?  'red' : 'green' %>" >
+								<%= child.name %>
+							</td>
+							<td>
+								<table border="1" >
+								<tr>
+									<th>GrandChild</th>
+								</tr>
+									<% child.grand_children.each_with_index do |grand_child,gc| %>
+										<tr>
+											<td style="background-color:<%= gc % 2 == 0 ?  'red' : 'green' %>" >
+												<%= grand_child.name %>
+											</td>
+										</tr>
+									<% end %>
+									</table >
+								</td>
+							</tr>
+						<% end %>
+						</table >
+					</td>
+				</tr>
+			<% end %>
+			</table >
