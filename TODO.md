@@ -1,4 +1,17 @@
 ---
+RC1:
+- API.md
+- benchmark profiling of many inputs, record outputs
+- view: display and explain benchmarks
+- view: family???
+- better README linking to things
+- TUTORIAL.md
+- belongs_to: remove dfs logic? is something there better?
+	- make it something enabled
+- correct enabling/disabling logic
+	- make it disabled by default
+
+---
 belongs_to helpers:
 - *** remove dfs logic
 	- start with parent method
