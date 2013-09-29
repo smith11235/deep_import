@@ -28,6 +28,18 @@ describe "DeepImport::ModelLogic" do
 			it "is tracked by model cache" do
 				DeepImport::ModelsCache.cached_instances( model_class ).should be_an_instance_of( Array )
 			end
+
+			%w( belongs_to has_one ).each do |association_type|
+				describe association_type do
+					# currently disabled
+					it "should override create_other"
+					it "should override create_other!"
+					# enabled
+					it "should override other=" # tags correct model with ownership
+					it "should override build" # creates model with attributes, tagged with ownership
+				end
+			end
+
 		end
 	end
 
@@ -39,7 +51,7 @@ describe "DeepImport::ModelLogic" do
 		ENV[var] = original_value
 		rval # return the block result
 	end
-		
+
 
 	describe "Creation Tracking" do
 		let( :root_class ){ DeepImport::Config.deep_import_config[:roots][0] }

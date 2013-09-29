@@ -6,13 +6,6 @@ belongs_to helpers:
 	- api: 
 		- child.parent = random_parent
 			- benchmark/associations
-				- for all generated methods:
-					- make them all rais errors for now
-					- For each model with belongs_to or has_one 
-						- other=  # done
-						- build_other( attributes = {} )
-						- create_other( attributes = {} )
-						- create_other!( attributes = {} )
 					- for each model with has_many:
 						- others<< 
 						- others.push  
@@ -31,7 +24,6 @@ belongs_to helpers:
 							- .reset
 
 		- save: raise error, or print warning silently depending on setting
-
 
 		- nested construction:
 			- child = parent.children.build
