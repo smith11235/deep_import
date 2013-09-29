@@ -16,10 +16,10 @@ For the examples, consider the example models:
 
 has_many
 --------
-### supported
+##### supported
 - parent.children.build  
 
-### saddly still unsupported
+##### saddly still unsupported
 - parent.childrens.create(!): redirect through build
 - parent.childrens.push: add support logic
 - parent.childrens<<: add support logic
