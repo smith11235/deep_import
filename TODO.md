@@ -10,6 +10,10 @@ RC1:
 	- make it something enabled
 - correct enabling/disabling logic
 	- make it disabled by default
+- is this tested:
+	- in API.md
+		- create_other( attributes = {} ) # disable # done
+		- create_other!( attributes = {} ) # disable # done
 
 ---
 belongs_to helpers:

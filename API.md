@@ -14,12 +14,29 @@ For the examples, consider the example models:
 - Child
 	- belongs_to: Parent
 
+Functionality is developed with TDD using RSpec.
+Specs can be found in the usual place, spec/**
+
+has_one And belongs_to
+----------------------
+Current level of support allows easy development supporting a specific pattern in combination with the config file.
+
+Follow the TUTORIAL.md for instructions on how to use deep_import.
+
+Once the full association API has been supported, batch loading should become seemless for a Rails developer.
+
+##### Supported 
+- other= instance
+- build_other( attributes = {} ) 
+- create_other( attributes = {} ) # disabled
+- create_other!( attributes = {} ) # disabled
+
+
 has_many
 --------
-##### supported
-- parent.children.build  
-
-##### saddly still unsupported
+##### Saddly still unsupported
+i have not found the trick yet, but I know I am close
+- parent.children.build: in development
 - parent.childrens.create(!): redirect through build
 - parent.childrens.push: add support logic
 - parent.childrens<<: add support logic
@@ -32,18 +49,4 @@ has_many
 - parent.children.destroy
 - parent.children.destroy_all
 - parent.children.reset
-
-has_one AND belongs_to
-	endabled:
-	- other= instance # done
-	- build_other( attributes = {} ) # 
-	- create_other( attributes = {} ) # disable # done
-	- create_other!( attributes = {} ) # disable # done
-
-=begin
-	Method construction methods that create the
-	- has_one
-	- belongs_to
-	association methods
-=end
 
