@@ -17,13 +17,24 @@ For the examples, consider the example models:
 Functionality is developed with TDD using RSpec.
 Specs can be found in the usual place, spec/**
 
+Goals
+-----
+The goal of Deep Import is a seemless integration with the standard Rails/ActiveRecord Association logic.
+
+By integrating within the Association logic we eliminate the need for a developer to learn a new pattern or new API.
+Code that utilizes the Deep Import functionality will be easily understood by any Rails developer.
+In some scenarios, an existing codebase could theorhetically utilize Deep Import without any modifications.
+
+Supported Usage
+---------------
+The goal is complete coverage of the Association api to provide complete confidence to Deep Import users.
+This is not where Deep Import is currently at.
+
+Deep Import can be used following a very specific, but friendly, pattern.
+Instructions for this can be found in TUTORIAL.md.
+
 has_one And belongs_to
 ----------------------
-Current level of support allows easy development supporting a specific pattern in combination with the config file.
-
-Follow the TUTORIAL.md for instructions on how to use deep_import.
-
-Once the full association API has been supported, batch loading should become seemless for a Rails developer.
 
 ##### Supported 
 - other= instance
