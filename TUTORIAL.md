@@ -8,12 +8,12 @@
 
 #### Purpose
 - used by Deep Import railtie
-- configurs the DeepImport enhancements to the applications Models
-- allows complex active-record associations
+- configurs what enhancements Deep Import makes to the applications Models
+- supports basic active-record associations
 	- has_many
 	- has_one
 	- belongs_to
-- allows efficient batched loading of nested data
+- allows transaction efficient batched loading of nested data
 
 #### Example Xml Batch Input of Nested Data
 
@@ -36,6 +36,7 @@
     </parents>
 
 #### Example config/deep_import.yml 
+Should be based on your data format.
 
     Parent:
      Children:
@@ -85,19 +86,21 @@ from lib/tasks/benchmark.rake
 Using the current belongs_to support you can load in any way you wish.
 from lib/tasks/benchmark.rake
 
-	# construct all the parents into an array/lookup container
+	# construct all the parents into a lookup container
 	parents = (0..1).collect {|i| Parent.new( :name => "#{i}" ) }
-	# then create children and collect them into a lookup container
+
+	# then create children and collect Children into a lookup container
 	children = (0..3).collect do |i| 
 		child = Child.new( :name => "#{i}" )
 		# setting their association randomly based on construction order
 		child.parent = parents[ i % 2 ]
 		child
 	end
+
 	# then create grandchildren
 	grand_children = (0..7).collect do |i|
 		grand_child = GrandChild.new( :name => "#{i}" ) 
-		# setting their child association radomly based on construction order
+		# set child association based on construction order
 		grand_child.child = children[ i % 4 ]
 		grand_child
 	end
