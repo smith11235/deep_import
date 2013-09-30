@@ -18,21 +18,21 @@
 #### Example Xml Batch Input of Nested Data
 
     <parents>
-  	  <parent name="Bill" >
-  		  <child name="Alice" />
-  		  <child name="Bob" >
-  	      <grand_child name="George" />
-  	      <grand_child name="Fred" />
-  	    </child>
-  		</parent>
-  		<parent name="Mary" >
-  			<child name="Mike" >
-  				<grand_child name="Wilma" />
-  			</child>
-  			<child name="Ike" >
-  				<grand_child name="Barney" />
-  			</child>
-  		</parent>
+     <parent name="Bill" >
+      <child name="Alice" />
+      <child name="Bob" >
+         <grand_child name="George" />
+         <grand_child name="Fred" />
+       </child>
+    </parent>
+    <parent name="Mary" >
+     <child name="Mike" >
+      <grand_child name="Wilma" />
+     </child>
+     <child name="Ike" >
+      <grand_child name="Barney" />
+     </child>
+    </parent>
     </parents>
 
 #### Example config/deep_import.yml 
