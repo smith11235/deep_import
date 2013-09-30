@@ -38,8 +38,9 @@ Benchmark
   * 27,930 objects for 30 x 30 x 30
 * Rake Task: deep_import:benchmark
   * defined in lib/deep_import/deep_import.rake[https://github.com/smith11235/deep_import/blob/master/lib/deep_import/deep_import.rake]
-* Results: (the 'real' column reflects the database transaction overhead)
 
+
+    * Results: (the 'real' column reflects the database transaction overhead)
     mysql running on remote server, time is in seconds
                    user     system      total        real
     10 x 10 x 10
