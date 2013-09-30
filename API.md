@@ -27,7 +27,7 @@ This is not where Deep Import is currently at.
 Deep Import can be used following a very specific, but friendly, pattern.
 Instructions for this can be found in TUTORIAL.md.
 
-Models for use in the examples
+Models used in the examples
 ------------------------------
 - Parent
 	- has_many: Children
