@@ -6,6 +6,8 @@ Deep Import
 * [TUTORIAL](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md)
 * [Association API](https://github.com/smith11235/deep_import/blob/master/API.md)
 * [Current Planned Features](https://github.com/smith11235/deep_import/blob/master/TODO.md)
+* Preliminary benchmark data below
+* Full interactive benchmark application is planned
 
 ===
 Transaction Analysis
