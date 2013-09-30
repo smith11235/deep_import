@@ -41,13 +41,13 @@ Benchmark
 * Results: (the 'real' column reflects the database transaction overhead)
 
     mysql running on remote server, time is in seconds
-                    user     system      total        real
+                   user     system      total        real
     10 x 10 x 10
-     deep_import:  4.650000   0.070000   4.720000 (  7.043655)
-         classic:  4.370000   0.260000   4.630000 (209.035913)
+    deep_import:  4.650000   0.070000   4.720000 (  7.043655)
+        classic:  4.370000   0.260000   4.630000 (209.035913)
     30 x 30 x 30
-     deep_import:  80.770000   0.980000  81.750000 ( 97.582577)
-         classic:  120.160000   7.850000 128.010000 (5264.665823) 
+    deep_import:  80.770000   0.980000  81.750000 ( 97.582577)
+        classic:  120.160000   7.850000 128.010000 (5264.665823) 
 
 Usage
 =====
