@@ -70,12 +70,14 @@ Model name formatting is based on active record [conventions](http://api.rubyonr
 	- ...it would have been simpler to just make an alternative API
 		- but not as easily used
 
-#### Sample Data Loader: Implicit Association Tracking
-- Depth First Odering 
+#### Sample Data Loader: Implicit Tracking
+- Until full API integration is finished this is implemented only through a hack
+	- illustrates simple code/process
+	- illustrates 'nested data' format
+- Depth First Odering Hack
 	- if you create a root object (a Parent)
 		- each Child created after is auto-assigned to the last root instance
-	- this is temporarily possible because of a hack
-		- eventual full integration with the Association api will replace this with a more robust solution
+	- full association API integration will replace this
 
 from lib/tasks/benchmark.rake
 
@@ -91,8 +93,8 @@ from lib/tasks/benchmark.rake
 	end
 	DeepImport.commit # save all models to database
 
-#### Sample Data Loader: Random Ordering Through Belongs To
-Using the current belongs_to support you can load in any way you wish.
+#### Sample Data Loader: Random Ordering: belongs_to
+Using the current belongs_to support you can load in any manner you wish.<br />
 from lib/tasks/benchmark.rake
 
 	# construct all the parents into a lookup container

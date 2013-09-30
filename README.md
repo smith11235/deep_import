@@ -4,6 +4,8 @@ Deep Import
 * Improved database transaction efficiency for large dataset loads
 * Allows standard active record syntax for developer familiarity
 * [TUTORIAL](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md)
+* [Association API](https://github.com/smith11235/deep_import/blob/master/API.md)
+* [Current Planned Features](https://github.com/smith11235/deep_import/blob/master/TODO.md)
 
 ===
 Transaction Analysis
@@ -18,6 +20,9 @@ Transaction Analysis
       - in M + B transactions
       - Where B is the number of belongs to relationships between the M model classes
       - M and B must be neglible compared to X for benefit
+			- using 2M records of space on the database
+				- association index created by DeepImport* models
+				- space is cheap, time is not
 
 ===
 Benchmark
