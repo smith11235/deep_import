@@ -16,6 +16,8 @@ Transaction Analysis
       - Product.new.save, @product.reviews.create
     activeRecord-import[https://github.com/zdennis/activerecord-import/wiki]:
       - X instances per transaction for 1 model class
+			- supports flat record formats
+			- doesnt support nested data well
     gem:DeepImport:
       - Load X instances of M model classes
       - in M + B transactions
