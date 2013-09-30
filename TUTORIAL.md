@@ -50,7 +50,7 @@ Each GrandChild belongs_to a Child.  Each Child belongs_to a Parent.
 Model name formatting is based on active record [conventions](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html)
 - Entries are expected in [CamelCase](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-camelize)
 
-- Root entry must be singular form.
+- Root entry must be [singular](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-singularize) form.
 - has_one relationships are represented in [singular](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-singularize) form.
 - has_many relationships are represented in [plural](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-pluralize) form.
 
@@ -62,7 +62,13 @@ They can be removed by running rake deep_import:teardown
 - run rake deep_import:setup anytime there are significant changes to the config
 
 #### Sample Data Loader: DFS ordering
-	- in lib/tasks/benchmark.rake
+Eventually support for has_many will make it so any data loading process will work.
+Until then a simple hack has been made that allows implicit association tracking using
+- Depth First Odering
+	- if you create a root object (a Parent)
+		- each Child created after is auto-assigned to the last root instance
+
+from lib/tasks/benchmark.rake
 		range = 4 # 5 parents, 25 children, 125 grand children 
 		(0..range).each do |parent_name|
 			parent = Parent.new( :name => parent_name.to_s ) # new, or build, not create
