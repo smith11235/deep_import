@@ -4,6 +4,7 @@ RC1:
 
 - TUTORIAL.md
 	- make sure example code uses faker
+
 	- all using Parent, Child, GrandChild
 	- build with code in rails app
 	- formats:
