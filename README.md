@@ -1,5 +1,5 @@
-===
 Deep Import
+===========
 * A gem for loading big data in Rails
 * Improved database transaction efficiency for large dataset loads
 * Allows standard active record syntax for developer familiarity
@@ -9,8 +9,8 @@ Deep Import
 * Preliminary benchmark data below
 * Full interactive benchmark application is planned
 
-===
 Transaction Analysis
+====================
 
     * when creating many models, database transaction costs are significant
     Standard Rails Model Instanct Creation: 
@@ -29,8 +29,8 @@ Transaction Analysis
   			- association index created by DeepImport* models
   			- space is cheap, time is not
 
-===
 Benchmark
+=========
 * Models are Parent, Child, Grandchild
   * defined in config/deep_import.yml (provided by application developer, not gem)
 * X Parents have X Children each and each Child has X GrandChildren
@@ -39,6 +39,7 @@ Benchmark
 * Rake Task: deep_import:benchmark
   * defined in lib/deep_import/deep_import.rake[https://github.com/smith11235/deep_import/blob/master/lib/deep_import/deep_import.rake]
 * Results: (the 'real' column reflects the database transaction overhead)
+
     mysql running on remote server, time is in seconds
                     user     system      total        real
     10 x 10 x 10
@@ -48,8 +49,8 @@ Benchmark
      deep_import:  80.770000   0.980000  81.750000 ( 97.582577)
          classic:  120.160000   7.850000 128.010000 (5264.665823) 
 
-===
 Usage
+=====
 - Gemfile:  "gem: 'deep_import', :git => 'git://github.com/smith11235/deep_import'"
 - create a config[https://github.com/smith11235/deep_import/blob/master/config/deep_import.yml] with your model architecture
 - rake deep_import:setup # to load the config and generate model enhancements
