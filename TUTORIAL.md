@@ -16,6 +16,7 @@
 - allows transaction efficient batched loading of nested data
 
 #### Example Xml Batch Input of Nested Data
+Provides a basis for your config/deep_import.yml
 
     <parents>
      <parent name="Bill" >
@@ -61,8 +62,8 @@ Model name formatting is based on active record [conventions](http://api.rubyonr
 - they are meant to be ignored by the user/developer
 - rerun any time the config has changes
 
-#### Sample Data Loader: DFS ordering
-- Depth First Odering
+#### Sample Data Loader: Implicit Association Tracking
+- Depth First Odering 
 	- if you create a root object (a Parent)
 		- each Child created after is auto-assigned to the last root instance
 	- this is temporarily possible because of a hack
@@ -82,7 +83,7 @@ from lib/tasks/benchmark.rake
 	end
 	DeepImport.commit # save all models to database
 
-#### Sample Data Loader: Random Ordering
+#### Sample Data Loader: Random Ordering Through Belongs To
 Using the current belongs_to support you can load in any way you wish.
 from lib/tasks/benchmark.rake
 
