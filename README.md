@@ -3,6 +3,7 @@ Deep Import
 * A gem for loading big data in Rails
 * Improved database transaction efficiency for large dataset loads
 * Allows standard active record syntax for developer familiarity
+* [TUTORIAL](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md)
 
 ===
 Transaction Analysis

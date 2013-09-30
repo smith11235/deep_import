@@ -3,14 +3,7 @@ RC1:
 - API.md: done, just review
 
 - TUTORIAL.md
-	- make sure example code uses faker
-
-	- all using Parent, Child, GrandChild
-	- build with code in rails app
-	- formats:
-		- belongs_to: solid
-		- dfs: unsafe but cool
-			- will be deprecated when api fully supported
+	- use faker for better benchmark/example
 
 - better README linking to things
 	- meant as quick description and show off

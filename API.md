@@ -34,6 +34,11 @@ Models used in the examples
 - Child
 	- belongs_to: Parent
 
+polymorphism
+------------
+Polymorphism, and any general aliasing or other special features in active record are still mainly unsupported.
+We'll get there.
+
 has_one And belongs_to
 ----------------------
 

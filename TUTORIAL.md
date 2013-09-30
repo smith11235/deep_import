@@ -7,41 +7,37 @@
 ### What is config/deep_import.yml
 
 #### Purpose
-- used by Deep Import railtie initialization plugin
-	- lib/deep_import/railtie.rb
-	- lib/deep_import/initializer.rb
-- specifies which models should be enhanced by Deep Import
-- defines has_one and has_many relationships
-	- using standard ActiveRecord model/table naming conventions
-- Allows implicit association tracking
-	- using very simple code
-	- current support is through a hack
-		- if models are loaded in DFS ordering
-	- eventual support will be through full API integration
+- used by Deep Import railtie
+- configurs the DeepImport enhancements to the applications Models
+- allows complex active-record associations
+	- has_many
+	- has_one
+	- belongs_to
+- allows efficient batched loading of nested data
 
 #### Example Xml Batch Input of Nested Data
-    <parents>
-		  <parent name="Bill" >
-			  <child name="Alice" />
-			  <child name="Bob" >
-		      <grand_child name="George" />
-		      <grand_child name="Fred" />
-		    </child>
-			</parent>
-			<parent name="Mary" >
-				<child name="Mike" >
-					<grand_child name="Wilma" />
-				</child>
-				<child name="Ike" >
-					<grand_child name="Barney" />
-				</child>
-			</parent>
-		</parents>
+  <parents>
+	  <parent name="Bill" >
+		  <child name="Alice" />
+		  <child name="Bob" >
+	      <grand_child name="George" />
+	      <grand_child name="Fred" />
+	    </child>
+		</parent>
+		<parent name="Mary" >
+			<child name="Mike" >
+				<grand_child name="Wilma" />
+			</child>
+			<child name="Ike" >
+				<grand_child name="Barney" />
+			</child>
+		</parent>
+  </parents>
 
 #### Example config/deep_import.yml 
-    Parent:
-     Children:
-      GrandChildren:
+  Parent:
+   Children:
+    GrandChildren:
 
 Each Parent has_many Children.  Each Child has_many GrandChildren.<br />
 Each GrandChild belongs_to a Child.  Each Child belongs_to a Parent.
@@ -55,18 +51,19 @@ Model name formatting is based on active record [conventions](http://api.rubyonr
 - has_many relationships are represented in [plural](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-pluralize) form.
 
 #### Running $ rake deep_import:setup
-Will generate several new migrations and models.
-These models create a shadow index to track the associations within your data.
-They can be removed by running rake deep_import:teardown
-- they are meant to be ignored by you
-- run rake deep_import:setup anytime there are significant changes to the config
+- runs rake deep_import:teardown
+- creates a DeepImport<model_name> model for each Model you have in the config
+	- these models create an association index in the background
+- rake deep_import:teardown can be used to remove them entirely at any time
+- they are meant to be ignored by the user/developer
+- rerun any time the config has changes
 
 #### Sample Data Loader: DFS ordering
-Eventually support for has_many will make it so any data loading process will work.
-Until then a simple hack has been made that allows implicit association tracking using
 - Depth First Odering
 	- if you create a root object (a Parent)
 		- each Child created after is auto-assigned to the last root instance
+	- this is temporarily possible because of a hack
+		- eventual full integration with the Association api will replace this with a more robust solution
 
 from lib/tasks/benchmark.rake
 
