@@ -9,7 +9,8 @@ Deep Import
 
 ===
 Transaction Analysis
-* when creating many models, database transaction costs are significant
+
+    * when creating many models, database transaction costs are significant
     Standard Rails Model Instanct Creation: 
       - 1 instance per transation
       - Product.new.save, @product.reviews.create
@@ -20,9 +21,9 @@ Transaction Analysis
       - in M + B transactions
       - Where B is the number of belongs to relationships between the M model classes
       - M and B must be neglible compared to X for benefit
-			- using 2M records of space on the database
-				- association index created by DeepImport* models
-				- space is cheap, time is not
+  		- using 2M records of space on the database
+  			- association index created by DeepImport* models
+  			- space is cheap, time is not
 
 ===
 Benchmark
