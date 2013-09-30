@@ -1,54 +1,40 @@
 ---
 RC1:
-- API.md
+- API.md: done, just review
+
+- correct enabling/disabling logic
+	- correct specs
+	- make it disabled by default
+
+- TUTORIAL.md
+	- all using Parent, Child, GrandChild
+	- build with code in rails app
+	- formats:
+		- belongs_to: solid
+		- dfs: unsafe but cool
+			- will be deprecated when api fully supported
+
+- better README linking to things
+	- meant as quick description and show off
+	- provide reference to TUTORIAL and API
+
 - benchmark profiling of many inputs, record outputs
 - view: display and explain benchmarks
 - view: family???
-- better README linking to things
-- TUTORIAL.md
-- belongs_to: remove dfs logic? is something there better?
-	- make it something enabled
-- correct enabling/disabling logic
-	- make it disabled by default
-- is this tested:
-	- in API.md
-		- create_other( attributes = {} ) # disable # done
-		- create_other!( attributes = {} ) # disable # done
+
 
 ---
-belongs_to helpers:
-- *** remove dfs logic
-	- start with parent method
+- remove dfs logic when api fully supported
+- develop support for has_many
+	- follow progress in API.md
+- save: raise error, or print warning silently depending on setting
+	- nested construction:
+	- child = parent.children.build
+	- hook into has_many/one association helpers
+	- call belongs_to logic
 
-	- api: 
-		- child.parent = random_parent
-			- benchmark/associations
-					- for each model with has_many:
-						- others<< 
-						- others.push  
-						- others.concat 
-						- others.build  
-						- others.create # use build
-						- others.create! # use build
-						- disable:
-							- others=(other,other,...) # not implemented yet
-							- other_ids=  # not relevant with deep_import
-							- .clear
-							- .delete
-							- .delete_all
-							- .destroy
-							- .destroy_all
-							- .reset
-
-		- save: raise error, or print warning silently depending on setting
-
-		- nested construction:
-			- child = parent.children.build
-				- hook into has_many/one association helpers
-				- call belongs_to logic
-
-			- child = parent.children.create 
-				- call build
+- child = parent.children.create 
+- call build
 					- override method definition on model
 
 			- http://errtheblog.com/posts/18-accessor-missing

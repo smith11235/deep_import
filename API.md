@@ -8,21 +8,16 @@ This means anything supporting:
 - has_one
 - belongs_to
 
-For the method listings below consider the following models:
-- Parent
-	- has_many: Children
-- Child
-	- belongs_to: Parent
+Design Goals
+------------
+- The goal of Deep Import is a seemless integration with the standard Rails/ActiveRecord Association logic.
 
-Goals
------
-The goal of Deep Import is a seemless integration with the standard Rails/ActiveRecord Association logic.
+- By integrating within the Association logic we eliminate the need for a developer to learn a new pattern or new API.
+- Code that utilizes the Deep Import functionality will be easily understood by any Rails developer.
 
-By integrating within the Association logic we eliminate the need for a developer to learn a new pattern or new API.
-Code that utilizes the Deep Import functionality will be easily understood by any Rails developer.
-In some scenarios, an existing codebase could theorhetically utilize Deep Import without any modifications.
+- In some scenarios, an existing codebase could theorhetically utilize Deep Import without any modifications.
 
-What has been developed has been in conjunction with RSpec examples, in the standard spec/ location.
+- What has been developed has been in conjunction with RSpec examples, in the standard spec/ location.
 
 Supported Usage
 ---------------
@@ -32,27 +27,40 @@ This is not where Deep Import is currently at.
 Deep Import can be used following a very specific, but friendly, pattern.
 Instructions for this can be found in TUTORIAL.md.
 
+Models for use in the examples
+------------------------------
+- Parent
+	- has_many: Children
+- Child
+	- belongs_to: Parent
+
 has_one And belongs_to
 ----------------------
 
-##### Supported 
-- other= instance
-- build_other( attributes = {} ) 
-- create_other( attributes = {} ) # disabled
-- create_other!( attributes = {} ) # disabled
+##### Supported: has_one perspective
+- parent.child= 
+- parent.build_child( attributes = {} ) 
+- parent.create_child( attributes = {} ) # disabled
+- parent.create_child!( attributes = {} ) # disabled
+
+##### Supported: belongs_to perspective
+- child.parent= 
+- child.build_parent( attributes = {} ) 
+- child.create_parent( attributes = {} ) # disabled
+- child.create_parent!( attributes = {} ) # disabled
 
 These are overridden by calling 'method_override' and redefining the methods.
 
 has_many
 --------
 ##### Saddly still unsupported
-i have not found the trick yet, but I know I am close
+I have not found the trick yet, but I know I am close.
 - parent.children.build: in development
-- parent.childrens.create(!): redirect through build
-- parent.childrens.push: add support logic
-- parent.childrens<<: add support logic
-- parent.childrens.concat: add support logic
-- parent.childrens=(other,other,...): add support logic
+- parent.children.create(!): redirect through build
+- parent.children.push: add support logic
+- parent.children<<: add support logic
+- parent.children.concat: add support logic
+- parent.children=(other,other,...): add support logic
 - parent.children_ids=   
 - parent.children.clear 
 - parent.children.delete 
