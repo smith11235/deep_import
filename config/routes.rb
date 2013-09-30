@@ -1,5 +1,6 @@
 DeepImport::Application.routes.draw do
   get "family/index"
+	get "family/markdown"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

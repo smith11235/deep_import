@@ -239,7 +239,7 @@ has_one AND belongs_to
 					# this is called after new and find, we want to check if this really is new
 					return unless self.new_record? # if its a preexisting model
 					return unless self.deep_import_id.nil? # if it already has a deep import id
-					return unless ENV["disable_deep_import"].nil? # if deep_import functionality is disabled
+					return if DeepImport.after_initialization_disabled? # if deep_import functionality is disabled
 					# add this new instance to the cache
 					DeepImport::ModelsCache.add( self )
 				end

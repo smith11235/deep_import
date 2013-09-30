@@ -32,8 +32,8 @@ describe "DeepImport::ModelLogic" do
 			%w( belongs_to has_one ).each do |association_type|
 				describe association_type do
 					# currently disabled
-					it "should override create_other"
-					it "should override create_other!"
+					it "should prevent create_other"
+					it "should prevent create_other!"
 					# enabled
 					it "should override other=" # tags correct model with ownership
 					it "should override build" # creates model with attributes, tagged with ownership
