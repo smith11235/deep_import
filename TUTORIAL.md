@@ -16,6 +16,7 @@
 - allows efficient batched loading of nested data
 
 #### Example Xml Batch Input of Nested Data
+
   <parents>
 	  <parent name="Bill" >
 		  <child name="Alice" />
@@ -35,6 +36,7 @@
   </parents>
 
 #### Example config/deep_import.yml 
+
   Parent:
    Children:
     GrandChildren:
