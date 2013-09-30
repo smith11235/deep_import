@@ -8,6 +8,17 @@ module DeepImport
 	mattr_accessor :settings 
 	@@settings = { :migration_name => "AddDeepImportEnhancements" }
 
+	def self.railtie_disabled?
+		disabled = ! ENV["deep_import_disable_railtie"].nil?
+		puts "DeepImport.disabled? #{disabled}"
+		puts "To Disable: deep_import_disable_railtie=true"
+		disabled
+	end
+
+	def self.after_initialization_disabled?
+		! ENV["disable_deep_import"].nil?
+	end
+
 	# root code directory
 	root = File.dirname( File.expand_path( __FILE__ ) )
 	root = File.join root, "deep_import"

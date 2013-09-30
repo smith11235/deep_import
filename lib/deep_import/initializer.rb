@@ -3,8 +3,7 @@ module DeepImport
 	module Initializer
 		def self.setup
 			# complete removal of deep_import background logic logic
-			if ENV["deep_import_disable_railtie"] # if it's defined to anything, we dont do anything
-				puts "(#{DateTime.now}) DeepImport: ENV[deep_import_disable_railtie] is set, exiting without loading deep_import".red
+			if DeepImport.railtie_disabled?
 				return
 			end
 

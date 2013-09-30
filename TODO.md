@@ -2,20 +2,6 @@
 RC1:
 - API.md: done, just review
 
-- correct enabling/disabling logic
-	- ENV references to DeepImport.enabled?
-		- initializer.rb
-			if ENV["deep_import_disable_railtie"] # if it's defined to anything, we dont do anything
-			puts "(#{DateTime.now}) DeepImport: ENV[deep_import_disable_railtie] is set, exiting without loading deep_import".red
-
-		- model_logic.rb 
- 			return unless ENV["disable_deep_import"].nil? # if deep_import functionality is disabled
-		- tasks.rake
-		  ENV["deep_import_disable_railtie"] = "1"
-
-	- correct specs
-	- make it disabled by default
-
 - TUTORIAL.md
 	- make sure example code uses faker
 	- all using Parent, Child, GrandChild
