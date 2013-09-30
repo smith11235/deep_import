@@ -69,14 +69,34 @@ Until then a simple hack has been made that allows implicit association tracking
 		- each Child created after is auto-assigned to the last root instance
 
 from lib/tasks/benchmark.rake
-		range = 4 # 5 parents, 25 children, 125 grand children 
-		(0..range).each do |parent_name|
-			parent = Parent.new( :name => parent_name.to_s ) # new, or build, not create
-			(0..range).each do |child_name|
-				child = parent.children.new( :name => child_name.to_s )
-				(0..range).each do |grand_child_name|
-					grand_child = child.grand_children.new( :name => grand_child_name.to_s )
-				end
+
+	range = 4 # 5 parents, 25 children, 125 grand children 
+	(0..range).each do |parent_name|
+		parent = Parent.new( :name => parent_name.to_s ) # new, or build, not create
+		(0..range).each do |child_name|
+			child = parent.children.new( :name => child_name.to_s )
+			(0..range).each do |grand_child_name|
+				grand_child = child.grand_children.new( :name => grand_child_name.to_s )
 			end
 		end
-		DeepImport.commit # save all models to database
+	end
+	DeepImport.commit # save all models to database
+
+#### Sample Data Loader: Random Ordering
+Using the current belongs_to support you can load in any way you wish.
+from lib/tasks/benchmark.rake
+
+	parents = (0..1).collect {|i| Parent.new( :name => "#{i}" ) }
+	children = (0..3).collect do |i| 
+		child = Child.new( :name => "#{i}" )
+		child.parent = parents[ i % 2 ]
+		child
+	end
+
+	grand_children = (0..7).collect do |i|
+		grand_child = GrandChild.new( :name => "#{i}" ) 
+		grand_child.child = children[ i % 4 ]
+		grand_child
+	end
+
+	DeepImport.commit # save all models to database
