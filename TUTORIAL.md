@@ -1,19 +1,34 @@
 # Tutorial
 
-### Install Deep Import Gem
+#### Code Robustness/RSpec
+- RSpec/BDD is the development process being used.
+- There are currently 170 specifications, with many more planned.
+
+    Finished in 32.74 seconds
+    170 examples, 0 failures, 29 pending
+
+#### Install Deep Import Gem
 
 - gem deep_import, :git => 'smith11235/deep_import'
 
-### What is config/deep_import.yml
-
-#### Purpose
-- used by Deep Import railtie
-- configurs what enhancements Deep Import makes to the applications Models
+#### What is config/deep_import.yml
+- a yaml formatted file of model names involved in batch import process
+- used by Deep Import railtie to configure the rails application models
 - supports basic active-record associations
 	- has_many
 	- has_one
 	- belongs_to
-- allows transaction efficient batched loading of nested data
+- structure should be based on data input format
+
+#### Example config/deep_import.yml 
+Should be based on your data format.
+
+    Parent:
+     Children:
+      GrandChildren:
+
+Each Parent has_many Children.  Each Child has_many GrandChildren.<br />
+Each GrandChild belongs_to a Child.  Each Child belongs_to a Parent.
 
 #### Example Xml Batch Input of Nested Data
 Provides a basis for your config/deep_import.yml
@@ -36,15 +51,6 @@ Provides a basis for your config/deep_import.yml
       </parent>
     </parents>
 
-#### Example config/deep_import.yml 
-Should be based on your data format.
-
-    Parent:
-     Children:
-      GrandChildren:
-
-Each Parent has_many Children.  Each Child has_many GrandChildren.<br />
-Each GrandChild belongs_to a Child.  Each Child belongs_to a Parent.
 
 #### Config Syntax Explanation
 Model name formatting is based on active record [conventions](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html)
@@ -54,13 +60,17 @@ Model name formatting is based on active record [conventions](http://api.rubyonr
 - has_one relationships are represented in [singular](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-singularize) form.
 - has_many relationships are represented in [plural](http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-pluralize) form.
 
-#### Running $ rake deep_import:setup
-- runs rake deep_import:teardown
-- creates a DeepImport<model_name> model for each Model you have in the config
-	- these models create an association index in the background
-- rake deep_import:teardown can be used to remove them entirely at any time
-- they are meant to be ignored by the user/developer
-- rerun any time the config has changes
+#### rake deep_import:setup && rake deep_import:teardown
+- setup
+	- creates a DeepImport<model_name> model for each Model in config/deep_import.yml 
+		- these are responsible for the model association tracking
+		- meant to be ignored by the user, background items
+	- generates a single migration
+	- runs teardown as a prerequisite
+	- rerun any time the config has changed
+- teardown
+	- removes DeepImport* models
+	- removes DeepImport migration
 
 #### Emphasis on Developer Code Familiarity
 - Rails is based on convention over configuration
