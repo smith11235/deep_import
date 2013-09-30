@@ -4,8 +4,8 @@
 - RSpec/BDD is the development process being used.
 - There are currently 170 specifications, with many more planned.
 
-    Finished in 32.74 seconds
-    170 examples, 0 failures, 29 pending
+	Finished in 32.74 seconds
+	170 examples, 0 failures, 29 pending
 
 #### Install Deep Import Gem
 
