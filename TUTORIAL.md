@@ -66,8 +66,9 @@ Model name formatting is based on active record [conventions](http://api.rubyonr
 - Rails is based on convention over configuration
 - Any developer should be able to understand any Rails code
 - As such, Deep Import is built within the Active Record Association api
-	- providing a seamless interface to batch loading to the everyday Rails developer
-	- in contrast to providing an alternative API
+	- provides a familiar coding process for the everyday Rails developer
+	- ...it would have been simpler to just make an alternative API
+		- but not as easily used
 
 #### Sample Data Loader: Implicit Association Tracking
 - Depth First Odering 
