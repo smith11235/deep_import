@@ -1,6 +1,5 @@
 ---
 RC1:
-- API.md: done, just review
 - benchmark profiling of many inputs, record outputs
   - (0..10), use same for each level
   - collect results to a yaml file
