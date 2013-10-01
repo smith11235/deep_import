@@ -1,16 +1,12 @@
 ---
 RC1:
 - API.md: done, just review
-
-- TUTORIAL.md
-	- use faker for better benchmark/example
-
-- better README linking to things
-	- meant as quick description and show off
-	- provide reference to TUTORIAL and API
-
 - benchmark profiling of many inputs, record outputs
-- view: display and explain benchmarks
+  - (0..10), use same for each level
+  - collect results to a yaml file
+  - add link to yaml in README
+- view: display yaml file and explain benchmarks
+  - add link to this in README
 - view: family???
 
 
