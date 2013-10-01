@@ -1,26 +1,58 @@
 Deep Import
 ===========
-* A gem for loading big data in Rails
-* Improved database transaction efficiency for large dataset loads
-* Allows standard active record syntax for developer familiarity
+
+#### Problem
+When importing:
+* many models
+* with many associations between them
+* using standard Rails syntax
+
+##### transaction costs become prohibitive
+
+ORM's in general suffer from prohibitive wrapper costs when applied to large data sets.
+* some avoid them for this reason alone
+Rails/ActiveRecord are efficient developer tools.
+* abandoning them has other costs
+
+#### Idea
+* Provide an enhancement to Rails to support efficient mass data loading.
+* Keep it familiar so any developer can pick it up and understand it.
+* Deep Import in no way solves every problem, but it solves a problem.
+
+#### Pior Work
+A commonly found solution is [activerecord-import](https://github.com/zdennis/activerecord-import)<br />
+* DeepImport is built using this.  
+Much Thanks.
+
+#### Self
+* Deep Import is a gem for mass importing of multiple models with associations.
+* Deep Import is built within the Associations API providing a seamless developer experience
+* Deep Import reduces the transaction costs of communicating with a database
+  * by temporarily increasing the space used for representing your models
 * [TUTORIAL](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md)
 * [Association API](https://github.com/smith11235/deep_import/blob/master/API.md)
 * [Current Planned Features](https://github.com/smith11235/deep_import/blob/master/TODO.md)
-* Preliminary benchmark data below
-* Full interactive benchmark application is planned
+* Preliminary Benchmark data below, more to follow
 
 Transaction Analysis
 ====================
 
-    * when creating many models, database transaction costs are significant
-    Standard Rails Model Instanct Creation: 
+Each model created with Model.new.save causes 1 transaction with the database.
+When creating many models, transaction costs become significant.
+
+Standard Rails Model Instance Creation: 
+
       - 1 instance per transation
       - Product.new.save, @product.reviews.create
-    activeRecord-import[https://github.com/zdennis/activerecord-import/wiki]:
+
+[activeRecord-import](https://github.com/zdennis/activerecord-import/wiki):
+
       - X instances per transaction for 1 model class
 			- supports flat record formats
 			- doesnt support nested data well
-    gem:DeepImport:
+
+DeepImport:
+
       - Load X instances of M model classes
       - in M + B transactions
       - Where B is the number of belongs to relationships between the M model classes
@@ -39,8 +71,8 @@ Benchmark
 * Rake Task: deep_import:benchmark
   * defined in lib/deep_import/deep_import.rake[https://github.com/smith11235/deep_import/blob/master/lib/deep_import/deep_import.rake]
 
+Results: (the 'real' column reflects the database transaction overhead)
 
-    * Results: (the 'real' column reflects the database transaction overhead)
     mysql running on remote server, time is in seconds
                    user     system      total        real
     10 x 10 x 10
@@ -50,6 +82,7 @@ Benchmark
     deep_import:  80.770000   0.980000  81.750000 ( 97.582577)
         classic:  120.160000   7.850000 128.010000 (5264.665823) 
 
+#####Thats 50 TIMES FASTER for a 27,000 object load
 Usage
 =====
 - Gemfile:  "gem: 'deep_import', :git => 'git://github.com/smith11235/deep_import'"
