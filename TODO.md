@@ -1,17 +1,12 @@
 ---
 RC1:
 - benchmark profiling of many inputs, record outputs
-  - (0..10), use same for each level
-  - collect results to a yaml file
-  - add link to yaml in README
+	- expose .dat file to git 
 
-- benchmarking needs to run in two environments:
-	- script/benchmark.sh: add to readme
-
-- view: display yaml file and explain benchmarks
-  - add link to this in README
-- view: family???
-
+- view: 
+	- family/benchmarks
+  	- add link to this in README
+		- show parsed tmp/benchmarks.dat
 
 ---
 - remove dfs logic when api fully supported
