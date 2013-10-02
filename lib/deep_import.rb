@@ -10,8 +10,8 @@ module DeepImport
 
 	def self.railtie_disabled?
 		disabled = ! ENV["deep_import_disable_railtie"].nil?
-		puts "DeepImport.disabled? #{disabled}"
-		puts "To Disable: deep_import_disable_railtie=true"
+		# puts "DeepImport.disabled? #{disabled}"
+		# puts "To Disable: deep_import_disable_railtie=true"
 		disabled
 	end
 
@@ -26,6 +26,6 @@ module DeepImport
 	%w( config setup teardown model_logic models_cache commit initializer railtie ).each do |file|
 		require File.join( root, file )
 	end
-			
+
 
 end

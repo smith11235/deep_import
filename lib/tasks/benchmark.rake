@@ -1,71 +1,54 @@
-require 'benchmark'
-
-desc "Associations Examples"
-task :associations => :environment do
-
-	# construct all the parents into an array/lookup container
-	parents = (0..1).collect {|i| Parent.new( :name => "#{i}" ) }
-	# then create children and collect them into a lookup container
-	children = (0..3).collect do |i| 
-		child = Child.new( :name => "#{i}" )
-		# setting their association randomly based on construction order
-		child.parent = parents[ i % 2 ]
-		child
-	end
-	# then create grandchildren
-	grand_children = (0..7).collect do |i|
-		grand_child = GrandChild.new( :name => "#{i}" ) 
-		# setting their child association radomly based on construction order
-		grand_child.child = children[ i % 4 ]
-		grand_child
-	end
-	DeepImport.commit # save all models to database
-
+require 'benchmark_deep_import.rb'
+def construct_and_return_tasks 
+	# collect the list of tasks if benchmark_deep_import is called
+	task_list = if ENV["RANGE"] # everything depends on if this is set 
+								benchmark_range = ENV["RANGE"]
+								raise "Invalid BENCHMARK_RANGE, expecting an integer, not '#{benchmark_range}'" unless benchmark_range =~ /^\d+$/
+								benchmark_range = benchmark_range.to_i # convert it to an integer
+								puts "Benchmark Range: #{benchmark_range}"
+								[ :environment ] + generate_benchmark_tasks( benchmark_range )
+							else
+								[:usage] 
+							end
+	task_list
 end
 
-desc "Build a fake dataset with and without deep_import"
-task :benchmark => :environment do
-	ENV["RANGE"] ||= "4" # creates range * range * range models
-	['deep_import','standard_import'].each do |task|
-		# clear database for uniform initial conditions
-		Rake::Task["db:reset"].reenable
-		Rake::Task["db:reset"].invoke
-		puts "#{task}: #{Benchmark.measure { Rake::Task["benchmark:#{task}"].invoke } }"
-	end
+def generate_benchmark_tasks( range )
+	# collect the statistics from 1 - benchmark_range
+	(1..range).collect { |range| generate_task_for_range( range ) }
 end
 
-namespace :benchmark do
-	desc "Example Data Set Creation With Deep Import"
-	task :deep_import => :environment do
-		DeepImport.logger = Logger.new(STDOUT)
-		range = ( ENV["RANGE"] || "1" ).to_i
+def generate_task_for_range( range )
+	task_name = "benchmark_deep_import_#{range}".to_sym
 
-		(0..range).each do |parent_name|
-			parent = Parent.new( :name => parent_name.to_s ) # new, or build, not create
-			(0..range).each do |child_name|
-				child = parent.children.new( :name => child_name.to_s )
-				(0..range).each do |grand_child_name|
-					grand_child = child.grand_children.new( :name => grand_child_name.to_s )
-				end
-			end
-		end
-		DeepImport.commit # save all models to database
+	task task_name do
+		puts "Running: #{task_name}"
+		BenchmarkDeepImport.new.benchmark( range )
 	end
 
-	desc "Example Rails Standard Syntax Import Without Deep Import"
-	task :standard_import => :environment do
-		ENV["disable_deep_import"] = "1" 
-		range = ( ENV["RANGE"] || "1" ).to_i
+	task_name
+end
 
-		(0..range).each do |parent_name|
-			parent = Parent.create!( :name => parent_name.to_s ) # create instead of build
-			(0..range).each do |child_name|
-				child = parent.children.create!( :name => child_name.to_s )
-				(0..range).each do |grand_child_name|
-					grand_child = child.grand_children.create!( :name => grand_child_name )
-				end
-			end
-		end
-	end
 
+# construct and return the list of tasks to be run if benchmarking is executed
+task_list = construct_and_return_tasks
+puts "Tasks: #{task_list.to_yaml}"
+
+desc "Run Benchmark testing for deep import"
+task :benchmark => task_list do
+	puts "Check Out: tmp/benchmarks.yml"
+end
+
+task :usage do
+	puts 
+	puts "Usage:"
+	puts
+	puts "rake benchmark RANGE=INTEGER"
+	puts "- RANGE = profile from 1..RANGE"
+	puts "  Parents x Children x Grandchildren = RANGE + RANGE^2 + RANGE^3 models loaded"
+	puts
+end
+
+task :enable_benchmarking do
+	ENV["ENABLE_DEEP_IMPORT_BENCHMARK"] = "1"
 end

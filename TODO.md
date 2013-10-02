@@ -4,6 +4,10 @@ RC1:
   - (0..10), use same for each level
   - collect results to a yaml file
   - add link to yaml in README
+
+- benchmarking needs to run in two environments:
+	- script/benchmark.sh: add to readme
+
 - view: display yaml file and explain benchmarks
   - add link to this in README
 - view: family???

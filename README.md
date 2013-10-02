@@ -18,10 +18,12 @@ In Rails, when importing:
 * Deep Import reduces the transaction costs of communicating with a database
   * by temporarily increasing the space used for representing your models
 * Deep Import is built within Rails to prevent developers from learning a new API
-* [TUTORIAL](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md)
+* [Tutorial](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md)
 * [Association API](https://github.com/smith11235/deep_import/blob/master/API.md)
-* [Current Planned Features](https://github.com/smith11235/deep_import/blob/master/TODO.md)
+* [TODO](https://github.com/smith11235/deep_import/blob/master/TODO.md)
 * Preliminary Benchmark data below, more to follow
+	* sh script/benchmark.sh RANGE=2
+	* cat tmp/benchmarks.dat
 
 #### How Fast Is Fast
 Rails will never be as fast as the perfect c++ data importer<br />
@@ -64,8 +66,9 @@ Benchmark
 * X Parents have X Children each and each Child has X GrandChildren
   *  1,110 objects for 10 x 10 x 10 
   * 27,930 objects for 30 x 30 x 30
-* Rake Task: deep_import:benchmark
+* Rake Task: benchmark
   * defined in [lib/deep_import/deep_import.rake](https://github.com/smith11235/deep_import/blob/master/lib/deep_import/deep_import.rake)
+	* execute as: $ rake benchmark BENCHMARK_RANGE=5 # loops from 0..$BENCHMARK_RANGE
 
 Results: (the 'real' column reflects the database transaction overhead)
 
