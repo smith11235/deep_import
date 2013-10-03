@@ -65,7 +65,7 @@ Benchmark Testing
 	* raw data: [public/benchmarks_30.dat](https://github.com/smith11235/deep_import/blob/master/public/benchmarks_30.dat)
 
 Results: (the 'real' column reflects the database transaction overhead)<br />
-[Better Results](twostepsleftofnormal.com:31234)<br />
+[More Results](http://twostepsleftofnormal.com:31234/)
 
     mysql running on remote server, time is in seconds
                    user     system      total        real
