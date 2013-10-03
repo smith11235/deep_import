@@ -1,14 +1,39 @@
-<h1>Family: A Deep Import Example</h1>
+<h1>Benchmarks of elapsed time for standard rails vs deep import data loads</h1>
+This is where the magic is<br />
+
+<%= link_to 'Raw Benchmark Data', 'benchmarks_30.dat' %><br />
+
+Benchmarks were taken using the ruby 'benchmarks' library.<br />
+The two most important times returned by benchmarks for how Deep Import works are 'total time' and 'elapsed time'.<br />
+<br >
+<b>Total Time</b> System processing time, the time your local machine spent working for you<br />
+<b>Elapsed Time</b> Total time to a human user that has passed.  This is the local time, and the remote time.  IE: database transactions<br />
+
+<table border="1" >
+	<tr>
+		<% @fields.keys.each do |field| %>
+			<th><%= @fields[field] %></th>
+		<% end %>
+	</tr>
+	<% @benchmarks.each do |benchmark| %>
+		<tr>
+			<% @fields.keys.each do |field| %>
+				<td><%= benchmark[field] %></td>
+			<% end %>
+		</tr>
+	<% end %>
+</table>
+
+<h2>(debug)Markdown parser for development</h2>
 <%= link_to 'markdown', family_markdown_url %>
 
-
-<h1>Current Families</h1>
+<h1>(debug)Family: A Deep Import Example</h1>
 <table border="1" >
 	<tr>
 		<th>Parent</th>
 		<th>Children</th>
 	</tr>
-	<% Parent.all.each_with_index do |parent,p| %>
+	<% [ Parent.first ].each_with_index do |parent,p| %>
 		<tr>
 			<td style="background-color:<%= p % 2 == 0 ?  'red' : 'green' %>" >
 				<%= parent.name %>
@@ -26,9 +51,9 @@
 							</td>
 							<td>
 								<table border="1" >
-								<tr>
-									<th>GrandChild</th>
-								</tr>
+									<tr>
+										<th>GrandChild</th>
+									</tr>
 									<% child.grand_children.each_with_index do |grand_child,gc| %>
 										<tr>
 											<td style="background-color:<%= gc % 2 == 0 ?  'red' : 'green' %>" >

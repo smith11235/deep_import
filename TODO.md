@@ -1,13 +1,11 @@
 ---
 RC1:
-- benchmark profiling of many inputs, record outputs
-  - (0..10), use same for each level
-  - collect results to a yaml file
-  - add link to yaml in README
-- view: display yaml file and explain benchmarks
+- view: 
+	- family/benchmarks
+		- parse data, show in raw table
+		- get morris gem? show chart of standard vs rails
+		- upgrade to data tables
   - add link to this in README
-- view: family???
-
 
 ---
 - remove dfs logic when api fully supported
