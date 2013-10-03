@@ -9,6 +9,18 @@ The two most important times returned by benchmarks for how Deep Import works ar
 <b>Total Time</b> System processing time, the time your local machine spent working for you<br />
 <b>Elapsed Time</b> Total time to a human user that has passed.  This is the local time, and the remote time.  IE: database transactions<br />
 
+<% require 'googlecharts' %>
+<image src="<%= Gchart.line_xy(
+								:size => "600x400",
+								:title => "Standard Rails vs Deep Import",
+								:bar_colors => 'FF0000,00FF00',
+								:stacked => false,
+								:legend => ["Standard Rails", "Deep Import"],
+								:axis_with_labels => "x,y",
+								:axis_labels => [ @model_counts.collect {|count| count/100 } ],
+								:data => [@elapsed_times[:standard_rails], @elapsed_times[:deep_import]]
+) %>" />
+
 <table border="1" >
 	<tr>
 		<% @fields.keys.each do |field| %>

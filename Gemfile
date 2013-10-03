@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gemspec
+gem "googlecharts"
 
 # Bundle edge Rails instead:
 gem 'rails'
