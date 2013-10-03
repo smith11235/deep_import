@@ -21,14 +21,6 @@ In Rails, when importing:
 * [Tutorial](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md)
 * [Association API](https://github.com/smith11235/deep_import/blob/master/API.md)
 * [TODO](https://github.com/smith11235/deep_import/blob/master/TODO.md)
-* Preliminary Benchmark data below, more to follow
-	* sh script/benchmark.sh RANGE=2
-	* cat tmp/benchmarks.dat
-
-#### How Fast Is Fast
-Rails will never be as fast as the perfect c++ data importer<br />
-But how often do you have time to configure perfect c++?<br />
-Deep Import attempts to make average bulk data loading fast enough for Rails developers<br />
 
 Transaction Analysis
 ====================
@@ -59,16 +51,17 @@ Causes 1 transaction with the database.
   			- association index created by DeepImport* models
   			- space is cheap, time is not
 
-Benchmark
-=========
+Benchmark Testing
+=================
 * Models are Parent, Child, Grandchild
-  * defined in config/deep_import.yml (provided by application developer, not gem)
-* X Parents have X Children each and each Child has X GrandChildren
-  *  1,110 objects for 10 x 10 x 10 
-  * 27,930 objects for 30 x 30 x 30
-* Rake Task: benchmark
-  * defined in [lib/deep_import/deep_import.rake](https://github.com/smith11235/deep_import/blob/master/lib/deep_import/deep_import.rake)
-	* execute as: $ rake benchmark BENCHMARK_RANGE=5 # loops from 0..$BENCHMARK_RANGE
+	* app/models/*.rb
+* Benchmark Data:
+	* sh script/benchmark.sh RANGE=30
+		* Generates Import Models: 
+			* RANGE = number of Parents
+			* RANGE^2 = number of Children (each Parent has RANGE Children)
+			* RANGE^3 = number of GrandChildren (each Child has RANGE GrandChildren)
+	* raw data: [public/benchmarks_30.dat](https://github.com/smith11235/deep_import/blob/master/public/benchmarks_30.dat)
 
 Results: (the 'real' column reflects the database transaction overhead)
 
@@ -82,6 +75,13 @@ Results: (the 'real' column reflects the database transaction overhead)
         classic:  120.160000   7.850000 128.010000 (5264.665823) 
 
 #####Thats 50 TIMES FASTER for a 27,000 object load
+
+#### How Fast Is Fast
+Rails will never be as fast as the perfect c++ data importer<br />
+But how often do you have time to configure perfect c++?<br />
+Deep Import attempts to make average bulk data loading fast enough for Rails developers<br />
+
+
 Usage
 =====
 - Read [TUTORIAL.md](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md) for explanations and examples
@@ -92,3 +92,10 @@ Usage
 - rake [deep_import:benchmark:deep_import](https://github.com/smith11235/deep_import/blob/master/lib/deep_import/deep_import.rake) # for sample batch load code
   - review code, use .new, .build, dont use .save, .create
   - add a DeepImport.commit call at the end of your loader
+
+#### Code Robustness/RSpec
+- RSpec/BDD is the development process being used.
+- There are currently 170 specifications, with many more planned.
+
+    Finished in 32.74 seconds
+    170 examples, 0 failures, 29 pending

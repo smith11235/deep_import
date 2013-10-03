@@ -6,26 +6,13 @@ Generally covered are the methods ActiveReocrd provides for associations.
 This means anything supporting:
 - has_many
 - has_one
-- belongs_to
-
-Design Goals
-------------
-- The goal of Deep Import is a seemless integration with the standard Rails/ActiveRecord Association logic.
-
-- By integrating within the Association logic we eliminate the need for a developer to learn a new pattern or new API.
-- Code that utilizes the Deep Import functionality will be easily understood by any Rails developer.
-
-- In some scenarios, an existing codebase could theorhetically utilize Deep Import without any modifications.
-
-- What has been developed has been in conjunction with RSpec examples, in the standard spec/ location.
+- belongs_to 
 
 Supported Usage
 ---------------
 The goal is complete coverage of the Association api to provide complete confidence to Deep Import users.
-This is not where Deep Import is currently at.
-
-Deep Import can be used following a very specific, but friendly, pattern.
-Instructions for this can be found in TUTORIAL.md.
+* Currently only belongs_to associations work
+Instructions for DeepImport and belongs_to import patterns can be found in TUTORIAL.md.
 
 Models used in the examples
 ------------------------------
@@ -34,10 +21,9 @@ Models used in the examples
 - Child
 	- belongs_to: Parent
 
-polymorphism
+polymorphism 
 ------------
-Polymorphism, and any general aliasing or other special features in active record are still mainly unsupported.
-We'll get there.
+Unsupported currently.
 
 has_one And belongs_to
 ----------------------

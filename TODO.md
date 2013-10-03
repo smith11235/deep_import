@@ -1,12 +1,11 @@
 ---
 RC1:
-- benchmark profiling of many inputs, record outputs
-	- expose .dat file to git 
-
 - view: 
 	- family/benchmarks
-  	- add link to this in README
-		- show parsed tmp/benchmarks.dat
+		- parse data, show in raw table
+		- get morris gem? show chart of standard vs rails
+		- upgrade to data tables
+  - add link to this in README
 
 ---
 - remove dfs logic when api fully supported
