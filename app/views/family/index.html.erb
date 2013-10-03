@@ -1,6 +1,8 @@
 <h1>Family: A Deep Import Example</h1>
-<%= link_to 'markdown', family_markdown_url %>
 
+<%= link_to 'benchmarks', 'benchmarks_30.dat' %>
+
+<%= link_to 'markdown', family_markdown_url %>
 
 <h1>Current Families</h1>
 <table border="1" >
@@ -8,7 +10,7 @@
 		<th>Parent</th>
 		<th>Children</th>
 	</tr>
-	<% Parent.all.each_with_index do |parent,p| %>
+	<% [ Parent.first ].each_with_index do |parent,p| %>
 		<tr>
 			<td style="background-color:<%= p % 2 == 0 ?  'red' : 'green' %>" >
 				<%= parent.name %>
