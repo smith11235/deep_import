@@ -64,7 +64,8 @@ Benchmark Testing
 			* RANGE^3 = number of GrandChildren (each Child has RANGE GrandChildren)
 	* raw data: [public/benchmarks_30.dat](https://github.com/smith11235/deep_import/blob/master/public/benchmarks_30.dat)
 
-Results: (the 'real' column reflects the database transaction overhead)
+Results: (the 'real' column reflects the database transaction overhead)<br />
+[Better Results](twostepsleftofnormal.com:31234)<br />
 
     mysql running on remote server, time is in seconds
                    user     system      total        real
@@ -74,8 +75,6 @@ Results: (the 'real' column reflects the database transaction overhead)
     30 x 30 x 30
     deep_import:  80.770000   0.980000  81.750000 ( 97.582577)
         classic:  120.160000   7.850000 128.010000 (5264.665823) 
-
-#####Thats 50 TIMES FASTER for a 27,000 object load
 
 #### How Fast Is Fast
 Rails will never be as fast as the perfect c++ data importer<br />

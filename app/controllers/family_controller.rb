@@ -27,6 +27,8 @@ class FamilyController < ApplicationController
 			fields[:grand_children] = line[grand_child_regex].to_i
 			line.gsub!(/^\d+\]/,'')
 
+			fields[:total_count] = fields[:parents] + fields[:children] + fields[:grand_children]
+
 			times = line[/\d+\.\d+\s\(\s*\d+\.\d+\)$/]
 			fields[:total_time] = times[/^\d+\.\d+/].to_f
 			fields[:elapsed_time] = times[/\d+\.\d+\)$/].gsub(/\)/,'').to_f
@@ -34,16 +36,15 @@ class FamilyController < ApplicationController
 			fields
 		end
 
-		@elapsed_times = { :deep_import => Array.new, :standard_rails => Array.new }
-		@model_counts = []
+		@elapsed_times = Hash.new # model-count => times-hash
 		@benchmarks.each do |benchmark|
-			if benchmark[:mode] =~ /Deep\sImport/
-				@elapsed_times[ :deep_import ] << benchmark[:elapsed_time]
-			else
-				@elapsed_times[ :standard_rails ] << benchmark[:elapsed_time]
-			end
+			@elapsed_times[ benchmark[:total_count] ] ||= Hash.new
 
-			@model_counts << ( benchmark[:parents] + benchmark[:children] + benchmark[:grand_children] )
+			if benchmark[:mode] =~ /Deep\sImport/
+				@elapsed_times[ benchmark[:total_count] ][ :deep_import ] = benchmark[:elapsed_time]
+			else
+				@elapsed_times[ benchmark[:total_count] ][ :standard_rails ] = benchmark[:elapsed_time]
+			end
 		end
 		
   end
