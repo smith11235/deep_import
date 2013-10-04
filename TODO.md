@@ -1,11 +1,30 @@
 ---
 RC1:
-- view: 
-	- family/benchmarks
-		- parse data, show in raw table
-		- get morris gem? show chart of standard vs rails
-		- upgrade to data tables
-  - add link to this in README
+* view: 
+	* family/benchmarks
+		* upgrade to data tables
+		* chart
+
+	* ARCHITECTURE.md
+	  * show how the algorithm works
+
+	* Deep Import Control:
+
+	  * disabled by default
+		* if railtie enabled:
+		  * modify models
+	    * deep_import model caching is still disabled
+
+		* when DeepImport.import { } called:
+			* enable caching
+			* call block
+			* load cache when block returns
+
+	* instead of config file:
+	  * extend activerecord::base using a module
+		  * add deep_import_belongs_to :parent ?
+				- extend the class
+				- adding a new method to activerecord::base
 
 ---
 - remove dfs logic when api fully supported
