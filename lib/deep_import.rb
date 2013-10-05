@@ -8,6 +8,22 @@ module DeepImport
 	mattr_accessor :settings 
 	@@settings = { :migration_name => "AddDeepImportEnhancements" }
 
+	def self.import 
+
+		# get model configuration from @@config populated by deep_import_belongs_to
+
+		# make model enhancements
+
+		# start cache
+
+		# at somepoint call yield
+
+		# commit cache
+
+		# remove model enhancements
+
+	end
+
 	def self.railtie_disabled?
 		disabled = ! ENV["deep_import_disable_railtie"].nil?
 		# puts "DeepImport.disabled? #{disabled}"
