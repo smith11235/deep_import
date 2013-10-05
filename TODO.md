@@ -1,30 +1,56 @@
----
 RC1:
+===
+
+## Config:
+* use config/deep_import.yml
+    Parent:
+			has_many: 
+			- Children
+		Child:
+			has_many: GrandChildren
+			belongs_to: Parent
+		GrandChild:
+			belongs_to: 
+			- Child
+
+### Top Level Format:
+* Identifies models of interest to DeepImport
+* Hash of model names in CamelCase format
+	* must match .singularize.camelcase
+
+### Model Def Format
+* Identifies associations this model has with regards to import logic
+* Hash of has_many, has_one, belongs_to entries
+	* model name, or array of model names
+
+
+## Invoking an Import block
+* DeepImport environment modifications are only active inside these blocks
+* This api is meant to flag to a user that the following code is special
+* Options are supported for tuning the import logic as you wish
+	* enable/disable: validations, save/create method handling
+* Commits of the models are made after the block is executed
+	 
+    DeepImport.import( { 
+												:on_save => :noop, # :raise_error is default
+												:on_create => :build # :raise_error is default
+											}
+				) {
+						parent = Parent.new	
+					}
+
+* ARCHITECTURE.md
+  * show how the algorithm works
+* remove dfs logic
+
+
+
 * view: 
+
 	* family/benchmarks
 		* upgrade to data tables
 		* chart
 
-	* ARCHITECTURE.md
-	  * show how the algorithm works
-
-	* Deep Import Control:
-
-	  * disabled by default
-		* if railtie enabled:
-		  * modify models
-	    * deep_import model caching is still disabled
-
-		* when DeepImport.import { } called:
-			* enable caching
-			* call block
-			* load cache when block returns
-
-	* instead of config file:
-	  * extend activerecord::base using a module
-		  * add deep_import_belongs_to :parent ?
-				- extend the class
-				- adding a new method to activerecord::base
 
 ---
 - remove dfs logic when api fully supported
