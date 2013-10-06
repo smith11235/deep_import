@@ -10,9 +10,11 @@ describe "DeepImport::Commit" do
 		(0..1).each do |parent_number|
 			parent = Parent.new( :name => parent_number.to_s )
 			(0..1).each do |child_number|
-				child = parent.children.build( :name => "#{child_number},#{parent_number}" )
+				child = Child.new( :name => "#{child_number},#{parent_number}" )
+				child.parent = parent
 				(0..1).each do |grand_child_number|
-					grandchild = child.grand_children.build( :name => "#{grand_child_number},#{child_number}" )
+					grandchild = GrandChild.new( :name => "#{grand_child_number},#{child_number}" )
+					grandchild.child = child
 				end
 			end
 		end

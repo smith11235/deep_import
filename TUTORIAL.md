@@ -71,52 +71,21 @@ Model name formatting is based on active record [conventions](http://api.rubyonr
 - Any developer should be able to understand any Rails code
 - As such, Deep Import is built within the Active Record Association api
 	- provides a familiar coding process for the everyday Rails developer
-	- ...it would have been simpler to just make an alternative API
-		- but not as easily used
 
-#### Sample Data Loader: Implicit Tracking
-- Until full API integration is finished this is implemented only through a hack
-	- illustrates simple code/process
-	- illustrates 'nested data' format
-- Depth First Odering Hack
-	- if you create a root object (a Parent)
-		- each Child created after is auto-assigned to the last root instance
-	- full association API integration will replace this
-
+#### Sample Data Loader: belongs_to support
+Using the current belongs_to support you can load in any manner you wish.<br />
 from lib/tasks/benchmark.rake
 
 	range = 4 # 5 parents, 25 children, 125 grand children 
 	(0..range).each do |parent_name|
 		parent = Parent.new( :name => parent_name.to_s ) # new, or build, not create
 		(0..range).each do |child_name|
-			child = parent.children.new( :name => child_name.to_s )
+			child = Child.new( :name => child_name.to_s )
+			child.parent = parent
 			(0..range).each do |grand_child_name|
-				grand_child = child.grand_children.new( :name => grand_child_name.to_s )
+				grand_child = GrandChild.new( :name => grand_child_name.to_s )
+				grand_child.child = child
 			end
 		end
-	end
-	DeepImport.commit # save all models to database
-
-#### Sample Data Loader: Random Ordering: belongs_to
-Using the current belongs_to support you can load in any manner you wish.<br />
-from lib/tasks/benchmark.rake
-
-	# construct all the parents into a lookup container
-	parents = (0..1).collect {|i| Parent.new( :name => "#{i}" ) }
-
-	# then create children and collect Children into a lookup container
-	children = (0..3).collect do |i| 
-		child = Child.new( :name => "#{i}" )
-		# setting their association randomly based on construction order
-		child.parent = parents[ i % 2 ]
-		child
-	end
-
-	# then create grandchildren
-	grand_children = (0..7).collect do |i|
-		grand_child = GrandChild.new( :name => "#{i}" ) 
-		# set child association based on construction order
-		grand_child.child = children[ i % 4 ]
-		grand_child
 	end
 	DeepImport.commit # save all models to database

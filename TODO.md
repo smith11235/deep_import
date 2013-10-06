@@ -1,9 +1,52 @@
+How to Restart
+==============
+
+Config Reformat
+===============
+* use config/deep_import.yml
+    Parent:
+		Child:
+			belongs_to: Parent
+		GrandChild:
+			belongs_to: 
+			- Child
+
+* requires updates to lib/deep_import/config.rb
+* requires updates to specs/deep_import_config/config_spec.rb
+* find all references to config
+	* parse the config in Railtie
+		* startup validation and alerting of config issues
+
+### Top Level Format:
+* Identifies models of interest to DeepImport
+* Hash of model names in CamelCase format
+	* must match .singularize.camelcase
+
+### Model Def Format
+* Identifies associations this model has with regards to import logic
+* Hash of has_many, has_one, belongs_to entries
+	* model name, or array of model names
+
+### Testing:
+* no config file: 
+	* railtie does nothing
+* junk config file
+	* railtie raises error
+* Hash of:
+	* key: string, camelcase, singular
+	* value: hash of:
+		* if nil/empty, just enable for deep import tracking
+		* key: string, allowed: belongs_to
+		* value: array or single string of:
+			* camelcase, singular name
+
+
 RC1:
 ===
 
+
 ## remove dfs logic
-	- specs
-	- references
+* code is now broken, wtf
 
 ## Invoking an Import block
 * DeepImport environment modifications are only active inside these blocks
@@ -30,35 +73,8 @@ RC1:
   * show how the algorithm works
 
 
-Config Reformat
-===============
-* use config/deep_import.yml
-    Parent:
-			has_many: 
-			- Children
-		Child:
-			has_many: GrandChildren
-			belongs_to: Parent
-		GrandChild:
-			belongs_to: 
-			- Child
-
-* requires updates to lib/deep_import/config.rb
-* requires updates to specs/deep_import_config/config_spec.rb
-* find all references to config
-	* parse the config in Railtie
-		* startup validation and alerting of config issues
-
-### Top Level Format:
-* Identifies models of interest to DeepImport
-* Hash of model names in CamelCase format
-	* must match .singularize.camelcase
-
-### Model Def Format
-* Identifies associations this model has with regards to import logic
-* Hash of has_many, has_one, belongs_to entries
-	* model name, or array of model names
-
+View
+-----
 * view: 
 
 	* family/benchmarks

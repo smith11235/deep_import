@@ -17,15 +17,6 @@ describe "DeepImport::Config" do
 			end
 		end
 
-		describe "Parents of Models" do
-			{Parent => nil,Child => Parent,GrandChild => Child}.each do |member,expected_parent|
-				describe "Parent of: #{member}" do
-					it "has a parent of #{expected_parent}" do
-						DeepImport::Config.parent_class_of( member ).should be(expected_parent)
-					end
-				end
-			end
-		end
 	end
 
 	describe "Detailed" do

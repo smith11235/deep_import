@@ -5,10 +5,6 @@ module DeepImport
 			@@details = ConfigParser.new.parse_model_trees
 		end
 
-		def self.parent_class_of( model_class )
-			@@details[ :parent_class_of ][ model_class ]
-		end
-
 		def self.deep_import_config
 			@@details
 		end
@@ -25,7 +21,7 @@ module DeepImport
 				config_file_path = File.join( Rails.root, "config", "deep_import.yml" )
 				raise "Missing Config File: #{config_file_path}".red unless File.file? config_file_path
 				@config = YAML::load File.open( config_file_path )
-				@details = { :models => Hash.new, :roots => Array.new, :parent_class_of => Hash.new }
+				@details = { :models => Hash.new, :roots => Array.new }
 			end
 
 			def parse_model_trees
@@ -77,15 +73,9 @@ module DeepImport
 				model_defs( parent_class )[ :flags ][ flag_name ] = flag_info
 			end
 
-			def set_parent_of( child_class, parent_class )
-				@details[ :parent_class_of ][ child_class ] = parent_class
-			end
-
 			def parse_child( parent_class, child_name, child_info )
 				raise "details of #{child_name} expected as a Hash or nil, not a #{child_info.class}" unless child_info.nil? || child_info.is_a?(Hash)
 				child_class = class_for( child_name ) # get class constant
-
-				set_parent_of( child_class, parent_class )
 
 				model_defs = model_defs( child_class ) # get definition to populate with details
 
