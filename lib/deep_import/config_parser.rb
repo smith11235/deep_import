@@ -71,6 +71,7 @@ module DeepImport
 			end
 
 			def association_symbol( association_string )
+				raise "Association is not a string: #{association_string.class}, #{association_string}" unless association_string.is_a? String
 				association_type = association_string.to_sym
 				raise "Invalid association type: #{association_type}" unless associations.include? association_type
 				association_type
@@ -78,7 +79,6 @@ module DeepImport
 
 			def parse_model_association( model_class, association_type, related_models )
 				type_sym = association_symbol( association_type )
-
 				if related_models.is_a? String
 					add_association( model_class, related_models, type_sym )
 				elsif related_models.is_a? Array 
@@ -94,8 +94,9 @@ module DeepImport
 			end
 
 			def class_for( model_name )
+				raise "Model Name Not A String: #{model_name.class}, #{model_name}" unless model_name.is_a? String
 				model_class = model_name.to_s.singularize.classify.constantize
-				raise "Root model not in singular class name form: Parsed(#{model_name}) vs Expected(#{model_class})" if model_name != model_class.to_s
+				raise "Model not in singular class name form: Parsed(#{model_name}) vs Expected(#{model_class})" if model_name != model_class.to_s
 				model_class
 			end
 

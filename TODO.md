@@ -4,12 +4,12 @@ How to Restart
 Config Reformat
 ===============
 * use config/deep_import.yml
-    Parent:
-		Child:
-			belongs_to: Parent
-		GrandChild:
-			belongs_to: 
-			- Child
+* parse it from yaml to ruby
+* reformat it so that:
+	- each Model entry was a class name constant
+	- each Model mapped to a Hash:
+	  - each Hash has a :belongs_to Array
+			- each entry is a ClassName constant
 
 * requires updates to lib/deep_import/config.rb
 * requires updates to specs/deep_import_config/config_spec.rb
@@ -40,15 +40,17 @@ Config Reformat
 		* value: array or single string of:
 			* camelcase, singular name
 
+API Change
+==========
+### General
+* disabled by default
+* railtie executes
+	* loads initial config if present
+	* sets deep_import status
+		* ready_for_import
+		* error
 
-RC1:
-===
-
-
-## remove dfs logic
-* code is now broken, wtf
-
-## Invoking an Import block
+### Invoking an Import block
 * DeepImport environment modifications are only active inside these blocks
 * This api is meant to flag to a user that the following code is special
 * Options are supported for tuning the import logic as you wish
@@ -63,20 +65,18 @@ RC1:
 						parent = Parent.new	
 					}
 
-### Changes
-* specs:
-	* enable/disabled environment logic
-	* commit tests/caches tests
 
+RC1:
+===
+
+## Presentation in impress.js
 
 ## ARCHITECTURE.md
   * show how the algorithm works
 
-
 View
 -----
 * view: 
-
 	* family/benchmarks
 		* upgrade to data tables
 		* chart

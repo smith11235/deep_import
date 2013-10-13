@@ -4,6 +4,7 @@ module DeepImport
 	require 'activerecord-import'
 
 	mattr_accessor :logger # default to Rails.logger in railtie, can be set by user 
+	mattr_accessor :status
 
 	mattr_accessor :settings 
 	@@settings = { :migration_name => "AddDeepImportEnhancements" }
@@ -24,12 +25,6 @@ module DeepImport
 
 	end
 
-	def self.railtie_disabled?
-		disabled = ! ENV["deep_import_disable_railtie"].nil?
-		# puts "DeepImport.disabled? #{disabled}"
-		# puts "To Disable: deep_import_disable_railtie=true"
-		disabled
-	end
 
 	def self.after_initialization_disabled?
 		! ENV["disable_deep_import"].nil?
