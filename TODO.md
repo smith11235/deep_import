@@ -1,5 +1,6 @@
 RC1 DeepImport.import
 =================
+* bug: rake example, filter isnt working
 * replan specs
 * remake specs
 * Options are supported for tuning the import logic as you wish

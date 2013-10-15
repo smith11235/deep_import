@@ -25,6 +25,8 @@ module DeepImport
 					source_distribution = get_source_id_distribution model_class, belongs_to_class
 
 					error_prefix = "Alignment error: #{model_class} belongs_to: #{belongs_to_class} - "
+					puts "source: #{source_distribution.to_yaml}"
+					puts "deep: #{deep_distribution.to_yaml}"
 
 					# verify distribution alignment by entry count
 					raise "#{error_prefix} base and deep_import_* models differ: #{source_distribution.size} != #{deep_distribution.size}" if deep_distribution.size != source_distribution.size

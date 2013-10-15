@@ -13,10 +13,15 @@ task :example => :environment do
 				(0..1).each do |grandchild_number|
 					grandchild = GrandChild.new
 					grandchild.child = child
-					grand_child.save!
+					grandchild.save!
 				end
 			end
 		end
 	end
 
+	DeepImport.import do
+		grand_child = GrandChild.new
+		child = grand_child.build_child
+		parent = child.build_parent
+	end
 end
