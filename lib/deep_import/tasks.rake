@@ -1,5 +1,10 @@
 namespace :deep_import do 
 
+	desc "Show Config"
+	task :show_config => :environment do
+		puts DeepImport::Config.models.to_yaml	
+	end
+
 	desc "Show Deep Import Messages within the log"
 	task :show_log do
 		puts "Warning: this is a hack, expects Rails.logger to write to log/#{Rails.env}.log".yellow

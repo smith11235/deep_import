@@ -32,7 +32,6 @@ end
 
 # construct and return the list of tasks to be run if benchmarking is executed
 task_list = construct_and_return_tasks
-puts "Tasks: #{task_list.to_yaml}"
 
 desc "Run Benchmark testing for deep import"
 task :benchmark => task_list do

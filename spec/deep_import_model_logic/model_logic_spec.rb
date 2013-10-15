@@ -13,10 +13,6 @@ describe "DeepImport::ModelLogic" do
 				model_instance 
 			} 
 
-			it "reports the same parent as the config" do
-				model_class.parent_class.should be(DeepImport::Config.parent_class_of( model_class ))
-			end
-
 			it "has accessible deep_import_id"	do
 				model_class.accessible_attributes.should include( :deep_import_id )
 			end
