@@ -30,17 +30,21 @@ module DeepImport
 	end
 
 	private
-	def self.validate_import_options options
-		@@import_options = options.reverse_merge( :on_save => :raise_error )
 
+	def self.validate_import_options options
 		valid_values = {
 			:on_save => [ :raise_error, :noop ]
 		}
-		
-		DeepImport.import_options.each do |option,value|
+
+		defaults = Hash.new
+		valid_values.each { |option,values| defaults[ option ] = values.first }
+		# validate the options
+		options.each do |option,value|
 			raise "Unknown Import Option: #{option}" unless valid_values.keys.include? option
 			raise "Unknown #{option} => #{value}, expecting #{valid_values[option]}" unless valid_values[ option ].include? value
 		end
-		
+
+		# assign the options for reuse
+		@@import_options = options.reverse_merge defaults
 	end
 end
