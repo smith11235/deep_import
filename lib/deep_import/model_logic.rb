@@ -34,14 +34,23 @@ module DeepImport
 				[ "", "!" ].each do |ending|
 					method_name = "save#{ending}".to_sym
 					deep_import_method = "save_with_deep_import#{ending}".to_sym
+					without_method = "save_without_deep_import#{ending}".to_sym
 					case DeepImport.import_options[ :on_save ] 
 					when :raise_error
 						send :define_method, deep_import_method do
-							raise "disabled by DeepImport, provide ':on_save => :noop' to DeepImport.import to override"
+							if DeepImport.importing?
+								raise "disabled by DeepImport, provide ':on_save => :noop' to DeepImport.import to override"
+							else
+								send without_method_name	
+							end
 						end
 					when :noop
 						send :define_method, deep_import_method do
-							# noop
+							if DeepImport.importing?
+								# noop
+							else
+								send without_method_name	
+							end
 						end
 					end
 					send :alias_method_chain,  method_name, :deep_import
@@ -51,8 +60,37 @@ module DeepImport
 			def	setup_belongs_to_association_for( other_class )
 				other_name = other_class.to_s.underscore
 				setup_belongs_to_other( other_name )
+				setup_method_build_other( other_name )
+				setup_method_create_other( other_name )
 
 			end
+			def setup_method_build_other( other_name )
+				method_name = "build_#{other_name}".to_sym
+				deep_import_method_name = "#{method_name}_with_deep_import".to_sym
+				without_method_name = "#{method_name}_without_deep_import".to_sym
+
+				# define the new method logic based on the direction we're looking
+				send :define_method, deep_import_method_name do |attributes = {}| 
+					other_instance = send without_method_name, attributes # call the orriginal logic to run normal logic
+					DeepImport::ModelsCache.set_association_on( self, other_instance ) if DeepImport.importing?
+					return other_instance
+				end
+			end
+
+			def setup_method_create_other( other_class )
+				# get the properly formatted method name
+				[ "", "!" ].each do |exclamation|
+					method_name = "create_#{other_class.to_s.underscore}#{exclamation}".to_sym
+					send :define_method, method_name do |attributes = {}| 
+						if DeepImport.importing?
+							raise "disabled by DeepImport" #, provide ':on_belongs_to_create_other => :build_other' to DeepImport.import to override"
+						else
+							send without_method_name
+						end
+					end
+				end
+			end
+
 
 			def setup_belongs_to_other( other_name )
 				# method we are enhancing
@@ -60,7 +98,7 @@ module DeepImport
 				# new method names: deep_import logic, original logic
 				deep_import_method_name = "#{other_name}_with_deep_import=".to_sym
 				without_method_name = "#{other_name}_without_deep_import=".to_sym
-				
+
 				# define the deep import method
 				send :define_method, deep_import_method_name do |other_instance| 
 					send without_method_name, other_instance # original logic 
