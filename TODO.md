@@ -1,62 +1,20 @@
-How to Restart
-==============
+Method Overriding
+=================
+- how to override instance.other=
+- alias_method_chain
+
 
 Config Reformat
 ===============
-* use config/deep_import.yml
-* parse it from yaml to ruby
-* reformat it so that:
-	- each Model entry was a class name constant
-	- each Model mapped to a Hash:
-	  - each Hash has a :belongs_to Array
-			- each entry is a ClassName constant
+* flesh out specs
 
-* requires updates to lib/deep_import/config.rb
-* requires updates to specs/deep_import_config/config_spec.rb
-* find all references to config
-	* parse the config in Railtie
-		* startup validation and alerting of config issues
+DeepImport.import
+=================
+* add specs
+* correct model_cache and other specs
 
-### Top Level Format:
-* Identifies models of interest to DeepImport
-* Hash of model names in CamelCase format
-	* must match .singularize.camelcase
-
-### Model Def Format
-* Identifies associations this model has with regards to import logic
-* Hash of has_many, has_one, belongs_to entries
-	* model name, or array of model names
-
-### Testing:
-* no config file: 
-	* railtie does nothing
-* junk config file
-	* railtie raises error
-* Hash of:
-	* key: string, camelcase, singular
-	* value: hash of:
-		* if nil/empty, just enable for deep import tracking
-		* key: string, allowed: belongs_to
-		* value: array or single string of:
-			* camelcase, singular name
-
-API Change
-==========
-### General
-* disabled by default
-* railtie executes
-	* loads initial config if present
-	* sets deep_import status
-		* ready_for_import
-		* error
-
-### Invoking an Import block
-* DeepImport environment modifications are only active inside these blocks
-* This api is meant to flag to a user that the following code is special
 * Options are supported for tuning the import logic as you wish
 	* enable/disable: validations, save/create method handling
-* Commits of the models are made after the block is executed
-	 
     DeepImport.import( { 
 												:on_save => :noop, # :raise_error is default
 												:on_create => :build # :raise_error is default
