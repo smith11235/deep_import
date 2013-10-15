@@ -5,7 +5,6 @@ def construct_and_return_tasks
 								benchmark_range = ENV["RANGE"]
 								raise "Invalid BENCHMARK_RANGE, expecting an integer, not '#{benchmark_range}'" unless benchmark_range =~ /^\d+$/
 								benchmark_range = benchmark_range.to_i # convert it to an integer
-								puts "Benchmark Range: #{benchmark_range}"
 								[ :environment ] + generate_benchmark_tasks( benchmark_range )
 							else
 								[:usage] 

@@ -9,9 +9,11 @@ task :example => :environment do
 			(0..1).each do |child_number|
 				child = Child.new
 				child.parent = parent
+				child.save!
 				(0..1).each do |grandchild_number|
 					grandchild = GrandChild.new
 					grandchild.child = child
+					grand_child.save!
 				end
 			end
 		end

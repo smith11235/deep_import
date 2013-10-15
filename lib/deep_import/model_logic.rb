@@ -11,8 +11,11 @@ module DeepImport
 =end
 	module ModelLogic
 		def self.included(base) # :nodoc:
+			return if base.accessible_attributes.to_a.include? 'deep_import_id'
 			puts "Adding DeepImport::ModelLogic to #{base}"
+
 			base.extend ClassMethods
+
 
 			# now setup the basic deep import model tracking
 			base.setup_deep_import_id
@@ -41,7 +44,7 @@ module DeepImport
 							if DeepImport.importing?
 								raise "disabled by DeepImport, provide ':on_save => :noop' to DeepImport.import to override"
 							else
-								send without_method_name	
+								send without_method	
 							end
 						end
 					when :noop
@@ -49,7 +52,7 @@ module DeepImport
 							if DeepImport.importing?
 								# noop
 							else
-								send without_method_name	
+								send without_method	
 							end
 						end
 					end
