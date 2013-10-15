@@ -1,9 +1,4 @@
 Method Overriding
-=================
-- how to override instance.other=
-- alias_method_chain
-
-
 Config Reformat
 ===============
 * flesh out specs

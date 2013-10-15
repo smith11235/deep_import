@@ -11,6 +11,7 @@ module DeepImport
 =end
 	module ModelLogic
 		def self.included(base) # :nodoc:
+			puts "Adding DeepImport::ModelLogic to #{base}"
 			base.extend ClassMethods
 
 			# now setup the basic deep import model tracking
