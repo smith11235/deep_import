@@ -17,6 +17,7 @@ module DeepImport
 			# now setup the basic deep import model tracking
 			base.setup_deep_import_id
 			base.setup_after_initialization_callback
+			base.modify_save
 			# and then the belongs_to associations
 			belongs_to_associations = DeepImport::Config.models.fetch( base ).fetch( :belongs_to )
 			belongs_to_associations.keys.each do |belongs_to_class|
@@ -29,9 +30,31 @@ module DeepImport
 				send :attr_accessible, :deep_import_id # expose the deep_import_id methods
 			end
 
+			def modify_save
+				[ "", "!" ].each do |ending|
+					method_name = "save#{ending}".to_sym
+					deep_import_method = "save_with_deep_import#{ending}".to_sym
+					case DeepImport.import_options[ :on_save ] 
+					when :raise_error
+						send :define_method, deep_import_method do
+							raise "disabled by DeepImport, provide ':on_save => :noop' to DeepImport.import to override"
+						end
+					when :noop
+						send :define_method, deep_import_method do
+							# noop
+						end
+					end
+					send :alias_method_chain,  method_name, :deep_import
+				end
+			end
+
 			def	setup_belongs_to_association_for( other_class )
 				other_name = other_class.to_s.underscore
+				setup_belongs_to_other( other_name )
 
+			end
+
+			def setup_belongs_to_other( other_name )
 				# method we are enhancing
 				method_name = "#{other_name}=".to_sym
 				# new method names: deep_import logic, original logic
