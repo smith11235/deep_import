@@ -1,40 +1,22 @@
-Method Overriding
-Config Reformat
-===============
-* flesh out specs
-
-DeepImport.import
-=================
-* add specs
-* correct model_cache and other specs
-
+RC1 DeepImport.import
+=====================
 * Options are supported for tuning the import logic as you wish
-	* enable/disable: validations, save/create method handling
-    DeepImport.import( { 
-												:on_save => :noop, # :raise_error is default
-												:on_create => :build # :raise_error is default
-											}
-				) {
-						parent = Parent.new	
-					}
+	:on_belongs_to_create_other => :build # :raise_error is default
+	* override belongs_to.create_other(!)
+	* override belongs_to.build_other
 
+* replan specs
+* remake specs
+* impress.js
+* blog post
 
-RC1:
-===
-
-## Presentation in impress.js
-
-## ARCHITECTURE.md
-  * show how the algorithm works
-
-View
------
+### View
 * view: 
 	* family/benchmarks
 		* upgrade to data tables
 		* chart
 
-
+other
 ---
 - remove dfs logic when api fully supported
 - develop support for has_many

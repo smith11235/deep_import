@@ -1,11 +1,11 @@
 desc "Example Deep Import"
 task :example => :environment do
+	Rake::Task["db:reset"].invoke
 
-	#	DeepImport.import do
-	DeepImport.import( :on_save => :noop ) do
+	# example showing belongs_to::other=
+	DeepImport.import do
 		(0..3).each do |parent_number|
 			parent = Parent.new
-			parent.save
 			(0..1).each do |child_number|
 				child = Child.new
 				child.parent = parent
@@ -17,4 +17,10 @@ task :example => :environment do
 		end
 	end
 
+	DeepImport.import do
+		# example showing belongs_to::build_other
+		grand_child = GrandChild.new
+		child = grand_child.build_child
+		parent = child.build_parent
+	end
 end
