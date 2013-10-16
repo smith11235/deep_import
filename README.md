@@ -1,7 +1,10 @@
 Deep Import
 ===========
-A Gem for efficient mass data imports with Rails.<br />
-**[GIST](https://gist.github.com/smith11235/7001147)**<br />
+* A Gem for efficient mass data imports with Rails.
+	* **[GIST](https://gist.github.com/smith11235/7001147)**
+* A benchmark test loaded **27,000** model instances
+* using **standard rails** in **5,505** seconds, or **90 MINUTES**
+* using **Deep Import** in    **90** seconds, or **1.5 MINUTES**
 
 #### Problem
 In Rails, when importing:
