@@ -4,7 +4,6 @@
 * polymorphism, and other tricks are as of yet untested
 * belongs_to
 	* through belongs_to you can hopefully code anything you need to
-		* GIST make one of lib/tasks/example.rake
 * has_one, has_many are next
 
 ## DeepImport.import { ... load logic ... }
