@@ -21,6 +21,7 @@ In Rails, when importing:
 * [Tutorial](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md)
 * [Association API](https://github.com/smith11235/deep_import/blob/master/API.md)
 * [TODO](https://github.com/smith11235/deep_import/blob/master/TODO.md)
+* [ARCHITECTURE](https://github.com/smith11235/deep_import/blob/master/ARCHITECTURE.md)
 * [Benchmarks View](http://twostepsleftofnormal.com:31234/)
 
 Transaction Analysis

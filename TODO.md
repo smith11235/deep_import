@@ -1,16 +1,17 @@
 RC1 DeepImport.import
-=================
+=====================
 * bug: rake example, filter isnt working
-* replan specs
-* remake specs
+	* deep doesnt filter out deep_import_id=nil
+
 * Options are supported for tuning the import logic as you wish
 	:on_belongs_to_create_other => :build # :raise_error is default
 	* override belongs_to.create_other(!)
 	* override belongs_to.build_other
-* architecture.md
+
+* replan specs
+* remake specs
 * impress.js
 * blog post
-
 
 ### View
 * view: 

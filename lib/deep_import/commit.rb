@@ -59,13 +59,17 @@ module DeepImport
 		end
 
 		def get_deep_import_id_distribution( model_class, belongs_to_class )
-			belongs_to_id_field = "deep_import_#{belongs_to_class.to_s.underscore}_id"
+			# what is the deep_import model_class
 			deep_model_class = "DeepImport#{model_class}".constantize
-
+			# what is the field name representing belongs_to_class
+			belongs_to_id_field = "deep_import_#{belongs_to_class.to_s.underscore}_id"
+			# for each belongs_to_class id, how many model_class's have it
 			select_clause = "#{belongs_to_id_field} AS deep_import_id, count( id ) AS counts"
+			# only for records that have a tracked relationship
+			where_clause = "#{belongs_to_id_field} IS NOT NULL"
 
 			deep_distribution = Hash.new # convert the sql groupy by/count result to a hash
-			deep_model_class.group( belongs_to_id_field ).select( select_clause ).each do |record| 
+			deep_model_class.where( where_clause ).group( belongs_to_id_field ).select( select_clause ).each do |record| 
 				deep_distribution[ record.deep_import_id ] = record.counts 
 			end
 
