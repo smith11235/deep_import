@@ -1,5 +1,7 @@
 Deep Import
 ===========
+A Gem for efficient mass data imports with Rails.<br>
+**[GIST](https://gist.github.com/smith11235/7001147)**
 
 #### Problem
 In Rails, when importing:

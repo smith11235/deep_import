@@ -4,17 +4,17 @@
 * polymorphism, and other tricks are as of yet untested
 * belongs_to
 	* through belongs_to you can hopefully code anything you need to
-		* GIST make one of lib/tasks/example.rake
 * has_one, has_many are next
 
 ## DeepImport.import { ... load logic ... }
-* signals magic
-* DeepImport logic only executes within these blocks
-	* this ensures that on any error, deep_import will be a part of relevant stack traces
 * **[GIST](https://gist.github.com/smith11235/7001147)**
+* signals magic
 	* focus on creating all the models and associations
 	* everything created in the block will be commited to the database 
 	* forget calling save, and create_* methods
+* DeepImport logic only executes within these blocks
+	* this ensures that on any error, deep_import will be a part of relevant stack traces
+
 
 ## config/deep_import.yml
 * A Hash of 'ModelName' => Hash of Associations
