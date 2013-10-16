@@ -1,7 +1,7 @@
 Deep Import
 ===========
-A Gem for efficient mass data imports with Rails.<br>
-**[GIST](https://gist.github.com/smith11235/7001147)**
+A Gem for efficient mass data imports with Rails.<br />
+**[GIST](https://gist.github.com/smith11235/7001147)**<br />
 
 #### Problem
 In Rails, when importing:
@@ -20,11 +20,10 @@ In Rails, when importing:
 * Deep Import reduces the transaction costs of communicating with a database
   * by temporarily increasing the space used for representing your models
 * Deep Import is built within Rails to prevent developers from learning a new API
-* [Tutorial](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md)
-* [Association API](https://github.com/smith11235/deep_import/blob/master/API.md)
-* [TODO](https://github.com/smith11235/deep_import/blob/master/TODO.md)
 * [ARCHITECTURE](https://github.com/smith11235/deep_import/blob/master/ARCHITECTURE.md)
 * [Benchmarks View](http://twostepsleftofnormal.com:31234/)
+* [Tutorial](https://github.com/smith11235/deep_import/blob/master/TUTORIAL.md)
+* [Association API](https://github.com/smith11235/deep_import/blob/master/API.md)
 
 Transaction Analysis
 ====================
