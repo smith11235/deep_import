@@ -1,9 +1,17 @@
+Specs Rewrite
+=============
+Move logger to '#{Rails.env}_deep_import.log'
+DeepImport.import
+# move :import_options to DeepImport.settings
+
 RC1 DeepImport.import
 =====================
 * Options are supported for tuning the import logic as you wish
-	:on_belongs_to_create_other => :build # :raise_error is default
 	* override belongs_to.create_other(!)
+		* reroute to build_other 
+			:on_belongs_to_create_other => :build # :raise_error is default
 	* override belongs_to.build_other
+* option defaults should be through first:
 
 * replan specs
 * remake specs

@@ -1,6 +1,6 @@
 desc "Example Deep Import"
 task :example => :environment do
-	Rake::Task["db:reset"].invoke
+#		Rake::Task["db:reset"].invoke
 
 	# example showing belongs_to::other=
 	DeepImport.import do

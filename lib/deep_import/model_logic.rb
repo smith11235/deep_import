@@ -10,12 +10,12 @@ module DeepImport
 			# has_many, has_one, belongs_to association methods
 =end
 	module ModelLogic
+
 		def self.included(base) # :nodoc:
-			return if base.accessible_attributes.to_a.include? 'deep_import_id'
-			puts "Adding DeepImport::ModelLogic to #{base}"
-
+			raise "It appears as if #{base} has already been extended by DeepImport, this should only be done once" if base.accessible_attributes.to_a.include? 'deep_import_id'
+			DeepImport.logger.info "Adding DeepImport::ModelLogic to #{base}".green
+			# add the new methods to this model class in question
 			base.extend ClassMethods
-
 
 			# now setup the basic deep import model tracking
 			base.setup_deep_import_id
