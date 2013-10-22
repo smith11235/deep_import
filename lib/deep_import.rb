@@ -3,27 +3,39 @@ module DeepImport
 	require 'colorize'
 	require 'activerecord-import'
 
-	mattr_accessor :logger # default to Rails.logger in railtie, can be set by user 
+	mattr_accessor :logger
 	mattr_accessor :status
+	@@status = :init
 
 	mattr_accessor :settings 
-	@@settings = { :migration_name => "AddDeepImportEnhancements" }
+	@@settings = { 
+		:migration_name => "AddDeepImportEnhancements", 
+		:required_status_for_import => :ready_to_import, 
+		:enable_import_logic_status => :importing  
+	}
 
-	def self.importing?
-		DeepImport.status == :importing
+	def self.mark_ready_for_import!
+		DeepImport.status = DeepImport.settings[:required_status_for_import]
 	end
 
-	def self.after_initialization_disabled?
-		! ENV["disable_deep_import"].nil?
+	def self.ready_for_import?
+		DeepImport.status == DeepImport.settings[:required_status_for_import]
+	end
+
+	def self.mark_importing!
+		DeepImport.status = DeepImport.settings[:enable_import_logic_status] 
+	end
+
+	def self.importing?
+		DeepImport.status == DeepImport.settings[:enable_import_logic_status] 
 	end
 
 	# root code directory
 	root = File.dirname( File.expand_path( __FILE__ ) )
 	root = File.join root, "deep_import"
 
-	%w( config setup teardown model_logic models_cache commit initializer railtie import ).each do |file|
+	%w( default_logger config initialize setup teardown import_options model_logic models_cache commit railtie import ).each do |file|
 		require File.join( root, file )
 	end
-
 
 end

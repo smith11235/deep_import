@@ -1,6 +1,6 @@
 module DeepImport
 
-	def self.commit
+	def self.commit!
 		Commit.new
 	end
 
@@ -25,8 +25,8 @@ module DeepImport
 					source_distribution = get_source_id_distribution model_class, belongs_to_class
 
 					error_prefix = "Alignment error: #{model_class} belongs_to: #{belongs_to_class} - "
-					puts "source: #{source_distribution.to_yaml}"
-					puts "deep: #{deep_distribution.to_yaml}"
+					DeepImport.logger.info "source: #{source_distribution.to_yaml}"
+					DeepImport.logger.info "deep: #{deep_distribution.to_yaml}"
 
 					# verify distribution alignment by entry count
 					raise "#{error_prefix} base and deep_import_* models differ: #{source_distribution.size} != #{deep_distribution.size}" if deep_distribution.size != source_distribution.size
@@ -115,7 +115,7 @@ module DeepImport
 				[ base_class, "DeepImport#{base_class}".constantize ].each do |model_class|
 					instances = DeepImport::ModelsCache.cached_instances( model_class )
 					raise "#{model_class} does not respond to import" unless model_class.respond_to? :import, true
-					puts "Importing #{instances.size} of #{model_class}"
+					DeepImport.logger.info "Importing #{instances.size} of #{model_class}"
 					results = model_class.import instances
 					if results.failed_instances.size > 0
 						raise "Error Inserting #{model_class}, #{results.failed_instances.size}/#{instances.size} failures. Failed Instances: #{results.failed_instances.to_yaml}"
