@@ -1,6 +1,6 @@
 module DeepImport
 
-	def self.commit
+	def self.commit!
 		Commit.new
 	end
 

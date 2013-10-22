@@ -6,6 +6,11 @@ Deep Import
 * using **standard rails** in **5,505** seconds, or **90 MINUTES**
 * using **Deep Import** in    **90** seconds, or **1.5 MINUTES**
 
+#### WIKI
+* [WIKI](http://www.github.com/smith11235/deep_import/wiki)
+* To Develop: ```git clone https://github.com/smith11235/deep_import.wiki.git wiki```
+	* add to .gitignore ```/wiki/``` 
+
 #### Problem
 In Rails, when importing:
 * lots of data (many model instances)

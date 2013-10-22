@@ -4,12 +4,14 @@ module DeepImport
 		attr_reader :models, :status
 
 		def self.models
+			raise "@@models has not yet been defined yet" if @@models.nil?
 			@@models
 		end
 
 		def initialize
 			@config_file_path = File.join( Rails.root, "config", "deep_import.yml" )
 			parse
+
 			@@models = @models if valid?
 		end
 
