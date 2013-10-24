@@ -4,8 +4,11 @@ module DeepImport
 	require 'activerecord-import'
 
 	mattr_accessor :logger
-	mattr_accessor :status
+	mattr_reader :status
 	@@status = :init
+	def self.status=( value )
+		@@status = value
+	end
 
 	mattr_accessor :settings 
 	@@settings = { 

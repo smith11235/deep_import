@@ -11,10 +11,7 @@ class BenchmarkDeepImport
 			puts "Running benchmark for #{import_method} - #{range}^3 models..." 
 			benchmark_data = {
 				:import_method => import_method,
-				:number_of_parents => range,
-				:number_of_children => range * range,
-				:number_of_grand_children => range * range * range,
-				:total_models_imported => range + range * range + range * range * range,
+				:range => range,
 				:benchmark => "#{Benchmark.measure { import(range,import_method) }}"
 			}
 
