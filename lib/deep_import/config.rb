@@ -106,6 +106,8 @@ module DeepImport
 
 		def add_association( model_class, related_model, association_type )
 			related_class = class_for related_model
+			# this is a Hash in order to support deeper configuration with keywords like polymorphic
+			# for the time being this is the truth 
 			@models[ model_class ][ association_type ][ related_class ] = true
 		end
 
