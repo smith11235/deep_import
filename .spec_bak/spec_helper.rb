@@ -1,15 +1,5 @@
 # Logic to be reused by various tests that support deep_import
 require 'config_helper'
-# for clearing out the tables between each benchmarking measurement
-def delete_models 
-	GrandChild.delete_all
-	Child.delete_all
-	Parent.delete_all
-	DeepImportGrandChild.delete_all
-	DeepImportChild.delete_all
-	DeepImportParent.delete_all
-end
-
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'

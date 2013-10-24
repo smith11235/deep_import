@@ -10,9 +10,14 @@ module DeepImport
 
 		def initialize
 			@config_file_path = File.join( Rails.root, "config", "deep_import.yml" )
+			@models = Hash.new
 			parse
 
-			@@models = @models if valid?
+			@@models = if valid?
+									 @models 
+									else
+										Hash.new
+									end
 		end
 
 		def valid?
@@ -32,7 +37,7 @@ module DeepImport
 			if ! File.file? @config_file_path
 				puts "Missing config file"
 				@status = :inactive
-				DeepImport.logger.info "DeepImport: No #{@config_file_path}"
+				DeepImport.logger.debug "DeepImport: No #{@config_file_path}"
 				return false
 			end
 
@@ -55,7 +60,6 @@ module DeepImport
 				return false
 			end
 
-			@models = Hash.new
 			begin
 				@config.each do |model_name,info|
 					model_class = class_for model_name
