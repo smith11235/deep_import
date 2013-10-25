@@ -2,8 +2,12 @@ require 'spec_helper'
 
 describe 'DeepImport.import - General API' do
 
+	before( :all ){ ConfigHelper.new.valid_config }
 	before( :each ){ delete_models }
-	after( :each ){ DeepImport.mark_ready_for_import! }
+	after( :each ){ 
+		DeepImport.mark_ready_for_import! 
+		delete_models
+	}
 
 	it "should be ready for import after import" do
 		DeepImport.import { Parent.new }

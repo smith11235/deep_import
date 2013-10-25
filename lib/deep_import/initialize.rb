@@ -1,13 +1,14 @@
 module DeepImport
 
 	def self.initialize!( options = {} )
+		DeepImport.logger ||= DeepImport.default_logger
+		# validate the import options
+		DeepImport.import_options = options
+
 		# check if deep import is already setup
 		return true if DeepImport.ready_for_import?
 
 		init = Initialize.new
-
-		# validate the import options
-		DeepImport.import_options = options
 
 		case false # failure case 
 		when init.parse_config
@@ -23,7 +24,6 @@ module DeepImport
 	class Initialize
 
 		def initialize
-			DeepImport.logger ||= DeepImport.default_logger
 
 			# otherwise the expectation is the :init status
 			raise "Calling setup_environemnt when status != :init; #{DeepImport.status}" unless DeepImport.status == :init
