@@ -12,4 +12,5 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require impress_library
 //= require_tree .
