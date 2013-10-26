@@ -1,4 +1,6 @@
 DeepImport::Application.routes.draw do
+  get "impress/index"
+
   get "family/index"
 	get "family/markdown"
 
