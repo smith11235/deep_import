@@ -1,4 +1,4 @@
-<p><b>Left</b> and <b>Right</b> arrow keys move the slideshow</p>
+<p><b>Left(back)</b> and <b>Right(forward)</b> arrow keys move the slideshow</p>
 <script type="text/javascript" src="../impress.js" ></script>
 
 <div id="impress" >
@@ -16,21 +16,60 @@
 	<div class="step" data-x="4000" data-y="600" data-z="125" data-scale=".5" data-rotate-x='0' data-rotate-y='-90' data-rotate-z='0' >
 		<h1>Standard Logic</h1>
 		<div class="gist" >
-			<script src="https://gist.github.com/smith11235/7174960.js"></script>
+			<script src="https://gist.github.com/smith11235/7175304.js"></script>
 		</div>
 	</div>
 
 	<div class="step" data-x="5000" data-y="600" data-z="125" data-scale=".5" data-rotate-x='180' data-rotate-y='-90' data-rotate-z='0' >
-		<h1>Now, the Deep Import Environment Enhancement</h1>
+		<h1>Now with Deep Import</h1>
 		<div class="gist" >
 			<script src="https://gist.github.com/smith11235/7174731.js"></script>
 		</div>
 	</div>
 
-	<div class="step" data-x="-5000" data-y="0" data-z="0" data-scale="10" data-rotate-x='0' data-rotate-y='90' data-rotate-z='0' >
+	<div class="step" data-x="-1000" data-y="-5000" data-z="-1000" data-scale="10" data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
 		<h1>Like Lightning</h1>
 		<p><b>27930</b> model instances in 90 <b>seconds</b> instead of 90 <b>minutes</b></p>
 	</div>
 
-</div>
+	<div class="step"  data-x="-1000" data-y="-5000" data-z="-800" data-scale="1" data-rotate-x='30' data-rotate-y='0' data-rotate-z='0' >
+		<p>How is all this possible?</p>
+	</div>
 
+	<div class="step"  data-x="-1000" data-y="-4000" data-z="-800" data-scale="1" data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+		<h1>Magic</h1>
+	</div>
+
+	<div class="step"  data-x="-1000" data-y="-2000" data-z="-800" data-scale=".5" data-rotate-x='0' data-rotate-y='-90' data-rotate-z='0' >
+		<h1>Deep Import * Models</h1>
+		<p>'Shadow' models used to track Model instances during bulk imports</p>
+		<p>Also responsible for association tracking</p>
+	</div>
+
+	<div class="step"  data-x="-1000" data-y="-2000" data-z="-800" data-scale=".5" data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+		<h1>It's a Space vs Time Thing</h1>
+		<p>Extra model instances (and database space) are used to reduce database transactions</p>
+		<p>It is a 1 to 1 relation between Models and Deep Import Models<p>
+	</div>
+
+	<div class="step"  data-x="-1000" data-y="-2000" data-z="1500" data-scale="5" data-rotate-x='90' data-rotate-y='0' data-rotate-z='0' >
+		<h1>DeepImport.import {}</h1>
+		<p>Forget calling <b>save</b> or <b>create</b> methods</p>
+		<p>Any instance created within the passed block is committed by Deep Import<p>
+	</div>
+
+	<div class="step"  data-x="-1000" data-y="-2000" data-z="2000" data-scale=".1" data-rotate-x='135' data-rotate-y='0' data-rotate-z='0' >
+		<h1>Configuration: Tell Deep Import What To Track</h1>
+		<script src="https://gist.github.com/smith11235/7176030.js"></script>
+
+	</div>
+
+	<div class="step"  data-x="-1000" data-y="-2000" data-z="2500" data-scale=".1" data-rotate-x='180' data-rotate-y='0' data-rotate-z='0' >
+		<h1>Setup</h1>
+		<p>The DeepImport * models are created based on the config file</p>
+		<p>After creating <b>config/deep_import.yml</b> execute <b>rake deep_import:setup</b></p>
+		<p>Creates 1 migration, removable with <b>rake deep_import:teardown</b></p>
+
+	</div>
+
+</div>
