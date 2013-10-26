@@ -41,6 +41,6 @@ describe 'DeepImport.import - General API' do
 			grand_child = GrandChild.new
 			grand_child.create_child
 			end
-		}
+		}.to raise_error
 	end
 end
