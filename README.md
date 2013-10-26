@@ -1,7 +1,7 @@
 Deep Import Readme
 ==================
 
-[Presentation](http://twostepsleftofnormal.com:31234/impress/index#/step-1)
+[Presentation](http://twostepsleftofnormal.com:31234/impress/index)
 
 #### WIKI
 * [WIKI](http://www.github.com/smith11235/deep_import/wiki/README)
