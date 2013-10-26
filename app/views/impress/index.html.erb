@@ -1,2 +1,45 @@
 <h1>Impress#index</h1>
 <p>Find me in app/views/impress/index.html.erb</p>
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<title>DeepImport by smith11235</title>
+	</head>
+
+	<body>
+		<div>
+			<p> Use the <b>left</b> and <b>right</b> arrow keys</p>
+		</div>
+
+			<div class="step" data-x="500" data-y="0" data-z="-400" data-rotate-y="115" data-scale="0.2" >
+				Specifically For Rails and ActiveRecord Developers
+			</div>
+
+		</div>
+
+		<script type="text/javascript" src="impress.js"></script>
+		<!--
+		call `impress().init()` function to initialize impress.js presentation.
+		-->
+		<script>impress().init();</script>
+	</body>
+</html>---
+# Deep Import
+
+Making **bulk data** with ActiveRecord **EASY**
+
+---
+= data-z="-800"
+= data-scale=".1"
+# Simplicity
+```
+	DeepImport.import do 
+		(1..25).each do
+			parent = Parent.new
+			(1..25).each do 
+				child = Child.new
+				child.parent = parent
+			end
+		end
+```
+
