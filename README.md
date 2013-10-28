@@ -3,6 +3,10 @@ Deep Import Readme
 
 [Deep Import Presentation](http://twostepsleftofnormal.com:31234) built with: [Impress.js](https://github.com/bartaz/impress.js)
 
+#### To Develop
+
+```git clone https://github.com/smith11235/deep_import.git```
+
 #### WIKI
 * [WIKI-Home](http://www.github.com/smith11235/deep_import/wiki/Home)
 	* full readme
@@ -11,7 +15,6 @@ Deep Import Readme
 	* tutorial
 
 * To Develop: ```git clone https://github.com/smith11235/deep_import.wiki.git wiki```
-	* add to .gitignore ```/wiki/``` 
 
 
 
