@@ -3,7 +3,6 @@ module DeepImport
 	class Teardown
   	
 		def initialize
-			@config = Config.deep_import_config
 			remove_generated_files
 		end
 

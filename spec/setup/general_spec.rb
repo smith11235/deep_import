@@ -8,12 +8,12 @@ describe "rake deep_import:setup" do
 	}
 
 	it "should execute successfully" do
-		# expect { system( 'rake deep_import:setup' ) or raise "rake deep_import:setup failed" }.to_not raise_error
+		expect { system( 'rake deep_import:setup' ) or raise "rake deep_import:setup failed" }.to_not raise_error
 	end
 
 	describe "after setup" do
 		before( :all ) { 
-			# system( 'rake deep_import:setup' ) or raise "rake deep_import:setup failed"
+			system( 'rake deep_import:setup' ) or raise "rake deep_import:setup failed"
 		}
 
 		describe "schema migration" do

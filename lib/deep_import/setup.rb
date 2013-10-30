@@ -3,7 +3,9 @@ module DeepImport
 	class Setup
 
 		def initialize
-			@config = Config.deep_import_config
+			config = DeepImport::Config.new
+			raise "Cannot run setup, invalid config file" unless config.valid?
+			@models = Config.models
 
 			# populate these
 			@migration_name = DeepImport.settings[ :migration_name ]
@@ -21,7 +23,7 @@ module DeepImport
 		end
 
 		def add_source_model_schema_changes
-			@config[:models].each do |model_class,info|
+			@models.each do |model_class,info|
 				table_name = model_class.to_s.underscore.pluralize
 				@migration_logic << "add_column :#{table_name}, :deep_import_id, :string"
 				@migration_logic << "add_index :#{table_name}, [:deep_import_id, :id], :name => 'di_id_index'"
@@ -29,7 +31,7 @@ module DeepImport
 		end
 
 		def add_deep_import_model_schema_changes
-			@config[:models].each do |model_class,info|
+			@models.each do |model_class,info|
 				add_deep_import_model_migration( model_class, info )
 			end
 		end
@@ -41,17 +43,17 @@ module DeepImport
 			@migration_logic <<  "  t.string :deep_import_id"
 			@migration_logic <<  "  t.datetime :parsed_at"
 			@migration_logic <<  "  t.timestamps"
-			info[:belongs_to].each do |belongs_to|
+			info[:belongs_to].keys.each do |belongs_to|
 				@migration_logic <<  "  t.string :deep_import_#{belongs_to.to_s.underscore}_id"
 			end
 			@migration_logic <<  "end"
-			info[:belongs_to].each do |belongs_to|
+			info[:belongs_to].keys.each do |belongs_to|
 				@migration_logic <<  "add_index :deep_import_#{table_name}, [:deep_import_id, :deep_import_#{belongs_to.to_s.underscore}_id], :name => 'di_#{belongs_to.to_s.underscore}'"
 			end
 		end
 
 		def add_deep_import_model_definitions
-			@config[:models].each do |model_class,info|
+			@models.each do |model_class,info|
 				generate_deep_import_model_definition( model_class, info )
 			end
 		end
@@ -62,7 +64,7 @@ module DeepImport
 			File.open( model_file, "w" ) do |f|
 				f.puts "class DeepImport#{model_class} < ActiveRecord::Base"
 				f.puts "  attr_accessible :deep_import_id, :parsed_at"
-				info[:belongs_to].each do |belongs_to|
+				info[:belongs_to].keys.each do |belongs_to|
 					f.puts "  attr_accessible :deep_import_#{belongs_to.to_s.underscore}_id"
 				end
 				f.puts "end"
