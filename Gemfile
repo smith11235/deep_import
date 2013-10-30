@@ -10,6 +10,8 @@ gem 'sqlite3'
 gem 'mysql2'
 gem 'rspec-rails'
 gem 'rspec_candy' # for extra fun testing helpers
+gem 'pry'
+gem 'zeus'
 
 # http://stackoverflow.com/questions/8395347/gollum-wiki-undefined-method-new-for-redcarpetmodule
 gem 'redcarpet', '1.17.2' # for markdown support

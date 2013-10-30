@@ -76,7 +76,9 @@ module DeepImport
 			private
 
 			def next_id_for( model_class )
-				@model_instance_cache[ model_class ].size.to_s
+				# if fetch fails its because the class isnt tracked
+				instances = @model_instance_cache.fetch model_class 
+				instances.size.to_s
 			end
 
 			def add_instance_to_cache( model_instance )

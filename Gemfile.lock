@@ -186,6 +186,8 @@ GEM
     uglifier (2.3.0)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    zeus (0.13.3)
+      method_source (>= 0.6.7)
 
 PLATFORMS
   ruby
@@ -199,6 +201,7 @@ DEPENDENCIES
   guard-rspec
   jquery-rails
   mysql2
+  pry
   rails
   redcarpet (= 1.17.2)
   rspec
@@ -209,3 +212,4 @@ DEPENDENCIES
   therubyracer
   thin
   uglifier (>= 1.0.3)
+  zeus

@@ -1,21 +1,13 @@
 module DeepImport
 
 	def self.initialize!( options = {} )
-		DeepImport.logger ||= DeepImport.default_logger
 		# validate the import options
 		DeepImport.import_options = options
 
 		# check if deep import is already setup
 		return true if DeepImport.ready_for_import?
 
-		init = Initialize.new
-
-		case false # failure case 
-		when init.parse_config
-			DeepImport.logger.error "Failed parsing deep import config"
-		when init.modify_target_models
-			DeepImport.logger.error "Failed modifying target models" 
-		end
+		Initialize.new
 
 	end
 
@@ -24,10 +16,14 @@ module DeepImport
 	class Initialize
 
 		def initialize
-
 			# otherwise the expectation is the :init status
 			raise "Calling setup_environemnt when status != :init; #{DeepImport.status}" unless DeepImport.status == :init
-
+			case false # failure case 
+			when parse_config
+				DeepImport.logger.error "Failed parsing deep import config"
+			when modify_target_models
+				DeepImport.logger.error "Failed modifying target models" 
+			end
 		end
 
 		# these things should only be done 1 time
