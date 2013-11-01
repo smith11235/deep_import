@@ -20,13 +20,41 @@ describe "rake deep_import:teardown" do
 			system( 'rake deep_import:teardown' ) or raise "rake deep_import:teardown failed"
 		}
 
-		it "should have removed all DeepImport* models"
+	
+		describe "generated files" do
+			it "should have removed the model files" do
+				generated_files = Dir.glob( "app/models/deep_import_*.rb" )
+				generated_files.size.should == 0
+			end
+			it "should have removed the migration file" do
+				generated_files = Dir.glob( "db/migrate/*_deep_import_*.rb" )
+				generated_files.size.should == 0
+			end
+		end
 
-		it "should have removed the migration file"
+		describe "schema changes" do
+			# test fields, index's will have to have been removed
+			it "should have removed deep_import_id's from parents" do
+				ActiveRecord::Base.connection.should_not be_column_exists( "parents", :deep_import_id, :string )
+			end
+			it "should_not have removed deep_import_id's from children" do
+				ActiveRecord::Base.connection.should_not be_column_exists( "children", :deep_import_id, :string )
+			end
+			it "should_not have removed deep_import_id's from grand_children" do
+				ActiveRecord::Base.connection.should_not be_column_exists( "grand_children", :deep_import_id, :string )
+			end
 
-		it "should have removed deep_import_id's from source model tables"
+			it "should_not have removed deep_import_parents" do
+				ActiveRecord::Base.connection.should_not be_table_exists( "deep_import_parents" )
+			end
+			it "should_not have removed deep_import_children" do
+				ActiveRecord::Base.connection.should_not be_table_exists( "deep_import_children" )
+			end
+			it "should_not have removed deep_import_grand_children" do
+				ActiveRecord::Base.connection.should_not be_table_exists( "deep_import_grand_children" )
+			end
 
-		it "should have removed deep_import_* tables"
+		end
 
 	end
 
