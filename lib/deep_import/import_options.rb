@@ -8,14 +8,7 @@ module DeepImport
 		import_options = ImportOptions.new( options )
 		options = import_options.to_hash
 
-		@@import_options ||= options
-
-		if options != @@import_options
-			DeepImport.logger.error "Error: deep import can only be called with one set of import options currently" 
-			DeepImport.logger.error "Previous: #{@@import_options.to_yaml}"
-			DeepImport.logger.error "Current: #{optionsoptions.to_yaml}"
-			raise "Improperly configured import options, see log"
-		end
+		@@import_options = options
 	end
 
 	class ImportOptions
@@ -55,6 +48,7 @@ module DeepImport
 			@options.each do |option,value|
 				raise "Unknown Import Option: #{option}" unless valid_values.keys.include? option
 				raise "Unknown #{option} => #{value}, expecting #{valid_values[option]}" unless valid_values[ option ].include? value
+				raise "Option #{option} was already set to #{DeepImport.import_options[option]}, cannot change to #{value}" unless DeepImport.import_options.nil? || DeepImport.import_options[option] == value
 			end
 		end
 	end
