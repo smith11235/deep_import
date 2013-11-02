@@ -3,7 +3,16 @@ module DeepImport
 	require 'colorize'
 	require 'activerecord-import'
 
+	deep_import_dir = File.join( File.dirname( File.expand_path( __FILE__ ) ), "deep_import" )
+
+	%w( default_logger config initialize setup teardown import_options model_logic models_cache commit railtie import ).each do |file|
+		require File.join( deep_import_dir, file )
+	end
+
 	mattr_accessor :logger
+
+	private 
+
 	mattr_reader :status
 	@@status = :init
 	def self.status=( value )
@@ -33,12 +42,5 @@ module DeepImport
 		DeepImport.status == DeepImport.settings[:enable_import_logic_status] 
 	end
 
-	# root code directory
-	root = File.dirname( File.expand_path( __FILE__ ) )
-	root = File.join root, "deep_import"
-
-	%w( default_logger config initialize setup teardown import_options model_logic models_cache commit railtie import ).each do |file|
-		require File.join( root, file )
-	end
 
 end

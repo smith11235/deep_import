@@ -9,9 +9,7 @@ module DeepImport
 
 	class Commit
 		def initialize
-			DeepImport.logger.info "[DeepImport::ModelsCachse.stats at commit time] #{DeepImport::ModelsCache.stats.to_yaml}"
-			DeepImport.logger.info "#{'DeepImport.commit:'.green}             (in seconds)     user     system      total        real"
-			DeepImport.logger.info "#{'DeepImport.commit:'.green} STEP=#{'Importing'.red}    TIME: #{Benchmark.measure { import_models }}"
+			DeepImport.logger.info "#{'DeepImport.commit:'.green} STEP=#{'Import Total'.red} TIME: #{Benchmark.measure { import_models }}"
 			DeepImport.logger.info "#{'DeepImport.commit:'.green} STEP=#{'Associations'.red} TIME: #{Benchmark.measure { set_associations }}"
 			DeepImport.logger.info "#{'DeepImport.commit:'.green} STEP=#{'Validating'.red}   TIME: #{Benchmark.measure { validate_associations }}"
 			DeepImport.logger.info "#{'DeepImport.commit:'.green} STEP=#{'Deleting'.red}     TIME: #{Benchmark.measure { delete_deep_import_models }}"
@@ -118,8 +116,10 @@ module DeepImport
 				[ base_class, "DeepImport#{base_class}".constantize ].each do |model_class|
 					instances = DeepImport::ModelsCache.cached_instances( model_class )
 					raise "#{model_class} does not respond to import" unless model_class.respond_to? :import, true
-					DeepImport.logger.info "Importing #{instances.size} of #{model_class}"
-					results = model_class.import instances
+					results = nil
+					DeepImport.logger.info "- #{model_class}.import #{instances.size} instances"
+					DeepImport.logger.info "                                     TIME: #{Benchmark.measure { results = model_class.import( instances ) }}"
+
 					if results.failed_instances.size > 0
 						raise "Error Inserting #{model_class}, #{results.failed_instances.size}/#{instances.size} failures. Failed Instances: #{results.failed_instances.to_yaml}"
 					end
