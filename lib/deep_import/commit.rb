@@ -1,10 +1,11 @@
 module DeepImport
 
+	private
+
 	def self.commit!
 		Commit.new
 	end
 
-	private
 
 	class Commit
 		def initialize
