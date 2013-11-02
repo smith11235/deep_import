@@ -8,8 +8,6 @@ describe 'DeepImport::ModelLogic - General API' do
 	}
 
 	it "should have teardown logic"
-	it "should have methods disabled by default"
-	it "should have methods enabled when DeepImport.ready_to_import?"
 
 	describe Child do
 		let( :child ){ Child.new }

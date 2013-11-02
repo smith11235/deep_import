@@ -12,6 +12,10 @@ describe 'DeepImport.import - General API' do
 		delete_models
 	}
 
+	it "should have methods disabled by default" do
+		Parent.new.deep_import_id.should == nil
+	end
+
 	it "should be ready for import after import" do
 		DeepImport.import { Parent.new }
 		DeepImport.should be_ready_for_import
