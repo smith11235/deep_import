@@ -2,7 +2,10 @@ require 'spec_helper'
 
 describe 'DeepImport.import - General API' do
 
-	before( :all ){ ConfigHelper.new.valid_config }
+	before( :all ){ 
+		ConfigHelper.new.valid_config
+		DeepImport.initialize!
+	}
 	before( :each ){ delete_models }
 	after( :each ){ 
 		DeepImport.mark_ready_for_import! 
@@ -29,10 +32,10 @@ describe 'DeepImport.import - General API' do
 
 	it "should track belongs_to build_other associations" do
 		DeepImport.import do
-			grand_child = GrandChild.new
-			grand_child.build_child
+			grand_child = GrandChild.new :name => "abc"
+			grand_child.build_child :name => "xyz"
 		end
-		expect { GrandChild.first.child.id }.to_not raise_error
+		GrandChild.find_by_name( "abc" ).child.name.should == "xyz"
 	end
 
 	it "should cause belongs_to create_other to raise an error" do

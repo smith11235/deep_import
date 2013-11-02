@@ -22,6 +22,10 @@ module DeepImport
 			instances.values
 		end
 
+		def self.empty?
+			ModelsCache.stats.values.uniq =~ [0]
+		end
+
 		def self.stats
 			stats = Hash.new
 			@@cache.raw_cache.each do |model_class,instances|
