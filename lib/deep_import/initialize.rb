@@ -24,8 +24,20 @@ module DeepImport
 			when modify_target_models
 				DeepImport.logger.error "Failed modifying target models" 
 			end
+			check_activerecord_import_gem
 		end
 
+		def check_activerecord_import_gem
+			DeepImport::Config.models.keys.each do |model_class|
+				if ! model_class.respond_to? :import
+					DeepImport.logger.error "#{model_class} does not respond_to? :import"
+					DeepImport.logger.error "this method should exist from deep imports gem dependency on 'activerecord-import'"
+					DeepImport.logger.error "Try adding: gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git' to your Gemfile"
+
+					raise "activerecord-import not configured correctly, see deep import log"
+				end
+			end
+		end
 		# these things should only be done 1 time
 		def parse_config
 			config = DeepImport::Config.new
