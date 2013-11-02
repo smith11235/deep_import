@@ -2,12 +2,14 @@ module DeepImport
 
 	def self.import( options = {}, &import_block )
 		start_time = Time.now
+		DeepImport.logger.info "" 
+		DeepImport.logger.info "" 
+		DeepImport.logger.info "==========================================================="
 		DeepImport.logger.info "Starting Import At #{start_time}"
+		DeepImport.logger.info "==========================================================="
 		DeepImport.logger.info "#{'DeepImport.import:'.green}             #{'(in seconds)     user     system      total        real'.black.on_yellow}"
 		# initialize the deep import environment modifications
-		DeepImport.logger.info "                                     TIME: #{Benchmark.measure { import_block.call }}"
-		DeepImport.logger.info "#{'DeepImport.initialize!:'.green}         TIME: #{Benchmark.measure { import_block.call }}"
-		DeepImport.initialize! options
+		DeepImport.logger.info "#{'DeepImport.initialize!:'.green}              TIME: #{Benchmark.measure { DeepImport.initialize! options }}"
 
 		# now run the import
 		import = Import.new
@@ -18,7 +20,9 @@ module DeepImport
 		puts "DeepImport.import successful.  Check the log for what happened (default: #{DeepImport.default_logger_path})".green
 
 		end_time = Time.now
+		DeepImport.logger.info "==========================================================="
 		DeepImport.logger.info "Import Ended At #{end_time}, with a duration of #{end_time - start_time} seconds"
+		DeepImport.logger.info "==========================================================="
 	end
 
 	private

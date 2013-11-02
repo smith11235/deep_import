@@ -3,7 +3,12 @@ module DeepImport
 	private
 
 	def self.commit!
-		Commit.new
+		# all model saving logic should be within one transaction
+		# to help with database locking between multiple processes
+		# and to provide roll back support on error
+		ActiveRecord::Base.transaction do
+			Commit.new
+		end
 	end
 
 

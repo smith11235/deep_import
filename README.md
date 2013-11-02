@@ -1,6 +1,8 @@
 Deep Import Readme
 ==================
 
+**[Usage Example](https://gist.github.com/smith11235/7280752)**
+
 [Deep Import Presentation](http://twostepsleftofnormal.com:31234) built with: [Impress.js](https://github.com/bartaz/impress.js)
 
 #### To Develop
