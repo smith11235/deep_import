@@ -1,4 +1,5 @@
 module DeepImport
+	require 'digest/md5'
 
 	class Setup
 
@@ -22,11 +23,17 @@ module DeepImport
 			puts @generated_files.to_yaml
 		end
 
+		def md5( input )
+			Digest::MD5.hexdigest( input )
+		end
+
 		def add_source_model_schema_changes
 			@models.each do |model_class,info|
-				table_name = model_class.to_s.underscore.pluralize
-				@migration_logic << "add_column :#{table_name}, :deep_import_id, :string"
-				@migration_logic << "add_index :#{table_name}, [:deep_import_id, :id], :name => 'di_id_index'"
+				table_name = ":#{model_class.to_s.underscore.pluralize}"
+				@migration_logic << "add_column #{table_name}, :deep_import_id, :string, :references => false"
+
+				# hash is for postgres index name uniqueness requirements
+				@migration_logic << "add_index #{table_name}, [:deep_import_id, :id], :name => 'di_id_#{md5(table_name)}'"
 			end
 		end
 
@@ -38,17 +45,20 @@ module DeepImport
 
 		def add_deep_import_model_migration( model_class, info )
 			plural_name = model_class.to_s.pluralize
-			table_name = plural_name.underscore
-			@migration_logic <<  "create_table :deep_import_#{table_name} do |t|"
-			@migration_logic <<  "  t.string :deep_import_id"
+			table_name = ":deep_import_#{plural_name.underscore}"
+			@migration_logic <<  "create_table #{table_name} do |t|"
+			@migration_logic <<  "  t.string :deep_import_id, :references => false"
 			@migration_logic <<  "  t.datetime :parsed_at"
 			@migration_logic <<  "  t.timestamps"
 			info[:belongs_to].keys.each do |belongs_to|
-				@migration_logic <<  "  t.string :deep_import_#{belongs_to.to_s.underscore}_id"
+				@migration_logic <<  "  t.string :deep_import_#{belongs_to.to_s.underscore}_id, :references => false"
 			end
 			@migration_logic <<  "end"
 			info[:belongs_to].keys.each do |belongs_to|
-				@migration_logic <<  "add_index :deep_import_#{table_name}, [:deep_import_id, :deep_import_#{belongs_to.to_s.underscore}_id], :name => 'di_#{belongs_to.to_s.underscore}'"
+				hash_of_source_target = md5( "#{table_name}_#{belongs_to}" )
+				# hash is for postgres index name uniqueness requirements
+				index_name = "di_#{belongs_to.to_s.underscore}_#{hash_of_source_target}"
+				@migration_logic <<  "add_index #{table_name}, [:deep_import_id, :deep_import_#{belongs_to.to_s.underscore}_id], :name => '#{index_name}'"
 			end
 		end
 

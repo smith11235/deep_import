@@ -1,7 +1,7 @@
----
+--- 
 Parent: 
-Child:
+Child: 
   belongs_to: Parent
-GrandChild:
-  belongs_to:
+GrandChild: 
+  belongs_to: 
   - Child

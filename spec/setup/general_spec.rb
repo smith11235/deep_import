@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'digest/md5'
 
 describe "rake deep_import:setup" do
 
@@ -23,31 +24,35 @@ describe "rake deep_import:setup" do
 				Dir.glob( migration_file_pattern ).size.should eq(1)
 			end
 
-			table_name = "parents"	
-			describe "changes for: #{table_name}" do
-				it "should have #{table_name}.deep_import_id column" do
+			describe "changes for: parents" do
+				let( :table_name ) { "parents" }	
+				it "should have parents.deep_import_id column" do
 					ActiveRecord::Base.connection.should be_column_exists( table_name, :deep_import_id, :string )
 				end
-				it "should have a 'di_id_index' on #{table_name}" do
-					ActiveRecord::Base.connection.should be_index_exists( table_name, [:deep_import_id, :id], :name => "di_id_index" )
+				let( :index_name ) { "di_id_#{Digest::MD5.hexdigest(':parents')}" }
+				it "should have an index on parents.deep_import_id" do
+					ActiveRecord::Base.connection.should be_index_exists( table_name, [:deep_import_id, :id], :name => index_name )
 				end
 			end
-			table_name = "children"	
-			describe "changes for: #{table_name}" do
-				it "should have #{table_name}.deep_import_id column" do
+
+			describe "changes for: children" do
+				let( :table_name ){ "children"	}
+				it "should have children.deep_import_id column" do
 					ActiveRecord::Base.connection.should be_column_exists( table_name, :deep_import_id, :string )
 				end
-				it "should have a 'di_id_index' on #{table_name}" do
-					ActiveRecord::Base.connection.should be_index_exists( table_name, [:deep_import_id, :id], :name => "di_id_index" )
+				let( :index_name ) { "di_id_#{Digest::MD5.hexdigest(':children')}" }
+				it "should have an index on children.deep_import_id" do
+					ActiveRecord::Base.connection.should be_index_exists( table_name.to_sym, [:deep_import_id, :id], :name => index_name )
 				end
 			end
-			table_name = "grand_children"	
-			describe "changes for: #{table_name}" do
-				it "should have #{table_name}.deep_import_id column" do
+			describe "changes for: grand_children" do
+				let( :table_name ){ "grand_children"	}
+				it "should have grand_children.deep_import_id column" do
 					ActiveRecord::Base.connection.should be_column_exists( table_name, :deep_import_id, :string )
 				end
-				it "should have a 'di_id_index' on #{table_name}" do
-					ActiveRecord::Base.connection.should be_index_exists( table_name, [:deep_import_id, :id], :name => "di_id_index" )
+				let( :index_name ) { "di_id_#{Digest::MD5.hexdigest(':grand_children')}" }
+				it "should have an index on grand_children.deep_import_id" do
+					ActiveRecord::Base.connection.should be_index_exists( table_name, [:deep_import_id, :id], :name => index_name )
 				end
 			end
 
@@ -77,7 +82,11 @@ describe "rake deep_import:setup" do
 						ActiveRecord::Base.connection.should be_column_exists( deep_model_table, association_field, :string )
 					end
 
-					let( :index_name ){ "di_#{Parent.to_s.underscore}" }
+					let( :index_name ){ 
+						hash_of_source_target = Digest::MD5.hexdigest( ":deep_import_children_Parent" )
+						"di_parent_#{hash_of_source_target}"
+					}
+
 					it "should have an index for this reference in it's table" do
 						ActiveRecord::Base.connection.should be_index_exists( deep_model_table, [:deep_import_id, association_field], :name => index_name )
 					end
@@ -113,7 +122,10 @@ describe "rake deep_import:setup" do
 						ActiveRecord::Base.connection.should be_column_exists( deep_model_table, association_field, :string )
 					end
 
-					let( :index_name ){ "di_#{Child.to_s.underscore}" }
+					let( :index_name ){ 
+						hash_of_source_target = Digest::MD5.hexdigest( ":deep_import_grand_children_Child" )
+						"di_child_#{hash_of_source_target}"
+					}
 					it "should have an index for this reference in it's table" do
 						ActiveRecord::Base.connection.should be_index_exists( deep_model_table, [:deep_import_id, association_field], :name => index_name )
 					end

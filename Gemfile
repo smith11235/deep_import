@@ -8,6 +8,7 @@ gem 'rails'
 gem 'thin'
 gem 'sqlite3'
 gem 'mysql2'
+gem 'pg'
 gem 'rspec-rails'
 gem 'rspec_candy' # for extra fun testing helpers
 gem 'pry'

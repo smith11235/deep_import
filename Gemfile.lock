@@ -102,6 +102,7 @@ GEM
     mime-types (1.25)
     multi_json (1.8.2)
     mysql2 (0.3.13)
+    pg (0.17.0)
     polyglot (0.3.3)
     pry (0.9.12.2)
       coderay (~> 1.0.5)
@@ -201,6 +202,7 @@ DEPENDENCIES
   guard-rspec
   jquery-rails
   mysql2
+  pg
   pry
   rails
   redcarpet (= 1.17.2)
