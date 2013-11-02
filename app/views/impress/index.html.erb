@@ -1,76 +1,261 @@
+
 <p><b>Left(back)</b> and <b>Right(forward)</b> arrow keys move the slideshow</p>
 <script type="text/javascript" src="../impress.js" ></script>
-
 <div id="impress" >
+	
+<div class='step' data-x='0' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>DeepImport</h1>
 
-	<div class="step" data-x="0" data-y="0" data-z="0" data-scale="4" data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
-		<h1>Deep Import</h1>
-		<p>A Bulk Data Loading Gem For Rails and Active Record</p>
-		<p><a href="https://github.com/smith11235/deep_import">Github</a></p>
-	</div>
+<p>A Bulk Data Loading Gem For Rails and Active Record</p>
 
-	<div class="step" data-x="0" data-y="0" data-z="-500" data-scale=".1" data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
-		<h1>Simplicity</h1>
-		<p>Use the syntax you already know</p>
-	</div>
+<p><a href="https://github.com/smith11235/deep_import">Github</a></p>
 
-	<div class="step" data-x="4000" data-y="600" data-z="125" data-scale=".5" data-rotate-x='0' data-rotate-y='-90' data-rotate-z='0' >
-		<h1>Standard Logic</h1>
-		<div class="gist" >
-			<script src="https://gist.github.com/smith11235/7175304.js"></script>
-		</div>
-	</div>
+<p><a href="https://gist.github.com/smith11235/7281601">Usage Example</a></p>
+</div>
+<div class='step' data-x='1000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Outline</h1>
 
-	<div class="step" data-x="5000" data-y="600" data-z="125" data-scale=".5" data-rotate-x='180' data-rotate-y='-90' data-rotate-z='0' >
-		<h1>Now with Deep Import</h1>
-		<div class="gist" >
-			<script src="https://gist.github.com/smith11235/7174731.js"></script>
-		</div>
-	</div>
+<ul>
+<li>Purpose </li>
+<li>Usage</li>
+<li>How It Works</li>
+</ul>
+</div>
+<div class='step' data-x='2000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Purpose</h1>
+</div>
+<div class='step' data-x='3000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Target Users</h1>
 
-	<div class="step" data-x="-1000" data-y="-5000" data-z="-1000" data-scale="10" data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
-		<h1>Like Lightning</h1>
-		<p><b>27930</b> model instances in 90 <b>seconds</b> instead of 90 <b>minutes</b></p>
-	</div>
+<p>Any Rails/ActiveRecord lovers with a need to efficiently ingest a lot of data</p>
+</div>
+<div class='step' data-x='4000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Example Bulk Data</h1>
 
-	<div class="step"  data-x="-1000" data-y="-5000" data-z="-800" data-scale="1" data-rotate-x='30' data-rotate-y='0' data-rotate-z='0' >
-		<p>How is all this possible?</p>
-	</div>
+<script src="https://gist.github.com/smith11235/7281452.js"></script>
+</div>
+<div class='step' data-x='5000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Example Standard Import Logic</h1>
 
-	<div class="step"  data-x="-1000" data-y="-4000" data-z="-800" data-scale="1" data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
-		<h1>Magic</h1>
-	</div>
+<script src="https://gist.github.com/smith11235/7281410.js"></script>
+</div>
+<div class='step' data-x='6000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>problem</h1>
 
-	<div class="step"  data-x="-1000" data-y="-2000" data-z="-800" data-scale=".5" data-rotate-x='0' data-rotate-y='-90' data-rotate-z='0' >
-		<h1>Deep Import * Models</h1>
-		<p>'Shadow' models used to track Model instances during bulk imports</p>
-		<p>Also responsible for association tracking</p>
-	</div>
+<p>Each call to <strong>save</strong> or <strong>create</strong> methods cause a transaction with the database.</p>
 
-	<div class="step"  data-x="-1000" data-y="-2000" data-z="-800" data-scale=".5" data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
-		<h1>It's a Space vs Time Thing</h1>
-		<p>Extra model instances (and database space) are used to reduce database transactions</p>
-		<p>It is a 1 to 1 relation between Models and Deep Import Models<p>
-	</div>
+<p>Each trasaction has opening and closing costs.  </p>
+</div>
+<div class='step' data-x='7000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>signifigance</h1>
 
-	<div class="step"  data-x="-1000" data-y="-2000" data-z="1500" data-scale="5" data-rotate-x='90' data-rotate-y='0' data-rotate-z='0' >
-		<h1>DeepImport.import {}</h1>
-		<p>Forget calling <b>save</b> or <b>create</b> methods</p>
-		<p>Any instance created within the passed block is committed by Deep Import<p>
-	</div>
+<p>When commiting many model instances to a database transaction costs become non-trivial. </p>
+</div>
+<div class='step' data-x='8000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>claim</h1>
 
-	<div class="step"  data-x="-1000" data-y="-2000" data-z="2000" data-scale=".1" data-rotate-x='135' data-rotate-y='0' data-rotate-z='0' >
-		<h1>Configuration: Tell Deep Import What To Track</h1>
-		<script src="https://gist.github.com/smith11235/7176030.js"></script>
+<p>Deep Import can improve a load
+* of <strong>27,930</strong> model instances
+* from 90 <strong>minutes</strong> to 90 <strong>seconds</strong>
+* by eliminating transaction costs</p>
+</div>
+<div class='step' data-x='9000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>why in Rails? (and ActiveRecord)</h1>
 
-	</div>
+<ul>
+<li>is this the path of least resistance?</li>
+<li>aren't other tools built for bulk data?</li>
+</ul>
+</div>
+<div class='step' data-x='10000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Yes, but rails and activerecord...</h1>
 
-	<div class="step"  data-x="-1000" data-y="-2000" data-z="2500" data-scale=".1" data-rotate-x='180' data-rotate-y='0' data-rotate-z='0' >
-		<h1>Setup</h1>
-		<p>The DeepImport * models are created based on the config file</p>
-		<p>After creating <b>config/deep_import.yml</b> execute <b>rake deep_import:setup</b></p>
-		<p>Creates 1 migration, removable with <b>rake deep_import:teardown</b></p>
+<ul>
+<li>are super easy to use</li>
+<li>provide helper logic like validations</li>
+<li>are database and developer agnostic</li>
+<li>fast to prototype and deliver</li>
+</ul>
+</div>
+<div class='step' data-x='11000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>so my friend</h1>
 
-	</div>
+<ul>
+<li>why would you slow down by switching to non-rails</li>
+</ul>
+</div>
+<div class='step' data-x='12000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>DeepImport.import { }</h1>
 
+<p><strong>When invoked</strong></p>
+
+<ul>
+<li>enhances the active record api on the Model classes
+
+<ul>
+<li>track all models instantiated and associations</li>
+</ul></li>
+<li>executes the user provided block of code</li>
+<li>commits all instantiated models to the database
+
+<ul>
+<li><strong>within a single transaction</strong></li>
+</ul></li>
+</ul>
+</div>
+<div class='step' data-x='13000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Example DeepImport.import call</h1>
+
+<p><a href="example deep import load of yaml file">gist</a></p>
+</div>
+<div class='step' data-x='14000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Did you see the difference?</h1>
+
+<ul>
+<li>added DeepImport.import call</li>
+<li>removed save calls
+<a href="of code difference">vimdiff image</a> app/assets/images</li>
+</ul>
+</div>
+<div class='step' data-x='15000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Benchmark</h1>
+
+<ul>
+<li><strong>27,930</strong> models
+
+<ul>
+<li>to a remote mysql instance</li>
+<li>across 3 associated model classes
+
+<ul>
+<li>30 Parents</li>
+<li>900 Children</li>
+<li>27,000 Grand Children</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div class='step' data-x='16000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Benchmark Results</h1>
+
+<p>Standard     90 <strong>minutes</strong>
+Deep Import  90 <strong>seconds</strong></p>
+</div>
+<div class='step' data-x='17000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Usage</h1>
+</div>
+<div class='step' data-x='18000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>gist</h1>
+
+<p><a href="https://gist.github.com/smith11235/7280752">Example Usage Gist</a></p>
+</div>
+<div class='step' data-x='19000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>config/deep_import.yml</h1>
+
+<ul>
+<li>tells Deep Import which models to track</li>
+<li>tells Deep Import which belongs_to associations to track</li>
+</ul>
+</div>
+<div class='step' data-x='20000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>example config/deep_import.yml</h1>
+
+<p>[gist]</p>
+</div>
+<div class='step' data-x='21000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>rake deep_import:setup</h1>
+
+<ul>
+<li>generates a migration based on config file</li>
+<li>executes migration to prepare database for deep import</li>
+</ul>
+</div>
+<div class='step' data-x='22000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>DeepImport.import( options = {} ) { }</h1>
+
+<ul>
+<li>if a config file exists and setup has been run</li>
+<li>just pass it a block that creates models</li>
+</ul>
+</div>
+<div class='step' data-x='23000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Import Options</h1>
+
+<ul>
+<li>a couple of options exist to tweak how active record is modified</li>
+<li>generally to allow <em>non import code</em> to run as <em>import code</em>
+
+<ul>
+<li>makes development and debugging against subsets easy</li>
+</ul></li>
+<li>:on_save =&gt; :noop - allows code with 'save' to be executed
+
+<ul>
+<li>link a gist</li>
+</ul></li>
+</ul>
+</div>
+<div class='step' data-x='24000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>How it Works</h1>
+</div>
+<div class='step' data-x='25000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Space Vs. Time</h1>
+
+<ul>
+<li>extra model instances are used to support the bulk import</li>
+</ul>
+</div>
+<div class='step' data-x='26000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>DeepImport* Models</h1>
+
+<ul>
+<li>for each ModelClass in the config file</li>
+<li>setup creates a DeepImportModelClass</li>
+<li>any time a ModelClass is instantiated
+
+<ul>
+<li>deep import creates a DeepImportModelClass</li>
+</ul></li>
+</ul>
+</div>
+<div class='step' data-x='27000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Association Tracking</h1>
+
+<ul>
+<li>whenever a belongs_to association method is called
+
+<ul>
+<li>the related DeepImportModelClass instance is updated</li>
+<li>basically a shadow index of record associations</li>
+</ul></li>
+<li>after load of models to the database
+
+<ul>
+<li>associations on source models are set from deep import models</li>
+<li>deep import models are then deleted</li>
+</ul></li>
+</ul>
+</div>
+<div class='step' data-x='28000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Standard Active Record Runtime</h1>
+
+<p>Each model created with: <strong>Model.new.save</strong></p>
+
+<p>Causes 1 transaction with the database.
+* 1 instance per transation
+    * Parent.new.save
+    * @parent.children.create</p>
+</div>
+<div class='step' data-x='29000' data-y='0' data-z='0' data-scale='1' data-rotate-x='0' data-rotate-y='0' data-rotate-z='0' >
+<h1>Active Record Import Runtime</h1>
+
+<p><a href="https://github.com/zdennis/activerecord-import/wiki">activeRecord-import</a>:</b></p>
+
+<ul>
+<li>X instances per transaction for 1 model class</li>
+<li>supports flat record formats</li>
+<li>doesnt support 'nested data' well</li>
+<li>helps power Deep Import, so much Thanks</li>
+</ul>
+</div>
 </div>
