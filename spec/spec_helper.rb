@@ -1,5 +1,12 @@
 # Logic to be reused by various tests that support deep_import
 require 'config_helper'
+
+# for repointing models to new connections
+def change_database_connection( config_name )
+	puts "Setting db to #{config_name}"
+	ActiveRecord::Base.establish_connection( config_name )
+end
+
 # for clearing out the tables between each benchmarking measurement
 def delete_models 
 	GrandChild.delete_all

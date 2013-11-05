@@ -26,6 +26,4 @@ describe 'DeepImport.initialize! - General API' do
 		expect { DeepImport.initialize! :on_save => :noop }.to raise_error
 	end
 
-
-
 end

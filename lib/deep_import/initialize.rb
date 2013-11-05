@@ -1,6 +1,9 @@
 module DeepImport
 
 	def self.initialize!( options = {} )
+		if DeepImport.status == :error
+			DeepImport.status = :init
+		end
 		# validate the import options
 		DeepImport.import_options = options
 

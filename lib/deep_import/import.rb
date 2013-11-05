@@ -7,6 +7,8 @@ module DeepImport
 		DeepImport.logger.info "==========================================================="
 		DeepImport.logger.info "Starting Import At #{start_time}"
 		DeepImport.logger.info "==========================================================="
+		DeepImport.logger.info "Running with adapter #{ActiveRecord::Base.connection_config[:adapter]}"
+
 		DeepImport.logger.info "#{'DeepImport.import:'.green}             #{'(in seconds)     user     system      total        real'.black.on_yellow}"
 		# initialize the deep import environment modifications
 		DeepImport.logger.info "#{'DeepImport.initialize!:'.green}              TIME: #{Benchmark.measure { DeepImport.initialize! options }}"

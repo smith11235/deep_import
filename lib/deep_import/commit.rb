@@ -53,12 +53,12 @@ module DeepImport
 			model_table = model_class.to_s.pluralize.underscore
 			belongs_to_table = belongs_to_class.to_s.pluralize.underscore
 
-			where_clause = "NOT ISNULL(#{model_table}.deep_import_id)"
+			where_clause = "#{model_table}.deep_import_id NOTNULL"
 			group_clause = "#{belongs_to_table}.deep_import_id"
 			select_clause = "#{belongs_to_table}.deep_import_id, count( #{model_table}.id ) AS counts"
 
 			source_distribution = Hash.new
-			model_class.joins( belongs_to_association ).where( where_clause ).group( group_clause ).select( select_clause ).each do |record|
+			model_class.joins( belongs_to_association ).where( "#{model_table}.deep_import_id NOTNULL" ).group( group_clause ).select( select_clause ).each do |record|
 				source_distribution[ record.deep_import_id ] = record.counts
 			end
 			source_distribution
@@ -72,7 +72,7 @@ module DeepImport
 			# for each belongs_to_class id, how many model_class's have it
 			select_clause = "#{belongs_to_id_field} AS deep_import_id, count( id ) AS counts"
 			# only for records that have a tracked relationship
-			where_clause = "#{belongs_to_id_field} IS NOT NULL"
+			where_clause = "#{belongs_to_id_field} NOTNULL"
 
 			deep_distribution = Hash.new # convert the sql groupy by/count result to a hash
 			deep_model_class.where( where_clause ).group( belongs_to_id_field ).select( select_clause ).each do |record| 
@@ -84,7 +84,7 @@ module DeepImport
 
 		def nilify_deep_import_ids
 			Config.models.each do |model_class,info|
-				model_class.update_all( "deep_import_id = NULL", "NOT ISNULL(deep_import_id)" )
+				model_class.update_all( "deep_import_id = NULL", "deep_import_id NOTNULL" )
 			end
 		end
 
@@ -100,10 +100,36 @@ module DeepImport
 				info[ :belongs_to ].keys.each do |parent_class|
 					names = model_names( model_class, parent_class )
 
-					model_class.joins( "JOIN #{names[:deep_import_target_table]} ON #{names[:target_table]}.deep_import_id = #{names[:deep_import_target_table]}.deep_import_id JOIN #{names[:association_table]} ON #{names[:deep_import_target_table]}.#{names[:deep_import_target_association_id_field]} = #{names[:association_table]}.deep_import_id" ).update_all( "#{names[:target_table]}.#{names[:target_association_id_field]} = #{names[:association_table]}.id", "NOT ISNULL(#{names[:target_table]}.deep_import_id)" )
-
+					case ActiveRecord::Base.connection_config[:adapter]
+					when "postgresql"
+						execute_postgresql_association_logic names
+					when "mysql2"
+						execute_mysql2_association_logic names
+					else
+						raise "unhandled database adapter"
+					end
 				end
 			end
+		end
+
+		def execute_mysql2_association_logic( names )
+		end
+
+		def execute_postgresql_association_logic( names )
+			ActiveRecord::Base.connection.execute( "
+				UPDATE 
+					#{names[:target_table]} AS target_table
+				SET
+					#{names[:target_association_id_field]} = belongs_to_table.id
+				FROM
+					#{names[:deep_import_target_table]} AS deep_import_index,
+					#{names[:association_table]} AS belongs_to_table 
+				WHERE
+					target_table.deep_import_id = deep_import_index.deep_import_id 
+				AND
+					deep_import_index.#{names[:deep_import_target_association_id_field]} = belongs_to_table.deep_import_id
+				AND
+				 	target_table.deep_import_id NOTNULL" )
 		end
 
 		def model_names( model_class, parent_class )

@@ -79,7 +79,7 @@ describe "DeepImport.commit!" do
 		describe "Child.belongs_to Parent" do
 			let( :parent_distribution ) {
 				dist = Hash.new
-				Child.joins( :parent ).group( "parents.id" ).select( "parents.name AS parent_name, count(children.id) AS child_references" ).each do |parent_reference|
+				Child.joins( :parent ).group( "parents.id" ).select( "MAX(parents.name) AS parent_name, count(children.id) AS child_references" ).each do |parent_reference|
 					dist[ parent_reference.parent_name ] = parent_reference.child_references
 				end
 				dist
@@ -90,14 +90,14 @@ describe "DeepImport.commit!" do
 			end
 
 			it "should have parents each occuring twice" do
-				parent_distribution.values.should =~ [2,2] 
+				parent_distribution.values.should =~ %w(2 2)
 			end
 		end
 
 		describe "GrandChild.belongs_to Child" do
 
 			let( :child_references ) {
-				reference_counts = GrandChild.joins( :child ).group( "children.id" ).select( "children.name AS child_name, count(grand_children.id) AS grand_child_references" )
+				reference_counts = GrandChild.joins( :child ).group( "children.id, children.name" ).select( "MAX(children.name) AS child_name, count(grand_children.id) AS grand_child_references" )
 				# now reformat it to an array
 				info = { :names => nil, :counts => nil }
 				info[ :names ] = reference_counts.collect {|reference| reference.child_name }
@@ -110,7 +110,7 @@ describe "DeepImport.commit!" do
 			end
 
 			it "should have parents each occuring twice" do
-				child_references[:counts].should =~ [2,2,2,2] 
+				child_references[:counts].should =~ %w(2 2 2 2)
 			end
 		end
 	end
