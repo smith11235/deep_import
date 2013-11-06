@@ -27,6 +27,11 @@ describe 'DeepImport.import - General API' do
 		Parent.all.count.should == 1 
 	end
 
+	it "should set deep_import_id to nil after commit" do
+		DeepImport.import { Parent.new }
+		Parent.first.deep_import_id.should == nil
+	end
+
 	it "should cause save to raise an error" do
 		expect { DeepImport.import { Parent.new.save } }.to raise_error
 	end

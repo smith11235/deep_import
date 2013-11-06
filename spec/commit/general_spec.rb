@@ -80,7 +80,7 @@ describe "DeepImport.commit!" do
 			let( :parent_distribution ) {
 				dist = Hash.new
 				Child.joins( :parent ).group( "parents.id" ).select( "MAX(parents.name) AS parent_name, count(children.id) AS child_references" ).each do |parent_reference|
-					dist[ parent_reference.parent_name ] = parent_reference.child_references
+					dist[ parent_reference.parent_name ] = parent_reference.child_references.to_s
 				end
 				dist
 			}
@@ -101,7 +101,7 @@ describe "DeepImport.commit!" do
 				# now reformat it to an array
 				info = { :names => nil, :counts => nil }
 				info[ :names ] = reference_counts.collect {|reference| reference.child_name }
-				info[ :counts ] = reference_counts.collect {|reference| reference.grand_child_references }
+				info[ :counts ] = reference_counts.collect {|reference| reference.grand_child_references.to_s }
 				info
 			}
 
