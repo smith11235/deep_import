@@ -55,6 +55,38 @@ class Positioner
 		@y -= @increment_amount
 		@x = Math.sin( @y )
 		@z = Math.cos( @y )
+
+		# now find the rotate_y value using 
+		# - the distance formula
+		# - the law of cosines
+		# C = rotate y (see wikipedia)
+
+		c_point = [0,0]
+		b_point = [@x,@z]
+		a_point = [1,0]
+
+		c_dist = distance( *a_point, *b_point)
+		b_dist = distance( *a_point, *c_point)
+		a_dist = distance( *c_point, *b_point)
+
+		@rotate_y = law_of_cosines( c_dist, b_dist, a_dist )
+	end
+
+	def law_of_cosines( c, b, a )
+		# returns the angle C opposite side c
+		to_degrees Math.acos( ( square( a ) + square( b ) - square( c ) ) / (2*a*b) )
+	end
+
+	def to_degrees( radians )
+		( radians * 180 ) / Math::PI
+	end
+
+	def distance( x1, y1, x2, y2 )
+		Math.sqrt( square( x2 - x1 ) + square( y2 - y1 ) )
+	end
+
+	def square( x )
+		x * x
 	end
 end
 
