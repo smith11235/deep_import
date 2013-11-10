@@ -9,8 +9,9 @@ task :impress => :environment do
 
 		f.puts header_content
 
+		position = Positioner.new
 		slides.each do |slide|
-			f.puts step_header
+			f.puts step_header( position.next_position )
 			
 			markdown = Redcarpet.new( slide )
 			f.puts markdown.to_html
@@ -23,16 +24,73 @@ task :impress => :environment do
 
 end
 
-def default_position
-	$x ||= 0 
-	defaults = { :x => $x, :y => 0, :z => 0, :scale => 1, :rotate_x => 0, :rotate_y => 0, :rotate_z => 0 }
-	$x += 1000
-	defaults
+task :math do
+	positioner = Positioner.new
+	(0..10).each do 
+		puts positioner.next_position.to_yaml
+	end
 end
 
-def step_header( position = {} )
-	position.reverse_merge! default_position 
+class Positioner 
+	def initialize
+		@x = 0
+		@y = 0
+		@z = 0
+		@rotate_y = 0
+		@coordinates_scale = 1500
+		@increment_amount = 0.5
+	end
 
+	def cscale( value )
+		@coordinates_scale * value
+	end
+
+	def next_position
+		increment_position
+
+		{ :x => cscale( @x ), :y => cscale( @y ), :z => cscale( @z ), :scale => 1, :rotate_x => 0, :rotate_y => @rotate_y, :rotate_z => 0 }
+	end
+
+	def increment_position
+		@y -= @increment_amount
+		@x = Math.sin( @y )
+		@z = Math.cos( @y )
+
+		# now find the rotate_y value using 
+		# - the distance formula
+		# - the law of cosines
+		# C = rotate y (see wikipedia)
+
+		c_point = [0,0]
+		b_point = [@x,@z]
+		a_point = [1,0]
+
+		c_dist = distance( *a_point, *b_point)
+		b_dist = distance( *a_point, *c_point)
+		a_dist = distance( *c_point, *b_point)
+
+		@rotate_y = law_of_cosines( c_dist, b_dist, a_dist )
+	end
+
+	def law_of_cosines( c, b, a )
+		# returns the angle C opposite side c
+		to_degrees Math.acos( ( square( a ) + square( b ) - square( c ) ) / (2*a*b) )
+	end
+
+	def to_degrees( radians )
+		( radians * 180 ) / Math::PI
+	end
+
+	def distance( x1, y1, x2, y2 )
+		Math.sqrt( square( x2 - x1 ) + square( y2 - y1 ) )
+	end
+
+	def square( x )
+		x * x
+	end
+end
+
+def step_header( position )
 	header = "<div class='step' "
 	position.each do |key,value|
 		header << "data-#{key.to_s.gsub(/_/,"-")}='#{value}' "
