@@ -9,8 +9,9 @@ task :impress => :environment do
 
 		f.puts header_content
 
+		position = Positioner.new
 		slides.each do |slide|
-			f.puts step_header
+			f.puts step_header( position.next_position )
 			
 			markdown = Redcarpet.new( slide )
 			f.puts markdown.to_html
@@ -23,16 +24,41 @@ task :impress => :environment do
 
 end
 
-def default_position
-	$x ||= 0 
-	defaults = { :x => $x, :y => 0, :z => 0, :scale => 1, :rotate_x => 0, :rotate_y => 0, :rotate_z => 0 }
-	$x += 1000
-	defaults
+task :math do
+	positioner = Positioner.new
+	(0..10).each do 
+		puts positioner.next_position.to_yaml
+	end
 end
 
-def step_header( position = {} )
-	position.reverse_merge! default_position 
+class Positioner 
+	def initialize
+		@x = 0
+		@y = 0
+		@z = 0
+		@rotate_y = 0
+		@coordinates_scale = 1500
+		@increment_amount = 0.5
+	end
 
+	def cscale( value )
+		@coordinates_scale * value
+	end
+
+	def next_position
+		increment_position
+
+		{ :x => cscale( @x ), :y => cscale( @y ), :z => cscale( @z ), :scale => 1, :rotate_x => 0, :rotate_y => @rotate_y, :rotate_z => 0 }
+	end
+
+	def increment_position
+		@y -= @increment_amount
+		@x = Math.sin( @y )
+		@z = Math.cos( @y )
+	end
+end
+
+def step_header( position )
 	header = "<div class='step' "
 	position.each do |key,value|
 		header << "data-#{key.to_s.gsub(/_/,"-")}='#{value}' "
