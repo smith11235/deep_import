@@ -12,6 +12,7 @@ PATH
       activerecord
       activerecord-import
       colorize
+      rails
 
 GEM
   remote: https://rubygems.org/
