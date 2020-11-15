@@ -73,9 +73,11 @@ module DeepImport
 			raise "Model File Already Exists: #{model_file}" if File.file? model_file
 			File.open( model_file, "w" ) do |f|
 				f.puts "class DeepImport#{model_class} < ActiveRecord::Base"
-				f.puts "  attr_accessible :deep_import_id, :parsed_at"
+				#f.puts "  attr_accessible :deep_import_id, :parsed_at"
 				info[:belongs_to].keys.each do |belongs_to|
-					f.puts "  attr_accessible :deep_import_#{belongs_to.to_s.underscore}_id"
+          low_name = belongs_to.to_s.underscore
+					#f.puts "  attr_accessible :deep_import_#{belongs_to.to_s.underscore}_id"
+          f.puts "  belongs_to :deep_import_#{low_name}"
 				end
 				f.puts "end"
 			end
@@ -87,7 +89,7 @@ module DeepImport
 			raise "Already a migration named: #{@migration_name}, run deep_import:teardown" if Dir.glob( "db/migrate/*_#{@migration_name.underscore}.rb" ).size > 0
 			migration_file = "db/migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_#{@migration_name.underscore}.rb"
 			File.open( migration_file, "w" ) do |f|
-				f.puts "class #{@migration_name} < ActiveRecord::Migration"
+        f.puts "class #{@migration_name} < ActiveRecord::Migration[#{Rails.version[/^\d.\d/]}]"
 				f.puts "  def change"
 				@migration_logic.each do |line|
 					f.puts "    #{line}"

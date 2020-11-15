@@ -12,10 +12,16 @@ module DeepImport
 	module ModelLogic
 
 		def self.included(base) # :nodoc:
-			raise "It appears as if #{base} has already been extended by DeepImport, this should only be done once" if base.accessible_attributes.to_a.include? 'deep_import_id'
+      # TODO: cleanup
+      raise "Already extended" unless base.column_names.include? 'deep_import_id'
+			#raise "It appears as if #{base} has already been extended by DeepImport, this should only be done once" if base.accessible_attributes.to_a.include? 'deep_import_id'
+
 			DeepImport.logger.info "Adding DeepImport::ModelLogic to #{base}".green
 			# add the new methods to this model class in question
-			base.extend ClassMethods
+			base.extend ClassSetupMethods 
+
+      # base.setup_deep_import
+      # TODO: use ^ - refactor below to prepend/DeepImportMethods
 
 			# now setup the basic deep import model tracking
 			base.setup_deep_import_id
@@ -28,9 +34,28 @@ module DeepImport
 			end
 		end
 
-		module ClassMethods
+
+    module DeepImportMethods
+      # https://littlelines.com/blog/2018/01/31/replace-alias-method-chain
+      def save
+        # TODO
+      end
+      def save!
+        # TODO
+      end
+    end
+
+
+		module ClassSetupMethods
+      def setup_deep_import
+        # TODO: use this for better Rails futurization
+        send :prepend, DeepImportMethods
+      end
+
 			def setup_deep_import_id 
-				send :attr_accessible, :deep_import_id # expose the deep_import_id methods
+        # TODO: is this needed in Rails 4+
+        # I think this can be removed
+				#send :attr_accessible, :deep_import_id # expose the deep_import_id methods
 			end
 
 			def modify_save
@@ -39,24 +64,29 @@ module DeepImport
 					deep_import_method = "save_with_deep_import#{ending}".to_sym
 					without_method = "save_without_deep_import#{ending}".to_sym
 					case DeepImport.import_options[ :on_save ] 
-					when :raise_error
+					when :raise_error # Better - Prevents mistaken code
 						send :define_method, deep_import_method do
 							if DeepImport.importing?
 								raise "disabled by DeepImport, provide ':on_save => :noop' to DeepImport.import to override"
 							else
+                # TODO: super - without_method_name is bad code here
 								send without_method	
 							end
 						end
-					when :noop
+					when :noop # Ok - Allows reused code between web controller/deep import jobs
 						send :define_method, deep_import_method do
 							if DeepImport.importing?
 								# noop
 							else
+                # TODO: super - without_method_name is bad code here
 								send without_method	
 							end
 						end
 					end
-					send :alias_method_chain,  method_name, :deep_import
+
+          # send :alias_method_chain,  method_name, :deep_import # Deprecated
+          send :alias_method, without_method, method_name # original source method
+					send :alias_method, method_name, deep_import_method # new intercept method
 				end
 			end
 
@@ -83,7 +113,9 @@ module DeepImport
 					return other_instance
 				end
 
-				send :alias_method_chain,  method_name, :deep_import
+				# send :alias_method_chain,  method_name, :deep_import # DEPRECATED
+        send :alias_method, without_method_name, method_name # original source method
+			  send :alias_method, method_name, deep_import_method_name # new intercept method
 			end
 
 			def setup_method_create_other( other_name )
@@ -102,7 +134,9 @@ module DeepImport
 						end
 					end
 
-					send :alias_method_chain,  method_name, :deep_import
+					#send :alias_method_chain,  method_name, :deep_import # DEPRECATED
+          send :alias_method, without_method_name, method_name # original source method
+					send :alias_method, method_name, deep_import_method_name # new intercept method
 				end
 			end
 
@@ -120,7 +154,9 @@ module DeepImport
 					DeepImport::ModelsCache.set_association_on( self, other_instance  ) if DeepImport.importing? 
 				end
 
-				send :alias_method_chain,  method_name, :deep_import
+				# send :alias_method_chain,  method_name, deep_import_method_name # 
+        send :alias_method, without_method_name, method_name # original source method
+			  send :alias_method, method_name, deep_import_method_name # new intercept method
 			end
 
 			def setup_after_initialization_callback 

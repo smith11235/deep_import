@@ -41,6 +41,4 @@ module DeepImport
 	def self.importing?
 		DeepImport.status == DeepImport.settings[:enable_import_logic_status] 
 	end
-
-
 end

@@ -9,7 +9,10 @@ module DeepImport
 		end
 
 		def initialize
-			@config_file_path = File.join( Rails.root, "config", "deep_import.yml" )
+      # TODO: add ENV["DEEP_IMPORT_CONFIG"]
+      # TODO: drive off info in models
+      # deep_importable id, parent_id
+      @config_file_path = File.join( ".", "config", "deep_import.yml" )
 			@models = Hash.new
 			parse
 
@@ -25,9 +28,13 @@ module DeepImport
 		end
 
 		def parse
-			return unless parse_config_file
+      unless parse_config_file
+        raise "Unable to parse config file: #{@status}"
+      end
 			@status = :parsed
-			return unless parse_models
+      unless parse_models
+        raise "Unable to parse models: #{@status}"
+      end
 			@status = :valid
 		end
 
@@ -35,17 +42,16 @@ module DeepImport
 
 		def parse_config_file
 			if ! File.file? @config_file_path
-				puts "Missing config file"
-				@status = :inactive
-				DeepImport.logger.debug "DeepImport: No #{@config_file_path}"
+				@status = :no_config_file
+				DeepImport.logger.debug "DeepImport: #{@status} #{@config_file_path}"
 				return false
 			end
 
 			begin
-				@config = YAML::load File.open( @config_file_path, "r" )
+        @config = YAML.load_file @config_file_path
 			rescue Exception => e
-				@status = :error
-				DeepImport.logger.error "Deep Import: parsing error for #{@config_file_path}"
+				@status = :parse_error
+				DeepImport.logger.error "Deep Import: #{@status} for #{@config_file_path}"
 				DeepImport.logger.error "Exception: #{e.to_yaml}"
 				return false
 			end
@@ -55,7 +61,7 @@ module DeepImport
 
 		def parse_models
 			if ! @config.is_a? Hash
-				@status = :error
+				@status = :config_format_error
 				DeepImport.logger.error "Deep Import: config root object not a Hash, #{@config.class}"
 				return false
 			end
@@ -66,7 +72,7 @@ module DeepImport
 					parse_model_associations( model_class, info )
 				end
 			rescue Exception => e
-				@status = :error
+				@status = :model_config_error
 				DeepImport.logger.error "Deep Import: error parsing models: #{e.to_yaml}"
 				DeepImport.logger.error "Backtrace #{e.backtrace}"
 				return false
@@ -76,7 +82,9 @@ module DeepImport
 
 		def	parse_model_associations( model_class, info )
 			@models[ model_class ] ||= Hash.new
-			associations.each {|association| @models[ model_class ][ association ] ||= Hash.new }
+			associations.each do |association| 
+        @models[ model_class ][ association ] ||= Hash.new 
+      end
 
 			return if info.nil? # this is a root class, no associations of note
 			raise "Info for #{model_class} expected as Hash, not: #{info.to_yaml}" unless info.is_a? Hash
@@ -87,6 +95,7 @@ module DeepImport
 		end
 
 		def associations
+      # Note: has_one/many, we only need to worry about the belongs
 			[ :belongs_to ]
 		end
 

@@ -111,14 +111,15 @@ module DeepImport
 			Config.models.each do |model_class,info|
 				info[ :belongs_to ].keys.each do |parent_class|
 					names = model_names( model_class, parent_class )
+          adapter = ActiveRecord::Base.connection_config[:adapter]
 
-					case ActiveRecord::Base.connection_config[:adapter]
+					case adapter
 					when "postgresql"
 						execute_postgresql_association_logic names
 					when "mysql2"
 						execute_mysql2_association_logic names
 					else
-						raise "unhandled database adapter"
+						raise "unhandled database adapter: #{adapter}"
 					end
 				end
 			end
