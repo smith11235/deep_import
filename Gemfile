@@ -5,9 +5,9 @@ gemspec
 gem 'rails'#, '~> 4.2.11.3'
 
 # Make common databases all work
-gem 'sqlite3' # base reset
+#gem 'sqlite3' # base reset
 #gem 'mysql2' # TODO: first/works i believe
-#gem 'pg' # TODO - best case
+gem 'pg' # TODO - best case
 
 group :development, :test do
   gem 'rspec-rails'#, "~> 3"

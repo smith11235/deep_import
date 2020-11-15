@@ -86,6 +86,7 @@ GEM
     nio4r (2.5.2)
     nokogiri (1.10.10)
       mini_portile2 (~> 2.4.0)
+    pg (1.2.3)
     rack (2.2.3)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -143,7 +144,6 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    sqlite3 (1.4.2)
     therubyracer (0.12.3)
       libv8 (~> 3.16.14.15)
       ref
@@ -163,10 +163,10 @@ PLATFORMS
 DEPENDENCIES
   activerecord-import!
   deep_import!
+  pg
   rails
   rspec
   rspec-rails
-  sqlite3
   therubyracer
   uglifier
 
