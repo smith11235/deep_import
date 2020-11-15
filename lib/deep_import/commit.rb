@@ -96,7 +96,7 @@ module DeepImport
 
 		def nilify_deep_import_ids
 			Config.models.each do |model_class,info|
-				model_class.update_all( "deep_import_id = NULL", field_not_null( :deep_import_id ) )
+				model_class.where.not(deep_import_id: nil).update_all(deep_import_id: nil)
 			end
 		end
 
