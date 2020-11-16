@@ -10,7 +10,8 @@ namespace :example do
   desc "Load sample data with deep import handling"
   task deep_import: :environment do
     report("Deep") do 
-      DeepImport.import(on_save: :noop) do 
+      #DeepImport.import do # expect error
+      DeepImport.import(on_save: :noop) do # works
         make_random_nested_data
       end
     end
@@ -18,7 +19,7 @@ namespace :example do
 
   # Sample Code: Can run as standard, or within deep import
   def make_random_nested_data
-    limit = (ENV["limit"] || "10").to_i
+    limit = (ENV["LIMIT"] || "10").to_i
     (0..limit).each do |parent_number|
       parent = Parent.new name: SecureRandom.hex
       parent.save # Note: save calls could be left out when building bulk data jobs
@@ -42,7 +43,7 @@ namespace :example do
     edate = DateTime.now
     dur = ((edate - sdate) * 24 * 60 * 60).to_f.round(2)
     added(s)
-    puts "#{type} Import: Time: #{dur} seconds".green
+    puts "Import: \"#{type}\": #{dur} seconds".green
   end
 
   def models
@@ -56,9 +57,9 @@ namespace :example do
   end
 
   def added(s)
-    puts "Added model instances\n-------------------".green
+    puts "Added model instances\n-------------------".yellow
     s.each do |m, init|
-      puts "#{m}: #{m.count - init}".green
+      puts "#{m}: #{m.count - init}".yellow
     end
   end
 end

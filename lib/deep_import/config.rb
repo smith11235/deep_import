@@ -3,10 +3,18 @@ module DeepImport
 	class Config
 		attr_reader :models, :status
 
-		def self.models
-			raise "@@models has not yet been defined yet" if @@models.nil?
-			@@models
-		end
+    def self.importable
+      @@importable
+    end
+
+    def self.belongs_to(base)
+      @@belongs_to[base]
+    end
+
+    def self.has_many(base)
+      @@has_many[base]
+    end
+
 
 		def initialize
       # Driven by file config
@@ -21,9 +29,32 @@ module DeepImport
 				DeepImport.logger.error "DeepImport: Failed to parse models."
 				DeepImport.logger.error "DeepImport: Config: \n#{@config.to_yaml}"
 				DeepImport.logger.error "DeepImport: Unable to initialize."
+        @models = {} # reset to empty - if invalid config - do nothing
         #raise e # dont raise - allow rails to work normally/prevents hard crashes from bad configs
       end
-			@@models = valid? ? @models : Hash.new
+			@@models = @models # DEPRECATED / REMOVE
+
+      @@importable = @models.keys
+      @@belongs_to = {}
+      @@has_many = {}
+
+      # fill in has_many/belongs_to
+      @models.each do |base, relations|
+        @@belongs_to[base] = relations[:belongs_to].keys.collect do |belongs| 
+
+          # TODO: presume all associations are has_many - add config option for has_one
+          @@has_many[belongs] ||= []
+          @@has_many[belongs] << base.to_s.underscore.pluralize.to_sym
+
+          belongs.to_s.underscore.to_sym
+        end
+      end
+
+      #puts "Deep Import Config".red
+      #puts "Importable: #{@@importable.map(&:to_s)}".red
+      #puts "Belongs To: #{@@belongs_to}".red
+      #puts "Has Many: #{@@has_many}".red
+
 		end
 
 		def valid?

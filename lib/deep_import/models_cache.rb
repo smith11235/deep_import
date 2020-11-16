@@ -3,7 +3,7 @@ module DeepImport
 	module ModelsCache
 		def self.reset
 			@@cache = Cache.new
-			DeepImport::Config.models.keys.each do |model_class| 
+			DeepImport::Config.importable.each do |model_class| 
 				@@cache.track_model( model_class )
 			end
 		end

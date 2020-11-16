@@ -44,7 +44,7 @@ module DeepImport
 			DeepImport.mark_importing!
 
 			# call the users block
-			DeepImport.logger.info "#{'DeepImport.import:'.green} executing users block"
+			DeepImport.logger.info "#{'DeepImport.import:'.green} building data"
 			DeepImport.logger.info "                                     TIME: #{Benchmark.measure { import_block.call }}"
 
 			DeepImport.mark_ready_for_import!

@@ -22,8 +22,9 @@ module DeepImport
 		end
 
 		def validate_associations
-			Config.models.each do |model_class,info|
-				info[ :belongs_to ].keys.each do |belongs_to_class|
+      Config.importable.each do |model_class|
+			  belongs = Config.belongs_to(model_class)
+				belongs.each do |belongs_to_class|
 					deep_distribution = get_deep_import_id_distribution model_class, belongs_to_class
 
 					source_distribution = get_source_id_distribution model_class, belongs_to_class
@@ -95,24 +96,25 @@ module DeepImport
 		end
 
 		def nilify_deep_import_ids
-			Config.models.each do |model_class,info|
+			Config.importable.each do |model_class|
 				model_class.where.not(deep_import_id: nil).update_all(deep_import_id: nil)
 			end
 		end
 
 		def delete_deep_import_models
-			Config.models.each do |model_class,info|
+			Config.importable.each do |model_class|
 				deep_import_model_class = "DeepImport#{model_class}".constantize
 				deep_import_model_class.delete_all
 			end
 		end
 
 		def set_associations
-			Config.models.each do |model_class,info|
-				info[ :belongs_to ].keys.each do |parent_class|
+      # TODO: use joins/active record code here
+      Config.importable.each do |model_class|
+			  belongs = Config.belongs_to(model_class)
+				belongs.each do |parent_class|
 					names = model_names( model_class, parent_class )
           adapter = ActiveRecord::Base.connection_config[:adapter]
-
 					case adapter
 					when "postgresql"
 						execute_postgresql_association_logic names
@@ -164,15 +166,15 @@ module DeepImport
 		def model_names( model_class, parent_class )
 			{
 				:target_table => model_class.to_s.underscore.pluralize,
-				:target_association_id_field => "#{parent_class}_id".underscore,
-				:deep_import_target_association_id_field => "deep_import_#{parent_class}_id".underscore,
-				:association_table => parent_class.to_s.underscore.pluralize,
+				:target_association_id_field => "#{parent_class}_id",
+				:deep_import_target_association_id_field => "deep_import_#{parent_class}_id",
+				:association_table => parent_class.to_s.pluralize,
 				:deep_import_target_table => "deep_import_#{model_class}".underscore.pluralize
 			}
 		end
 
 		def import_models
-			DeepImport::Config.models.keys.each do |base_class|
+			DeepImport::Config.importable.each do |base_class|
 				[ base_class, "DeepImport#{base_class}".constantize ].each do |model_class|
 					instances = DeepImport::ModelsCache.cached_instances( model_class )
 					raise "#{model_class} does not respond to import" unless model_class.respond_to? :import, true
