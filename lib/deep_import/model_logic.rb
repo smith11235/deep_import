@@ -19,13 +19,14 @@ module DeepImport
 			# add the new methods to this model class in question
 			base.extend ClassSetupMethods 
 
-      # base.setup_deep_import
+      # New Logic 
+      base.setup_deep_import
       # TODO: use ^ - refactor below to prepend/DeepImportMethods
 
 			# now setup the basic deep import model tracking
 			base.setup_deep_import_id
 			base.setup_after_initialization_callback
-			base.modify_save
+			# base.modify_save
 			# and then the belongs_to associations
 			belongs_to_associations = DeepImport::Config.models.fetch( base ).fetch( :belongs_to )
 			belongs_to_associations.keys.each do |belongs_to_class|
@@ -36,18 +37,31 @@ module DeepImport
 
     module DeepImportMethods
       # https://littlelines.com/blog/2018/01/31/replace-alias-method-chain
+
       def save
-        # TODO
+        deep_import_safety_check { super }
       end
+
       def save!
-        # TODO
+        deep_import_safety_check { super }
+      end
+
+      private
+
+      def deep_import_safety_check
+        if !DeepImport.importing?
+          yield # not in import block, do standard active record call
+        elsif DeepImport.raise_error? 
+          raise "DeepImport: 'save' called within import block - change code or pass 'on_save: :noop'"
+        else
+          # :noop - ignore call, keep processing
+        end
       end
     end
 
 
 		module ClassSetupMethods
-      def setup_deep_import
-        # TODO: use this for better Rails futurization
+      def setup_deep_import # Rails 5+
         send :prepend, DeepImportMethods
       end
 
@@ -62,26 +76,6 @@ module DeepImport
 					method_name = "save#{ending}".to_sym
 					deep_import_method = "save_with_deep_import#{ending}".to_sym
 					without_method = "save_without_deep_import#{ending}".to_sym
-					case DeepImport.import_options[ :on_save ] 
-					when :raise_error # Better - Prevents mistaken code
-						send :define_method, deep_import_method do
-							if DeepImport.importing?
-								raise "disabled by DeepImport, provide ':on_save => :noop' to DeepImport.import to override"
-							else
-                # TODO: super - without_method_name is bad code here
-								send without_method	
-							end
-						end
-					when :noop # Ok - Allows reused code between web controller/deep import jobs
-						send :define_method, deep_import_method do
-							if DeepImport.importing?
-								# noop
-							else
-                # TODO: super - without_method_name is bad code here
-								send without_method	
-							end
-						end
-					end
 
           # send :alias_method_chain,  method_name, :deep_import # Deprecated
           send :alias_method, without_method, method_name # original source method

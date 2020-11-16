@@ -2,6 +2,10 @@ module DeepImport
 
 	mattr_reader :import_options
 
+  def self.raise_error?
+    @@raise_error
+  end
+
 	private
 
 	def self.import_options=( options )
@@ -9,6 +13,8 @@ module DeepImport
 		options = import_options.to_hash
 
 		@@import_options = options
+
+    @@raise_error = options[:on_save] == :raise_error # else :noop
 	end
 
 	class ImportOptions
