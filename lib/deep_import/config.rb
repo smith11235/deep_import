@@ -9,75 +9,55 @@ module DeepImport
 		end
 
 		def initialize
-      # TODO: add ENV["DEEP_IMPORT_CONFIG"]
-      # TODO: drive off info in models
-      # deep_importable id, parent_id
-      @config_file_path = File.join( ".", "config", "deep_import.yml" )
-			@models = Hash.new
-			parse
+      # Driven by file config
+      # TODO: orrrrr, drive off info in models
 
-			@@models = if valid?
-									 @models 
-									else
-										Hash.new
-									end
+			@models = Hash.new
+      begin
+        parse_config
+        parse_models # from config
+        @status = :valid
+      rescue Exception => e
+				DeepImport.logger.error "DeepImport: Failed to parse models."
+				DeepImport.logger.error "DeepImport: Config: \n#{@config.to_yaml}"
+				DeepImport.logger.error "DeepImport: Unable to initialize."
+        #raise e # dont raise - allow rails to work normally/prevents hard crashes from bad configs
+      end
+			@@models = valid? ? @models : Hash.new
 		end
 
 		def valid?
-			return @status == :valid
-		end
-
-		def parse
-      unless parse_config_file
-        raise "Unable to parse config file: #{@status}"
-      end
-			@status = :parsed
-      unless parse_models
-        raise "Unable to parse models: #{@status}"
-      end
-			@status = :valid
+			@status == :valid
 		end
 
 		private
 
-		def parse_config_file
-			if ! File.file? @config_file_path
-				@status = :no_config_file
-				DeepImport.logger.debug "DeepImport: #{@status} #{@config_file_path}"
-				return false
-			end
+    def parse_config
+      if $deep_import_config.present? # Testing Helper/In Memory
+        @config = $deep_import_config
+      else # File based
+        cf = ENV["DEEP_IMPORT_CONFIG"] || File.join(".", "config", "deep_import.yml")
+        parse_config_file(cf)
+      end
+    end
 
+		def parse_config_file(config_file)
 			begin
-        @config = YAML.load_file @config_file_path
+        raise "Missing config file: #{config_file}" unless File.file?(config_file)
+        @config = YAML.load_file config_file
 			rescue Exception => e
-				@status = :parse_error
-				DeepImport.logger.error "Deep Import: #{@status} for #{@config_file_path}"
-				DeepImport.logger.error "Exception: #{e.to_yaml}"
-				return false
+				DeepImport.logger.error "DeepImport: Failed to parse config: #{config_file}"
+        raise e
 			end
-
-			return true
 		end
 
 		def parse_models
-			if ! @config.is_a? Hash
-				@status = :config_format_error
-				DeepImport.logger.error "Deep Import: config root object not a Hash, #{@config.class}"
-				return false
-			end
+		  raise "Config object not a Hash, #{@config.class}" if !@config.is_a? Hash
 
-			begin
-				@config.each do |model_name,info|
-					model_class = class_for model_name
-					parse_model_associations( model_class, info )
-				end
-			rescue Exception => e
-				@status = :model_config_error
-				DeepImport.logger.error "Deep Import: error parsing models: #{e.to_yaml}"
-				DeepImport.logger.error "Backtrace #{e.backtrace}"
-				return false
+			@config.each do |model_name,info|
+				model_class = class_for model_name
+				parse_model_associations( model_class, info )
 			end
-			return true 
 		end
 
 		def	parse_model_associations( model_class, info )

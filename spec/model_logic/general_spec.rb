@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe 'DeepImport::ModelLogic - General API' do
-
 	before(:all){
 		ConfigHelper.new.valid_config
 		DeepImport.initialize! 
@@ -14,7 +13,7 @@ describe 'DeepImport::ModelLogic - General API' do
 
 		describe "base enhancements" do
 			it "has accessible deep_import_id"	do
-				Child.accessible_attributes.should include( :deep_import_id )
+				expect(Child.column_names.include?('deep_import_id')).to be true
 			end
 
 			it "should have deep_import_after_initialize" do

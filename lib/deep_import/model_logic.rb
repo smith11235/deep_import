@@ -12,11 +12,10 @@ module DeepImport
 	module ModelLogic
 
 		def self.included(base) # :nodoc:
-      # TODO: cleanup
-      raise "Already extended" unless base.column_names.include? 'deep_import_id'
-			#raise "It appears as if #{base} has already been extended by DeepImport, this should only be done once" if base.accessible_attributes.to_a.include? 'deep_import_id'
+      # TODO: already initialized safety check
 
-			DeepImport.logger.info "Adding DeepImport::ModelLogic to #{base}".green
+			DeepImport.logger.info "DeepImport::ModelLogic: Initializing: #{base}".green
+
 			# add the new methods to this model class in question
 			base.extend ClassSetupMethods 
 

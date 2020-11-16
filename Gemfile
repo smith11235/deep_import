@@ -11,7 +11,7 @@ gem 'pg' # TODO - best case
 
 group :development, :test do
   gem 'rspec-rails'#, "~> 3"
-  #gem 'rspec_candy' # for extra fun testing helpers # TODO: needed
+  gem 'rspec_candy' # for extra fun testing helpers # TODO: needed
 end
 
 gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git'
