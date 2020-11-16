@@ -31,6 +31,7 @@ require 'rspec_candy/all'
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 RSpec.configure do |config|
+  config.filter_run_excluding manual: true # block Setup/Teardown for now
   # ## Mock Framework
   #
   # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:

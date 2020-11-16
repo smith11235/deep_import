@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "rake deep_import:teardown" do
+describe "rake deep_import:teardown", manual: true do
 
 	before( :all ) {
 		ConfigHelper.new.valid_config
