@@ -1,12 +1,27 @@
 namespace :example do
-  # Sample Code 
-  # Can be used as standard ORM loading, or with deep import
-  # Note: could remove the save calls for a simpler bulk import code block
-  def make_data
+
+  desc "Load sample data with standard ORM calls"
+  task normal: :environment do
+    report("Normal") do
+      make_random_nested_data 
+    end
+  end
+  
+  desc "Load sample data with deep import handling"
+  task deep_import: :environment do
+    report("Deep") do 
+      DeepImport.import(on_save: :noop) do 
+        make_random_nested_data
+      end
+    end
+  end
+
+  # Sample Code: Can run as standard, or within deep import
+  def make_random_nested_data
     limit = (ENV["limit"] || "10").to_i
     (0..limit).each do |parent_number|
       parent = Parent.new name: SecureRandom.hex
-      parent.save # Note: save could be left out when deep importing, used to show duality of code
+      parent.save # Note: save calls could be left out when building bulk data jobs
       (0..limit).each do |child_number|
         child = Child.new name: SecureRandom.hex, parent: parent
         child.save
@@ -44,22 +59,6 @@ namespace :example do
     puts "Added model instances\n-------------------".green
     s.each do |m, init|
       puts "#{m}: #{m.count - init}".green
-    end
-  end
-
-  desc "Load sample data with standard ORM calls"
-  task normal: :environment do
-    report("Normal") do
-      make_data 
-    end
-  end
-  
-  desc "Load sample data with deep import handling"
-  task deep_import: :environment do
-    report("Deep") do 
-      DeepImport.import(on_save: :noop) do # allows same code execution
-        make_data
-      end
     end
   end
 end
