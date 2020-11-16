@@ -1,17 +1,18 @@
 namespace :example do
-  # Sample code that could be standard ORM - or deep import
+  # Sample Code 
+  # Can be used as standard ORM loading, or with deep import
+  # Note: could remove the save calls for a simpler bulk import code block
   def make_data
-    limit = ENV["limit"] || 10
+    limit = (ENV["limit"] || "10").to_i
     (0..limit).each do |parent_number|
       parent = Parent.new name: SecureRandom.hex
-      parent.save
+      parent.save # Note: save could be left out when deep importing, used to show duality of code
       (0..limit).each do |child_number|
-        child = Child.new name: SecureRandom.hex
-        child.parent = parent # TODO: make it so ^ parent: parent works
+        child = Child.new name: SecureRandom.hex, parent: parent
         child.save
         (0..limit).each do |grandchild_number|
-          grandchild = GrandChild.new name: SecureRandom.hex # TODO: make it so child: child works
-          grandchild.child = child
+          grandchild = GrandChild.new name: SecureRandom.hex 
+          grandchild.child = child 
           grandchild.save
         end
       end
@@ -19,14 +20,14 @@ namespace :example do
   end
 
   def report(type)
-    # deep import provides stats, this is for helpful comparison
+    # while deep import provides stats, this is for helpful comparison between 'normal' and deep import
     s = stats
     sdate = DateTime.now
     yield # run make data - w/ and w/out deep import
     edate = DateTime.now
-    dur = ((edate - sdate) * 24 * 60 * 60).to_i
+    dur = ((edate - sdate) * 24 * 60 * 60).to_f.round(2)
     added(s)
-    puts "#{type} Import: #{dur} seconds".green
+    puts "#{type} Import: Time: #{dur} seconds".green
   end
 
   def models

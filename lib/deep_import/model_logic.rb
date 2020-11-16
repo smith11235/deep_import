@@ -19,6 +19,7 @@ module DeepImport
       base.class_eval do
         # https://littlelines.com/blog/2018/01/31/replace-alias-method-chain
         prepend DeepImportOverrideMethods # more specialized active record handlers
+
         after_initialize :deep_import_after_initialize
 
         belongs_to_associations = DeepImport::Config.models.fetch( base ).fetch( :belongs_to )
@@ -28,7 +29,6 @@ module DeepImport
           DeepImportOverrideMethods.define_assigns other_name
           DeepImportOverrideMethods.define_build other_name
           DeepImportOverrideMethods.define_create other_name
-
           # TODO: on {belongs_to_class}.{base.pluralize}.(build|create(!))
         end
       end
@@ -38,10 +38,20 @@ module DeepImport
       return unless DeepImport.importing? # only during imports
       # Assign new deep import id if this is a new record
       return unless self.new_record? 
-      return unless self.deep_import_id.nil? 
+      return unless self.deep_import_id.nil?
 
       DeepImport::ModelsCache.add(self) # add to cache/set id
-      # TODO: check for associations (Model.new other_model: om)
+
+      # Track associations passed into constructor, track them
+      # TODO: optimize this, set self.class.deep_importable_belongs_to => under_score_names array
+      belongs_to_associations = DeepImport::Config.models.fetch(self.class).fetch(:belongs_to).keys
+      belongs_to_associations.each do |belongs_to_class|
+        other_name = belongs_to_class.to_s.underscore
+        other_instance = self.send(other_name)
+        if other_instance
+          DeepImport::ModelsCache.set_association_on(self, other_instance) 
+        end
+      end
     end
 
     module DeepImportOverrideMethods
@@ -50,7 +60,11 @@ module DeepImport
         # aka: child.parent = parent
         send :define_method, "#{other_name}=".to_sym do |other_instance|
           super(other_instance) # call original self.other_name =
-          DeepImport::ModelsCache.set_association_on(self, other_instance) if DeepImport.importing? 
+          return other_instance if deep_import_id.nil? || !DeepImport.importing?
+          # ^ bulk assignment calls 'other=', before deep import id is created....
+          # ignore association tracking until an id has been assigned, then add tracking (from after_initialize)
+          DeepImport::ModelsCache.set_association_on(self, other_instance) 
+          other_instance
         end
       end
 
