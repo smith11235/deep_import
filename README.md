@@ -5,6 +5,16 @@ Deep Import lets you use standard code,
 to upload bulk data, with nested relations,
 in a fraction of the time.
 
+## Setup Your Code
+
+* Add gem: 
+  * `gem deep_import`
+* Add config file defining importable models and relationships:
+  * Example: [config/deep_import.yml](config/deep_import.yml)
+* Generate and execute database migration (from config file)
+  * `rake deep_import:setup`
+* Start running imports
+
 ### Simple Code Example
 
 Full code example: [lib/tasks/example.rake](lib/tasks/example.rake)
@@ -136,6 +146,31 @@ Each "Importable" ModelClass:
 
 * for each "belongs to" {OtherClass} association (foreign key relation) on ModelClass
   * the "deep_import_model_class" table will have a "deep_import_{other_class}_id" field
+##### Schema Example
+For models: Parent, each having many Children.
+
+```
+parents
+  id PKEY
+  ...data fields...
+  deep_import_id # relative id to batch import
+
+children
+  id PKEY
+  parent_id FKEY # unavailable at time of initial import
+  ...data fields...
+  deep_import_id # relative id to batch import
+
+deep_import_parents
+  deep_import_id 
+
+deep_import_children
+  deep_import_id
+  deep_import_parent_id # for joining to parents
+```
+
+When the "children" are bulk inserted, they all have null parent.
+Each child record has an index record, that has recorded the parent relation via a relative deep import id. Post import, the foreign key relations ("children.parent_id" field) are set via an update/joins query through the deep import index tables.
 
 #### Batch Relative IDs
 
@@ -148,6 +183,7 @@ EX: For a batch of 10 models, their relative id's will be "1" through "10". Runn
 For multi-machine safety:
 
 > deep_import_id = {process_id}_#{count of models in memory}
+
 > deep_import_id = 2384239482341_15
  
 
@@ -162,44 +198,11 @@ For multi-machine safety:
     * 1x UPDATE/JOINS query per association
   * deep import ids, and deep import index records, are deleted
 
-#### Schema Example
-
-```
-parents
-  id PKEY
-  ...data fields...
-  deep_import_id # relative id to batch import
-
-deep_import_parents
-  deep_import_id 
-
-children
-  id PKEY
-  parent_id FKEY
-  ...data fields...
-  deep_import_id # relative id to batch import
-
-deep_import_children
-  deep_import_id
-  deep_import_parent_id # for joining to parents
-```
-
-When the "children" are bulk inserted, they all have null parent.
-Each child record has an index record, that has recorded the parent relation via a relative deep import id. Post import, the foreign key relations ("children.parent_id" field) are set via an update/joins query through the deep import index tables.
   
 #### The Cost
 
 _Write out the math_
 
-### Setup:
-
-* Intall gem
-  * `gem deep_import`
-* Add config file defining importable models:
-  * [config/deep_import.yml](config/deep_import.yml)
-* Setup code files, and database migration (index tables required)
-  * `rake deep_import:setup`
-* Start writing code and running imports
 
 # Outdated Notes Below - Rewrite/Update
 ### Outdated Setup Example 
