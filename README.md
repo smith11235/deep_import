@@ -24,10 +24,15 @@ Full code example: [lib/tasks/example.rake](lib/tasks/example.rake)
 * 1 block of code: can be run normally, or with DeepImport
   * `rake example:normal`
   * `rake example:deep_import`
-* loads ~1500 models (in 3 nested classes: Parent/Child/Grandchild)
-  * **"Normal" execution takes ~10 seconds**
-  * **"Deep Import" execution takes ~1 second**
-  * larger data set timing is even more pronounced
+* 3 nested classes: Parent/Child/Grandchild
+  * with LIMIT=10, **~1,500 model instances**
+    * **"Normal" execution takes ~10 seconds**
+    * **"Deep Import" execution takes ~1 second**
+  * with LIMIT=29, **~28,000 model instances**
+    * **"Normal" execution takes ~214 seconds**
+    * **"Deep Import" execution takes ~32 second**
+
+Sample code for import job shown below.
 
 ```
   DeepImport.import do # engages magic
