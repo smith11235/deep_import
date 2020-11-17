@@ -87,7 +87,6 @@ module DeepImport
       def build(attributes = {})
         other_instance = super(attributes)
         if DeepImport.importing?
-          puts "Built #{other_instance.class} From #{proxy_association.owner}".green
           DeepImport::ModelsCache.set_association_on(other_instance, proxy_association.owner) 
         end
         other_instance 

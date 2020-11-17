@@ -114,6 +114,25 @@ module DeepImport
 			  belongs = Config.belongs_to(model_class)
 				belongs.each do |parent_class|
 					names = model_names( model_class, parent_class )
+
+          # setting target_table.{associated}_id
+          # joining through deep import index, to associated table
+          target_table = names[:target_table] # of model_class
+          index_table = names[:deep_import_target_table]
+          associated = names[:association_table]
+
+=begin
+# TODO: why doesnt this work
+          model_class. 
+            where.not(target_table => {deep_import_id: nil}). # TODO: add batch/process id
+            joins( # TODO: remove need for ON clause
+              "JOIN #{index_table} ON #{target_table}.deep_import_id = #{index_table}.deep_import_id"
+            ).joins( # TODO: remove need for ON clause
+							"JOIN #{associated} ON #{associated}.deep_import_id = #{index_table}.#{names[:deep_import_target_association_id_field]}"
+            ).update_all(
+              "#{target_table}.#{names[:target_association_id_field]} = #{associated}.id"
+            )
+=end
           adapter = ActiveRecord::Base.connection_config[:adapter]
 					case adapter
 					when "postgresql"
