@@ -45,11 +45,11 @@ Sample code for import job shown below.
 
 ```
   DeepImport.import do # engages magic - bulk inserts occur when code building block finishes
-    (0..30).each do |p|
+    (0..30).each do
       parent = Parent.new name: SecureRandom.hex
-      (0..30).each do |c|
+      (0..30).each do
         child = parent.children.build name: SecureRandom.hex
-        (0..30).each do |gc|
+        (0..30).each do
           child.grand_children.build name: SecureRandom.hex
 ```
 
@@ -64,7 +64,7 @@ In a standard ORM process, for X model instances to be loaded, there are X inser
 When loading a large number of models, the network calls add up to significant overhead.
 
 ```
-(0..10).each do |p|
+(0..10).each do
   Parent.new.save # 10 insert calls executed
 end
 ```
@@ -80,7 +80,7 @@ provides a simple solution to this problem.
 
 ```
 parents = []
-(0..10).each do |p|
+(0..10).each do
   parents << Parent.new # build all models in memory, limited by server memory
 end
 Parent.import parents # 1 bulk insert call executed
@@ -97,9 +97,9 @@ This is due to the fact that relationships (primary/foreign key fields) cannot b
 # Faulty code (what Deep Import handles)
 parents = []
 children = []
-(0..10).each do |p|
+(0..10).each do
   parents << Parent.new # build all models in memory, limited by server memory
-  (0..10).each do |c|
+  (0..10).each do
     children = Child.new parent: parents.last
   end
 end
@@ -114,14 +114,14 @@ To get around this, and still have some speed benefits, all Parents could be cre
 ```
 # Impractical Code - But works
 parents = []
-(0..10).each do |p|
+(0..10).each do
   parents << Parent.new # build all models in memory, limited by server memory
 end
 Parent.import parents # 1 bulk insert call executed
 
 children = []
 parents.each do |parent|
-  (0..10).each do |c|
+  (0..10).each do
     children = Child.new parent: parent
   end
 end
@@ -217,7 +217,7 @@ For multi-machine safety:
   
 #### The Cost
 
-_Write out the math_
+_Write out the math - for time + space_
 
 
 # Outdated Notes Below - Rewrite/Update
