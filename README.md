@@ -5,6 +5,8 @@ Deep Import lets you use standard code,
 to upload bulk data, with nested relations,
 in a fraction of the time.
 
+_Note: while this is written against ActiveRecord (ruby), the algorithm is portable to other high level ORMs._
+
 ## Setup Your Code
 
 * Add gem: 
