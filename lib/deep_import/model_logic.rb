@@ -32,11 +32,17 @@ module DeepImport
           end
         end
 
+        has_many = DeepImport::Config.has_many(self)
+        if has_many && has_many.size > 0
+          has_many.each do |other_name|
+            has_many other_name.to_s.pluralize.to_sym, extend: HasMany
+            # TODO: does this eliminate prior settings
+          end
+        end
+
         # TODO: add belongs_to DeepImport{self} - Use it to improve commit logic/no SQL
         after_initialize :deep_import_after_initialize # For all tracked classes
       end
-      # TODO: add HasMany
-      # - {belongs_to_class}.{base.pluralize}.(build|create(!))
     end
 
 
@@ -55,6 +61,38 @@ module DeepImport
         next unless other_instance
         DeepImport::ModelsCache.set_association_on(self, other_instance) 
       end
+    end
+
+    module HasMany
+
+      def create(attributes = {})
+        if DeepImport.importing?
+          raise "Blocked create on #{proxy_association.owner.class}" 
+          # TODO: allow with on_save: :noop
+          #build(attributes)
+        else
+          super(attributes)
+        end
+      end
+      def create!(attributes = {})
+        if DeepImport.importing?
+          raise "Blocked create on #{proxy_association.owner.class}" 
+          # TODO: allow with on_save: :noop
+          #build(attributes)
+        else
+          super(attributes)
+        end
+      end
+
+      def build(attributes = {})
+        other_instance = super(attributes)
+        if DeepImport.importing?
+          puts "Built #{other_instance.class} From #{proxy_association.owner}".green
+          DeepImport::ModelsCache.set_association_on(other_instance, proxy_association.owner) 
+        end
+        other_instance 
+      end
+
     end
 
     module BelongsTo

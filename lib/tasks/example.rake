@@ -22,13 +22,12 @@ namespace :example do
     limit = (ENV["LIMIT"] || "10").to_i
     (0..limit).each do |parent_number|
       parent = Parent.new name: SecureRandom.hex
-      parent.save # Note: save calls could be left out when building bulk data jobs
+      parent.save # Note: save calls for the 'normal' example, ignored by deep import
       (0..limit).each do |child_number|
-        child = Child.new name: SecureRandom.hex, parent: parent
+        child = parent.children.build name: SecureRandom.hex
         child.save
         (0..limit).each do |grandchild_number|
-          grandchild = GrandChild.new name: SecureRandom.hex 
-          grandchild.child = child 
+          grandchild = child.grand_children.build name: SecureRandom.hex 
           grandchild.save
         end
       end
