@@ -28,7 +28,7 @@ Full code example: [lib/tasks/example.rake](lib/tasks/example.rake)
 ```
 
 ## The Magic
-**A classic tradeoff between Speed and Disk Space.**
+**A classic tradeoff between Speed vs Space.**
 
 To achieve faster data loading times, extra server side space is used along with temporary extra records in the db.
 
