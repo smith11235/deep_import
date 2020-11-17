@@ -32,7 +32,7 @@ Full code example: [lib/tasks/example.rake](lib/tasks/example.rake)
 
 To achieve faster data loading times, extra server side space is used along with temporary extra records in the db.
 
-### The Culprit
+### The Culprit: Network Transaction Overhead
 In a standard ORM process, for X model instances to be loaded, there are X insert db queries/network calls. In a web controller, inserting 1 or 2 records due to a users activity, this is trivial, and fast enough.
 
 When loading a large number of models, the network calls add up to significant overhead.
@@ -43,9 +43,9 @@ When loading a large number of models, the network calls add up to significant o
 end
 ```
 
-### Bulk Inserts
+### The Solution: Bulk Inserts
 
-Rather than committing individual models, new instances are held in memory, server side, until all instances are ready for one bulk insert.
+Rather than committing individual models, new instances are held in memory, server side, until all instances are ready for one bulk insert. 1 query, 1 network transaction.
 
 #### Prior Work: ActiveRecord-Import
 
@@ -65,7 +65,7 @@ The above code provides a massive boost to speed of execution.
 #### Prior Work: The Limits
 
 ActiveRecord-Import does not handle the creation of nested data relations.
-This is due to the fact that relationships (primary/foreign key fields) cannot be tracked appropriately on, if the associated instance has not yet been created. 
+This is due to the fact that relationships (primary/foreign key fields) cannot be tracked, if the associated instance has not yet been created (given an primary key ID). 
 
 ```
 # Faulty code (what Deep Import handles)
@@ -78,12 +78,12 @@ children = []
   end
 end
 Parent.import parents # 1 bulk insert call executed
-Children.import children # 1 bulk insert call executed
+Children.import children # 1 bulk insert call executed, children all have "parent: null"
 ```
 
 The above code would "work", but, all of the children would be orphans, as their "parent_id" value would be missing, as none of the parents were tracked.
 
-To get around this, and still have some benefits, all Parents could be created and uploaded, and then all Children could be created and uploaded.
+To get around this, and still have some speed benefits, all Parents could be created and uploaded, and then all Children could be created and uploaded.
 
 ```
 # Impractical Code - But works
@@ -104,9 +104,9 @@ Children.import children # 1 bulk insert call executed
 
 While the above works, it is not practical in many data loading scenarios.
 
-**Effectively, for "Bulk Data Loads" of nested data relations, a Depth First Traversal of the data is desired, rather than a "Breadth First Traversal".** The "Breadth First" load pattern would create a lot of churn in your system, resulting in a lot of redundant processing overhead.
+**Effectively, for "Bulk Data Loads" of nested data relations, a Depth First Traversal of the source data is desired, rather than a "Breadth First Traversal".** The "Breadth First" load pattern would create a lot of churn in your system, resulting in a lot of redundant processing overhead.
 
-##### Real Examples
+##### Real World Examples
 
 **Financial Data Set - On Companies**
 With a data feed of top level entities (say, a Company), where each top level entity can be parsed to obtain its Products, and Metrics, you would want to parse the feed 1 Company at a time, building up all its data, and then move on to the next one. You would not want to parse all "top nodes" (feed files), load them, then all "secondary nodes", load them, and so on. 
@@ -137,16 +137,30 @@ Each "Importable" ModelClass:
 * for each "belongs to" {OtherClass} association (foreign key relation) on ModelClass
   * the "deep_import_model_class" table will have a "deep_import_{other_class}_id" field
 
+#### Batch Relative IDs
+
 The "deep_import_id" values, and association tracking, is handled automatically for the developer, by DeepImport.
+
+These ids are generated dynamically, specific to the set of to-be-imported data. They do not represent globally unique database uuids.
+
+EX: For a batch of 10 models, their relative id's will be "1" through "10". Running a second batch of 10, would again have relative id's "1" through "10".
+
+For multi-machine safety:
+
+> deep_import_id = {process_id}_#{count of models in memory}
+> deep_import_id = 2384239482341_15
+ 
 
 #### DeepImport Bulk Upload Process
 
 * all models are built in memory
-* each model class (and its index records) are uploaded in batch, 1 class at a time
-  * for 3x model classes, there are 6x bulk inserts
-* each belongs to association (foreign key) is set
-  * 1x UPDATE/JOINS query per association
-* deep import ids, and deep import index records, are deleted
+  * **Via developer code, standard ORM calls**
+* then, by DeepImport:
+  * each model class (and its index records) are uploaded in batch, 1 class at a time
+    * for 3x model classes, there are 6x bulk inserts
+  * each belongs to association (foreign key) is set
+    * 1x UPDATE/JOINS query per association
+  * deep import ids, and deep import index records, are deleted
 
 #### Schema Example
 
