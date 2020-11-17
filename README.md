@@ -44,7 +44,7 @@ Full code example: [lib/tasks/example.rake](lib/tasks/example.rake)
 Sample code for import job shown below.
 
 ```
-  DeepImport.import do # engages magic
+  DeepImport.import do # engages magic - bulk inserts occur when code building block finishes
     (0..30).each do |p|
       parent = Parent.new name: SecureRandom.hex
       (0..30).each do |c|
