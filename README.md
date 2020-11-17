@@ -22,16 +22,17 @@ For the above example
 Create a set of nested data models. Finance models, or web scraping, etc.
 
 ```
-    limit = (ENV["limit"] || "10").to_i
-    (0..limit).each do |parent_number|
+  DeepImport.import do
+    (0..30).each do |p|
       parent = Parent.new name: SecureRandom.hex
-      (0..limit).each do |child_number|
-        child = Child.new name: SecureRandom.hex, parent: parent
-        (0..limit).each do |grandchild_number|
-          grandchild = GrandChild.new name: SecureRandom.hex, child: child
+      (0..30).each do |c|
+        child = parent.children.build name: SecureRandom.hex
+        (0..30).each do |gc|
+          child.grand_children.build name: SecureRandom.hex
         end
       end
     end
+  end
 ```
 
 
