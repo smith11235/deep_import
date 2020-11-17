@@ -1,11 +1,20 @@
 ActiveRecord and other ORM's are great for ease of code writing and reading.
 But typically slow for bulk data loading.
 
-Deep Import lets you use standard code, 
+Deep Import lets you use the same, standard code, you already have, 
+that any new coder would write,
 to upload bulk data, with nested relations,
 in a fraction of the time.
 
 _Note: while this is written against ActiveRecord (ruby), the algorithm is portable to other high level ORMs._
+
+#### Same Code Benefits
+The same code being used between DeepImport, and normal execution, is important.
+
+* Any user of the ORM can intuitively, immediately, understand the code
+  * future maintainer or new hire out of college
+* Debugging the code can be done on a single instance, without DeepImport
+  * no need to re-write code to confirm functionality, or parity
 
 ## Setup Your Code
 
