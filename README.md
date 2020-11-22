@@ -11,7 +11,7 @@ At a cost in terms of efficiency,
 exacerbated when performing bulk data loading operations. 
 
 In general ORM's are great for small transactions touching a few records at a time.
-Typically as a result of a Users action (ex: a form submission).
+Typically as a result of a users action (ex: a form submission).
 
 When performing data loading (bulk inserts: feed ingestion, web scraping, ETL), 
 ActiveRecord slows down as each model is loaded individually, 
@@ -24,17 +24,17 @@ And more specifically, solves for multiple associated models seamlessly.
 
 This is done via a small algorithm, portable to any language.
 
-#### Benefit 2: Same Code
+### Benefit 2: Same Code
 The same standard ActiveRecord code can be used between DeepImport data loading, and normal execution.
 This is as important as the speed boost provided to bulk data loading.
 
 What this means is:
 * 0 code change required to adopt (or remove) DeepImport
-  * no lock in, no need to re-write code (add gem, get benefit 1)
+  * No lock in, no need to re-write code (add gem, get benefit 1)
 * Any coder can intuitively, immediately, understand the code
-  * future maintainer or new hire out of college
+  * Future maintainer or new hire out of college
 * Debugging can be done, on a single instance, with or without DeepImport
-  * no need to re-write code to confirm functionality or parity
+  * No need to re-write code to confirm functionality or parity
 
 ## Setup / Usage
 
@@ -48,7 +48,7 @@ What this means is:
 
 ## Data Loading Code Example
 
-Full code example can be viewed: [lib/tasks/example.rake](lib/tasks/example.rake)
+Full code example: [lib/tasks/example.rake](lib/tasks/example.rake)
 
 Breakdown of code example shown below.
 
@@ -87,9 +87,9 @@ to change the size of the sample import.
 
 For any value of {LIMIT}, the code builds:
 * {LIMIT} instances of Parents
-* {limit}^2 instances of Children 
+* {LIMIT}^2 instances of Children 
   * aka: for each Parent, it builds {LIMIT} Children
-* {limit}^3 instances of Grand Children 
+* {LIMIT}^3 instances of Grand Children 
   * aka: for each Child, it builds {LIMIT} GrandChildren
 
 ```
@@ -104,14 +104,12 @@ For any value of {LIMIT}, the code builds:
 
 #### Execution Time Comparison
 
-* with LIMIT=10
-  * ~1,500 model instances
-  * "Normal" takes **~10 seconds**
-  * "Deep Import" takes **~1 second**
-* with LIMIT=29
-  * ~28,000 model instances
-  * "Normal" takes **~214 seconds**
-  * "Deep Import" takes **~32 second**
+Executed from a server against a remove Postgres database.
+
+| LIMIT | Total Records | Normal Timing | DeepImport Timing |
+| ----- | ------------- | ------------- | ----------------- |
+|  10   |   ~1,500      |   10 seconds  |   1 second        |
+|  29   |   ~28,000     |  214 seconds  |   32 seconds      |
 
 ## The Magic (AKA: The Algorithm)
 
