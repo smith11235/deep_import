@@ -1,60 +1,121 @@
-ActiveRecord and other ORM's are great for ease of code writing and reading.
-But typically slow for bulk data loading.
+A rubygem to enable efficient/fast bulk data loading of nested data models, 
+with the same ActiveRecord code you already have.
 
-Deep Import lets you use the same, standard code, you already have, 
-that any new coder would write,
-to upload bulk data, with nested relations,
-in a fraction of the time.
+An execution timing example, and explanation of the algorithm can be found further down.
 
-_Note: while this is written against ActiveRecord (ruby), the algorithm is portable to other high level ORMs._
+### Benefit 1: Bulk Data Loading Speed Boost
 
-#### Same Code Benefits
-The same code being used between DeepImport, and normal execution, is important.
+ActiveRecord provides great ease of use to a developer 
+(simple, readable code, no raw SQL). 
+At a cost in terms of efficiency, 
+exacerbated when performing bulk data loading operations. 
 
-* Any user of the ORM can intuitively, immediately, understand the code
+In general ORM's are great for small transactions touching a few records at a time.
+Typically as a result of a Users action (ex: a form submission).
+
+When performing data loading (bulk inserts: feed ingestion, web scraping, ETL), 
+ActiveRecord slows down as each model is loaded individually, 
+with a network database transaction per record to be loaded.
+             
+DeepImport solves this data loading efficiency problem by enabling bulk inserts.
+And more specifically, solves for multiple associated models seamlessly.
+
+> EX: belongs_to, has_many, has_one, polymorphic relationships
+
+This is done via a small algorithm, portable to any language.
+
+#### Benefit 2: Same Code
+The same standard ActiveRecord code can be used between DeepImport data loading, and normal execution.
+This is as important as the speed boost provided to bulk data loading.
+
+What this means is:
+* 0 code change required to adopt (or remove) DeepImport
+  * no lock in, no need to re-write code (add gem, get benefit 1)
+* Any coder can intuitively, immediately, understand the code
   * future maintainer or new hire out of college
-* Debugging the code can be done on a single instance, without DeepImport
-  * no need to re-write code to confirm functionality, or parity
+* Debugging can be done, on a single instance, with or without DeepImport
+  * no need to re-write code to confirm functionality or parity
 
-## Setup Your Code
+## Setup / Usage
 
 * Add gem: 
   * `gem deep_import`
 * Add config file defining importable models and relationships:
-  * Example: [config/deep_import.yml](config/deep_import.yml)
+  * Example config: [config/deep_import.yml](config/deep_import.yml)
 * Generate and execute database migration (from config file)
   * `rake deep_import:setup`
 * Start running imports
 
-### Simple Code Example
+## Data Loading Code Example
 
-Full code example: [lib/tasks/example.rake](lib/tasks/example.rake)
+Full code example can be viewed: [lib/tasks/example.rake](lib/tasks/example.rake)
 
-* 1 block of code: can be run normally, or with DeepImport
-  * `rake example:normal`
-  * `rake example:deep_import`
-* 3 nested classes: Parent/Child/Grandchild
-  * with LIMIT=10, **~1,500 model instances**
-    * **"Normal" execution takes ~10 seconds**
-    * **"Deep Import" execution takes ~1 second**
-  * with LIMIT=29, **~28,000 model instances**
-    * **"Normal" execution takes ~214 seconds**
-    * **"Deep Import" execution takes ~32 second**
+Breakdown of code example shown below.
 
-Sample code for import job shown below.
+#### 3 Nested Model Classes
 
 ```
-  DeepImport.import do # engages magic - bulk inserts occur when code building block finishes
-    (0..30).each do
-      parent = Parent.new name: SecureRandom.hex
-      (0..30).each do
-        child = parent.children.build name: SecureRandom.hex
-        (0..30).each do
-          child.grand_children.build name: SecureRandom.hex
+Parent 
+  has_many :children
+
+Child
+  belongs_to :parent
+  has_many :grand_children
+
+GrandChild
+  belongs_to :child
 ```
 
-## The Magic
-**A classic tradeoff between Speed vs Space.**
+#### 1 block of code: w/ and w/out DeepImport
+
+Two rake tasks, to build the same data, via the same code block.
+
+* `rake example:normal` 
+* `rake example:deep_import`
+
+```
+  task :normal do
+    make_random_nested_data
+
+  task :deep_import
+    DeepImport.import do 
+      make_random_nested_data
+```
+
+The `make_random_nested_code` method takes a LIMIT parameter, 
+to change the size of the sample import.
+
+For any value of {LIMIT}, the code builds:
+* {LIMIT} instances of Parents
+* {limit}^2 instances of Children 
+  * aka: for each Parent, it builds {LIMIT} Children
+* {limit}^3 instances of Grand Children 
+  * aka: for each Child, it builds {LIMIT} GrandChildren
+
+```
+  limit = ENV["LIMIT"]
+  (0..limit).each do
+    parent = Parent.create!
+    (0..limit).each do
+      child = parent.children.create! 
+      (0..limit).each do
+        child.grand_children.create! 
+```
+
+#### Execution Time Comparison
+
+* with LIMIT=10
+  * ~1,500 model instances
+  * "Normal" takes **~10 seconds**
+  * "Deep Import" takes **~1 second**
+* with LIMIT=29
+  * ~28,000 model instances
+  * "Normal" takes **~214 seconds**
+  * "Deep Import" takes **~32 second**
+
+## The Magic (AKA: The Algorithm)
+
+**TLDR: A classic tradeoff between Speed vs Space.**
 
 To achieve faster data loading times, extra server side space is used along with temporary extra records in the db.
 
@@ -140,9 +201,9 @@ With a data feed of top level entities (say, a Company), where each top level en
 **Web Scraping - Aggregating an index**
 If a scraper was running, you would want to parse 1 website, and its associated data, then move onto the next website. You would not want to load each website record, then go back and reprocess each website.
 
-### Bulk Data Loading: Nested Data (Deep Import)
+### Bulk Data Loading: Nested Data (with DeepImport)
 
-Deep Import solves for this real world, complex structures, problem.
+DeepImport solves for this real world, complex structures, problem.
 
 To do so, a "shadow" index using "batch process relative" primary/foriegn keys is created.
 
@@ -156,14 +217,14 @@ While the ModelClass instance may contain a set of data points/columns, the inde
 
 Each "Importable" ModelClass:
 
-* will have a "deep_import_id" field on its "model_class" table
-* there will be a corresponding index table: "deep_import_{model_class}"
-  * with matching "deep_import_id" field
+* Will have a "deep_import_id" field on its "model_class" table
+* There will be a corresponding index table: "deep_import_{model_class}"
+  * With matching "deep_import_id" field
 
-* for each "belongs to" {OtherClass} association (foreign key relation) on ModelClass
-  * the "deep_import_model_class" table will have a "deep_import_{other_class}_id" field
+* For each "belongs to" {OtherClass} association (foreign key relation) on ModelClass
+  * The "deep_import_model_class" table will have a "deep_import_{other_class}_id" field
 ##### Schema Example
-For models: Parent, each having many Children.
+For sample data load code models: Parent, each having many Children.
 
 ```
 parents
@@ -205,51 +266,18 @@ For multi-machine safety:
 
 #### DeepImport Bulk Upload Process
 
-* all models are built in memory
-  * **Via developer code, standard ORM calls**
-* then, by DeepImport:
-  * each model class (and its index records) are uploaded in batch, 1 class at a time
-    * for 3x model classes, there are 6x bulk inserts
-  * each belongs to association (foreign key) is set
-    * 1x UPDATE/JOINS query per association
-  * deep import ids, and deep import index records, are deleted
+* First, all models are built in memory
+  * Via developer code block
+  * Standard ORM calls, modified behind the scenes by DeepImport
+* Then DeepImport Commit:
+  * Each model class is uploaded with a bulk insert
+    * 1 class at a time (plus its index records)
+    * For X core model classes, there are 2X bulk insert queries
+  * Each "belongs_to" association is set
+    * 1x UPDATE/JOINS query per association 
+  * DeepImport index data is deleted
+    * Both deep_import_ids and index records
 
-  
 #### The Cost
 
 _Write out the math - for time + space_
-
-
-# Outdated Notes Below - Rewrite/Update
-### Outdated Setup Example 
-Refactor/rewrite.
-
-[Usage Example](https://gist.github.com/smith11235/7281601)
-
-### To Develop 
-Note: need to break gem out from rails example app.
-#### Gem
-
-```
-deep_import.gemspec
-lib/deep_import
-```
-
-#### WIKI
-* [WIKI-Home](http://www.github.com/smith11235/deep_import/wiki/Home)
-	* full readme
-	* api
-	* architecture
-	* tutorial
-
-#### Presentation
-_TODO: outdated - replace_
-[Deep Import Presentation](http://twostepsleftofnormal.com:31234) 
-built with: 
-[Impress.js](https://github.com/bartaz/impress.js)
-
-* to develop presentation
-	* edit IMPRESS.md within wiki/
-	* execute ```rake impress```
-		* to regenerate **app/views/impress/index.html.erb**
-  * ```git clone https://github.com/smith11235/deep_import.wiki.git wiki```
