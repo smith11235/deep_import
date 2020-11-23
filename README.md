@@ -159,7 +159,7 @@ children = []
 (0..10).each do
   parents << Parent.new # build all models in memory, limited by server memory
   (0..10).each do
-    children = Child.new parent: parents.last
+    children = parent.children.build 
   end
 end
 Parent.import parents # 1 bulk insert call executed
@@ -181,7 +181,7 @@ Parent.import parents # 1 bulk insert call executed
 children = []
 parents.each do |parent|
   (0..10).each do
-    children = Child.new parent: parent
+    children << parent.children.build
   end
 end
 Children.import children # 1 bulk insert call executed
