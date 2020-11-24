@@ -8,6 +8,7 @@ module DeepImport
 		
 		initializer "deep_import.initializer" do
 			DeepImport.logger ||= DeepImport.default_logger
+      DeepImport.initialize!
 		end
 
 		rake_tasks do

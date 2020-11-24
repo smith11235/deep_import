@@ -2,10 +2,6 @@ require 'spec_helper'
 
 describe 'DeepImport::Config - Missing API' do
 
-	before( :all ) do
-		DeepImport.logger ||= DeepImport.default_logger # TODO: this needed here?
-    DeepImport.initialize! reset: true
-	end
   after(:all) do
     $deep_import_config = nil
   end

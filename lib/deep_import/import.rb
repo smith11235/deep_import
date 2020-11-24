@@ -8,6 +8,14 @@ module DeepImport
 		DeepImport.logger.info "Starting Import At #{start_time}"
 		DeepImport.logger.info "==========================================================="
 		DeepImport.logger.info "Running with adapter #{ActiveRecord::Base.connection_config[:adapter]}"
+    reset = options.has_key?(:reset) ? options.delete(:reset) : Rails.env.test?
+    if reset
+      DeepImport.status = :init
+      DeepImport.import_options = nil
+    end
+    DeepImport.import_options = options
+
+    # check if deep import is setup on modules
 
 		DeepImport.logger.info "#{'DeepImport.import:'.green}             #{'(in seconds)     user     system      total        real'.black.on_yellow}"
 		# initialize the deep import environment modifications

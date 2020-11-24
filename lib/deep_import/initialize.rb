@@ -1,19 +1,8 @@
 module DeepImport
   # TODO: clean this up
 
+  # TODO: move initialize
   def self.initialize!( options = {} )
-    reset = options.has_key?(:reset) ? options.delete(:reset) : Rails.env.test?
-    if reset
-      DeepImport.status = :init
-      DeepImport.import_options = nil
-    end
-
-    # validate the import options
-    DeepImport.import_options = options
-
-    return true if DeepImport.ready_for_import? # already initialized
-
-    # check if deep import is setup on modules
     Initialize.new
   end
 

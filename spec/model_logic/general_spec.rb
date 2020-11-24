@@ -1,9 +1,6 @@
 require 'spec_helper'
 
 describe 'DeepImport::ModelLogic (on Child)' do
-  before(:each) do
-    DeepImport.initialize! reset: true
-  end
   describe "DeepImport Module Includes" do
 
     it "includes ModelLogic" do

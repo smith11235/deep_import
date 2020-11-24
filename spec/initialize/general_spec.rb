@@ -1,10 +1,9 @@
 require 'spec_helper'
 
 describe 'DeepImport.initialize!' do
-
-  before :each do
-    DeepImport.initialize! reset: true # ignore config/initializers/deep_import.rb 
-  end
+  # executed through railtie
+  # alternatively: DeepImport.initialize!
+  # driven by: config/deep_import.yml
 
 	it "should have Parent, Child, GrandChild as keys in DeepImport::Config.models" do
 		DeepImport::Config.importable.should =~ [Parent,Child,GrandChild]
@@ -22,9 +21,14 @@ describe 'DeepImport.initialize!' do
 		GrandChild.included_modules.should include( DeepImport::ModelLogic )
 	end
 
+  # TODO: move this to import_options, import
 	it "should raise an error if called again with different options" do
+    DeepImport.import do # sets initial options
+    end
 		expect { 
-      DeepImport.initialize! reset: false, on_save: :noop  # options are explicit global rules for safety/awareness
+      DeepImport.import reset: false, on_save: :noop do
+        # explicit global rules for safety/awareness - can override with reset_false
+      end
     }.to raise_error
 	end
 
