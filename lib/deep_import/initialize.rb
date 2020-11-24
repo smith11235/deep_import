@@ -2,8 +2,13 @@ module DeepImport
   # TODO: clean this up
 
   def self.initialize!( options = {} )
-    reset = options.delete(:reset)
-    if reset # || DeepImport.status == :error
+    reset = if options.has_key?(:reset)
+              options.delete(:reset) # allow true/false override
+            else
+              Rails.env.test? # default to true in rspec
+            end
+
+    if reset 
       DeepImport.status = :init
       DeepImport.import_options = nil
     end

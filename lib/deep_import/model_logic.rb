@@ -16,22 +16,11 @@ module DeepImport
 
 
   # Common safety guard for Save methods vs No-Op option 
-  def self.deep_import_safety_check(method)
-    if !DeepImport.importing?
-      yield # not in import block, do standard normal call
-    elsif DeepImport.raise_error? 
-      raise "DeepImport: '#{method}' called within import block - change code or pass 'on_save: :noop'"
-    else
-      # :noop - ignore call, keep processing - TODO: logger.info?
-      # TODO: use from HasMany - redirect create => build
-    end
-  end
 
   module ModelLogic
 
     def self.included(base) # :nodoc:
       # TODO: already initialized safety check
-      DeepImport.logger.info "DeepImport::ModelLogic: Extending #{base}".green
       base.class_eval do
 
         prepend Saveable # override model.save and model.save!
@@ -79,32 +68,18 @@ module DeepImport
     module HasMany
 
       def create(attributes = {})
-        # TODO:
-        # DeepImport.deep_import_safety_check("create", self, :build) { super(attributes) }
-        if DeepImport.importing?
-          if DeepImport.raise_error?
-            raise "Blocked 'create' on #{proxy_association.owner.class}" 
-          else
-            # noop => build instead of create
-            build(attributes)
-          end
-        else
+        if DeepImport.allow_commit?
           super(attributes)
+        else
+          build(attributes)
         end
       end
 
       def create!(attributes = {})
-        # TODO:
-        # DeepImport.deep_import_safety_check("create!", self, :build) { super(attributes) }
-        if DeepImport.importing?
-          if DeepImport.raise_error?
-            raise "Blocked 'create!' on #{proxy_association.owner.class}" 
-          else
-            # noop => build instead of create
-            build(attributes)
-          end
-        else
+        if DeepImport.allow_commit?
           super(attributes)
+        else
+          build(attributes)
         end
       end
 
@@ -150,13 +125,11 @@ module DeepImport
         [ "", "!" ].each do |exclamation|
           method_name = "create_#{other_name}#{exclamation}".to_sym
           send :define_method, method_name do |attributes = {}| 
-            if DeepImport.importing?
-              raise "DeepImport: create_{model}(!) disabled"
-              # pass on_save: :noop to ignore" 
-              # TODO: provide ':on_belongs_to_create_other => :build_other' to DeepImport.import to override"
-              # ^ redirect create to build (automatically or as option)
-            else
-              super
+            if DeepImport.allow_commit?
+              super(attributes)
+            else # redirect to build
+              build_method = __method__.to_s.gsub(/create/, 'build').gsub(/!/, '')
+              send(build_method, attributes)
             end
           end
         end
@@ -164,14 +137,37 @@ module DeepImport
     end
 
     module Saveable
-      def save
-        DeepImport.deep_import_safety_check("save") { super }
+      def save(opts = {})
+        if DeepImport.allow_commit?
+          super(opts)
+        else 
+          true
+        end
       end
 
-      def save!
-        DeepImport.deep_import_safety_check("save!") { super }
+      def save!(opts = {})
+        if DeepImport.allow_commit?
+          super(opts) 
+        else
+          true
+        end
       end
 
+    end
+  end
+
+  def self.allow_commit?
+    # True = make normal save calls
+    # False = noop (save) or redirect (create => build)
+    # Error = if importing and raise error
+    if DeepImport.importing?
+      if DeepImport.raise_error? 
+        raise "DeepImport: commit method called within import block - change code or pass 'on_save: :noop'"
+      else
+        false
+      end
+    else
+      true
     end
   end
 

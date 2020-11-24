@@ -22,7 +22,9 @@ describe 'DeepImport.initialize! - General API' do
 	end
 
 	it "should raise an error if called again with different options" do
-		expect { DeepImport.initialize! on_save: :noop }.to raise_error
+		expect { 
+      DeepImport.initialize! reset: false, on_save: :noop 
+    }.to raise_error
 	end
 
 end

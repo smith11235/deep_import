@@ -3,17 +3,12 @@ require 'spec_helper'
 describe 'DeepImport.import - General API' do
 
 	before( :all ){ 
-		DeepImport.initialize! reset: true
-	}
-	before( :each ){ delete_models } # TODO: remove
-	after( :each ){ 
-		DeepImport.mark_ready_for_import! 
-		delete_models
+    # Load ModelLogic
+		DeepImport.initialize! 
 	}
 
-
-	it "should have methods disabled by default" do
-		Parent.new.deep_import_id.should == nil
+	it "should not be active by default" do
+		expect(Parent.new.deep_import_id).to be_nil
 	end
 
 	it "should be ready for import after import" do
@@ -22,7 +17,10 @@ describe 'DeepImport.import - General API' do
 	end
 
 	it "should track new models" do
-		DeepImport.import { Parent.new }
+		DeepImport.import { 
+      p = Parent.new 
+      expect(p.deep_import_id).to be_present
+    }
 		Parent.all.count.should == 1 
 	end
 

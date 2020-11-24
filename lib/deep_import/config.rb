@@ -49,15 +49,18 @@ module DeepImport
         end
       end
 
-      #puts "Deep Import Config".red
-      #puts "Importable: #{@@importable.map(&:to_s)}".red
-      #puts "Belongs To: #{@@belongs_to}".red
-      #puts "Has Many: #{@@has_many}".red
-      puts "Deep Import Config"
-      puts "Belongs To: #{@@belongs_to.to_yaml}"
-      puts "Has Many: #{@@has_many.to_yaml}"
-
 		end
+
+    def print_config
+      puts "DeepImport Config =================".green
+      c = {
+        importable: @@importable.map(&:to_s),
+        belongs_to: @@belongs_to,
+        has_many: @@has_many
+      }
+      puts c.to_yaml.green
+    end
+
 
 		def valid?
 			@status == :valid

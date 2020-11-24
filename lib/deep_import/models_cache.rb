@@ -3,9 +3,6 @@ module DeepImport
 	module ModelsCache
 		def self.reset
 			@@cache = Cache.new
-			DeepImport::Config.importable.each do |model_class| 
-				@@cache.track_model( model_class )
-			end
 		end
 
 		def self.add( model_instance )
@@ -39,13 +36,16 @@ module DeepImport
 		class Cache
 			def initialize
 				@model_instance_cache = Hash.new
+			  DeepImport::Config.importable.each do |model_class| 
+				  track_model(model_class)
+			  end
 			end
 
 			def track_model( model_class )
 				# ensure tracking arrays are setup
-				@model_instance_cache[ model_class ] ||= Hash.new
+				@model_instance_cache[ model_class ] = Hash.new
 				deep_model_class = "DeepImport#{model_class}".constantize
-				@model_instance_cache[ deep_model_class ] ||= Hash.new
+				@model_instance_cache[ deep_model_class ] = Hash.new
 			end
 
 			def raw_cache

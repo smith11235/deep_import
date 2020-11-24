@@ -63,6 +63,10 @@ GEM
     colorize (0.8.1)
     concurrent-ruby (1.1.7)
     crass (1.0.6)
+    database_cleaner (1.8.5)
+    database_cleaner-active_record (1.8.0)
+      activerecord
+      database_cleaner (~> 1.8.0)
     diff-lcs (1.4.4)
     erubi (1.10.0)
     execjs (2.7.0)
@@ -167,6 +171,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-import!
+  database_cleaner-active_record
   deep_import!
   pg
   rails

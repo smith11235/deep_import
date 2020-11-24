@@ -3,9 +3,9 @@ require 'spec_helper'
 describe 'DeepImport::ModelLogic - General API' do
 	it "should have teardown logic"
 
-	describe Child do
+	describe "logic around Child associations" do
     before :each do 
-      DeepImport.initialize!(reset: true)
+      DeepImport.initialize! # TODO: remove need for this
     end
 
     describe "DeepImport Module Includes" do
@@ -23,8 +23,7 @@ describe 'DeepImport::ModelLogic - General API' do
         expect(Child.included_modules.include?(DeepImport::ModelLogic::BelongsTo)).to be true
       end
       it "includes HasMany" do
-        pending
-        # TODO: how to test the proxy association inclusion
+        pending("test proxy association for extended module")
         expect(Child.included_modules.include?(DeepImport::ModelLogic::HasMany)).to be true
       end
 
@@ -73,7 +72,7 @@ describe 'DeepImport::ModelLogic - General API' do
           expect(Child.count).to eq(0)
         end
         it "no-ops save calls with option" do
-          DeepImport.import reset: true, on_save: :noop do 
+          DeepImport.import on_save: :noop do 
             expect { Child.new.save }.to_not raise_error
             expect { Child.new.save! }.to_not raise_error
             expect(Child.count).to eq(0)
@@ -84,20 +83,110 @@ describe 'DeepImport::ModelLogic - General API' do
     end
 
     describe "Belongs To" do
-      it "creates normally if not importing"
+      it "creates normally if not importing" do
+        ['', '!'].each do |ending|
+          child = Child.new
+          child.save!
+          child.send("create_parent#{ending}")
+        end
+        expect(Parent.count).to eq(2)
+      end
+
       describe "import" do
-        it "builds"
-        it "blocks create"
-        it "allows create with option"
+        it "builds" do
+          DeepImport.import do 
+            c = Child.new 
+            c.build_parent
+          end
+          expect(Child.count).to eq(1)
+          expect(Parent.count).to eq(1)
+        end
+        it "blocks create" do
+          expect { 
+            DeepImport.import do 
+              c = Child.new 
+              c.create_parent
+            end
+          }.to raise_error
+          expect { 
+            DeepImport.import do 
+              c = Child.new 
+              c.create_parent!
+            end
+          }.to raise_error
+          expect(Child.count).to eq(0)
+          expect(Parent.count).to eq(0)
+        end
+
+        it "redirects create to build with option" do
+          DeepImport.import on_save: :noop do 
+            expect { 
+              c = Child.new 
+              c.create_parent
+            }.to_not raise_error
+            expect { 
+              c = Child.new
+              c.create_parent!
+            }.to_not raise_error
+            expect(Child.count).to eq(0)
+            expect(Parent.count).to eq(0)
+          end
+          expect(Child.count).to eq(2)
+          expect(Parent.count).to eq(2)
+        end
       end
     end
 
     describe "Has Many" do
-      it "creates normally if not importing"
+      it "creates normally if not importing" do
+        parent = Parent.new
+        parent.save! 
+        parent.children.create
+        parent.children.create!
+        expect(Child.count).to eq(2)
+        expect(Child.where.not(parent_id: nil).count).to eq(2)
+      end
+
       describe "import" do
-        it "builds"
-        it "blocks create"
-        it "allows create with option"
+        it "builds" do
+          DeepImport.import do 
+            c = Child.new 
+            c.grand_children.build
+          end
+          expect(Child.count).to eq(1)
+          expect(GrandChild.count).to eq(1)
+        end
+        it "blocks create" do
+          expect { 
+            DeepImport.import do 
+              c = Child.new 
+              c.grand_children.create
+            end
+          }.to raise_error
+          expect { 
+            DeepImport.import do 
+              c = Child.new 
+              c.grand_children.create!
+            end
+          }.to raise_error
+          expect(Child.count).to eq(0)
+          expect(GrandChild.count).to eq(0)
+        end
+        it "redirects create to build with option" do
+          DeepImport.import on_save: :noop do 
+            c = Child.new
+            expect { 
+              c.grand_children.create
+            }.to_not raise_error
+            expect { 
+              c.grand_children.create!
+            }.to_not raise_error
+            expect(Child.count).to eq(0)
+            expect(Parent.count).to eq(0)
+          end
+          expect(Child.count).to eq(1)
+          expect(GrandChild.count).to eq(2)
+        end
       end
     end
 	end

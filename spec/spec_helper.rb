@@ -7,17 +7,6 @@ def change_database_connection( config_name )
 	ActiveRecord::Base.establish_connection( config_name )
 end
 
-# for clearing out the tables between each benchmarking measurement
-def delete_models 
-	GrandChild.delete_all
-	Child.delete_all
-	Parent.delete_all
-	DeepImportGrandChild.delete_all
-	DeepImportChild.delete_all
-	DeepImportParent.delete_all
-end
-
-
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
@@ -58,4 +47,8 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = "random"
+
+  config.before(:suite) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
 end

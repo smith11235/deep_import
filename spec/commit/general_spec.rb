@@ -5,8 +5,7 @@ describe "DeepImport.commit!" do
 	# this is not super granular to commit as it is relying on import/models_cache, etc
 
 	before(:all) {
-		delete_models # Needed? should be automatic
-		DeepImport.import reset: true do
+		DeepImport.import do
 			%w(a b).each do |parent_name|
 				parent = Parent.new name: parent_name
 				(0..1).each do |child_number|
@@ -17,10 +16,6 @@ describe "DeepImport.commit!" do
 				end
 			end
 		end
-	}
-
-	after(:all){
-		delete_models # TODO: remove 
 	}
 
 	describe "Base Model Tracking" do
@@ -61,7 +56,6 @@ describe "DeepImport.commit!" do
 		it "should set deep_import_id's to nil on GrandChild" do
 			GrandChild.pluck( :deep_import_id ).uniq.should =~ [nil]
 		end
-
 
 	end
 
