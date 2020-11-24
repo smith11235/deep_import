@@ -13,6 +13,20 @@ module DeepImport
   # New Blogs
   # https://littlelines.com/blog/2018/01/31/replace-alias-method-chain
 =end
+
+
+  # Common safety guard for Save methods vs No-Op option 
+  def self.deep_import_safety_check(method)
+    if !DeepImport.importing?
+      yield # not in import block, do standard normal call
+    elsif DeepImport.raise_error? 
+      raise "DeepImport: '#{method}' called within import block - change code or pass 'on_save: :noop'"
+    else
+      # :noop - ignore call, keep processing - TODO: logger.info?
+      # TODO: use from HasMany - redirect create => build
+    end
+  end
+
   module ModelLogic
 
     def self.included(base) # :nodoc:
@@ -45,7 +59,6 @@ module DeepImport
       end
     end
 
-
     def deep_import_after_initialize
       # For all trackable classes
       return unless DeepImport.importing? # only during imports
@@ -66,19 +79,30 @@ module DeepImport
     module HasMany
 
       def create(attributes = {})
+        # TODO:
+        # DeepImport.deep_import_safety_check("create", self, :build) { super(attributes) }
         if DeepImport.importing?
-          raise "Blocked create on #{proxy_association.owner.class}" 
-          # TODO: allow with on_save: :noop
-          #build(attributes)
+          if DeepImport.raise_error?
+            raise "Blocked 'create' on #{proxy_association.owner.class}" 
+          else
+            # noop => build instead of create
+            build(attributes)
+          end
         else
           super(attributes)
         end
       end
+
       def create!(attributes = {})
+        # TODO:
+        # DeepImport.deep_import_safety_check("create!", self, :build) { super(attributes) }
         if DeepImport.importing?
-          raise "Blocked create on #{proxy_association.owner.class}" 
-          # TODO: allow with on_save: :noop
-          #build(attributes)
+          if DeepImport.raise_error?
+            raise "Blocked 'create!' on #{proxy_association.owner.class}" 
+          else
+            # noop => build instead of create
+            build(attributes)
+          end
         else
           super(attributes)
         end
@@ -141,24 +165,13 @@ module DeepImport
 
     module Saveable
       def save
-        deep_import_safety_check { super }
+        DeepImport.deep_import_safety_check("save") { super }
       end
 
       def save!
-        deep_import_safety_check { super }
+        DeepImport.deep_import_safety_check("save!") { super }
       end
 
-      private
-
-      def deep_import_safety_check
-        if !DeepImport.importing?
-          yield # not in import block, do standard active record call
-        elsif DeepImport.raise_error? 
-          raise "DeepImport: 'save' called within import block - change code or pass 'on_save: :noop'"
-        else
-          # :noop - ignore call, keep processing
-        end
-      end
     end
   end
 
