@@ -1,9 +1,6 @@
 require 'spec_helper'
 
-describe 'DeepImport.initialize! - General API' do
-	before(:all){ 
-		DeepImport.initialize! reset: true
-	}
+describe 'DeepImport.initialize!' do
 
 	it "should have [Parent, Child, GrandChild] as keys in DeepImport::Config.models" do
 		DeepImport::Config.importable.should =~ [Parent,Child,GrandChild]
@@ -22,8 +19,9 @@ describe 'DeepImport.initialize! - General API' do
 	end
 
 	it "should raise an error if called again with different options" do
+    DeepImport.initialize! reset: true # ignore config/initializers/deep_import.rb 
 		expect { 
-      DeepImport.initialize! reset: false, on_save: :noop 
+      DeepImport.initialize! reset: false, on_save: :noop  # options are explicit global rules for safety/awareness
     }.to raise_error
 	end
 

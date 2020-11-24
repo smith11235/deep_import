@@ -2,11 +2,6 @@ require 'spec_helper'
 
 describe 'DeepImport.import - General API' do
 
-	before( :all ){ 
-    # Load ModelLogic
-		DeepImport.initialize! 
-	}
-
 	it "should not be active by default" do
 		expect(Parent.new.deep_import_id).to be_nil
 	end

@@ -44,6 +44,11 @@ What this means is:
   * Example config: [config/deep_import.yml](config/deep_import.yml)
 * Generate and execute database migration (from config file)
   * `rake deep_import:setup`
+* Add initialization file:
+  * `config/initializers/deep_import.rb`
+  * `DeepImport.initialize! on_save: :noop`
+    * conditionally include it only within worker processes
+    * not needed from within rails server process
 * Start running imports
 
 ## Data Loading Code Example
