@@ -32,7 +32,6 @@ module DeepImport
         @models = {} # reset to empty - if invalid config - do nothing
         #raise e # dont raise - allow rails to work normally/prevents hard crashes from bad configs
       end
-			@@models = @models # DEPRECATED / REMOVE
 
       @@importable = @models.keys
       @@belongs_to = {}
@@ -54,6 +53,9 @@ module DeepImport
       #puts "Importable: #{@@importable.map(&:to_s)}".red
       #puts "Belongs To: #{@@belongs_to}".red
       #puts "Has Many: #{@@has_many}".red
+      puts "Deep Import Config"
+      puts "Belongs To: #{@@belongs_to.to_yaml}"
+      puts "Has Many: #{@@has_many.to_yaml}"
 
 		end
 

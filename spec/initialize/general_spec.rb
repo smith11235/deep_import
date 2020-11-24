@@ -7,7 +7,7 @@ describe 'DeepImport.initialize! - General API' do
 	}
 
 	it "should have [Parent, Child, GrandChild] as keys in DeepImport::Config.models" do
-		DeepImport::Config.models.keys.should =~ [Parent,Child,GrandChild]
+		DeepImport::Config.importable.should =~ [Parent,Child,GrandChild]
 	end
 
 	it "should add DeepImport::ModelLogic to Parent" do
@@ -23,7 +23,7 @@ describe 'DeepImport.initialize! - General API' do
 	end
 
 	it "should raise an error if called again with different options" do
-		expect { DeepImport.initialize! :on_save => :noop }.to raise_error
+		expect { DeepImport.initialize! on_save: :noop }.to raise_error
 	end
 
 end

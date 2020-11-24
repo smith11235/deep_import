@@ -9,6 +9,12 @@ module DeepImport
 	private
 
 	def self.import_options=( options )
+    if options == nil # from Reset - #TODO - make better reset - especially for rspec
+      @@import_options = nil
+      @@raise_error = nil
+      return
+    end
+
 		import_options = ImportOptions.new( options )
 		options = import_options.to_hash
 
@@ -54,7 +60,7 @@ module DeepImport
 			@options.each do |option,value|
 				raise "Unknown Import Option: #{option}" unless valid_values.keys.include? option
 				raise "Unknown #{option} => #{value}, expecting #{valid_values[option]}" unless valid_values[ option ].include? value
-				raise "Option #{option} was already set to #{DeepImport.import_options[option]}, cannot change to #{value}" unless DeepImport.import_options.nil? || DeepImport.import_options[option] == value
+				raise "Option #{option} was already set to #{DeepImport.import_options[option]}, cannot change to #{value}" unless DeepImport.import_options.nil? || DeepImport.import_options[option] == value 
 			end
 		end
 	end

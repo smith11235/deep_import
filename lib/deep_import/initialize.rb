@@ -2,8 +2,10 @@ module DeepImport
   # TODO: clean this up
 
   def self.initialize!( options = {} )
-    if DeepImport.status == :error
+    reset = options.delete(:reset)
+    if reset # || DeepImport.status == :error
       DeepImport.status = :init
+      DeepImport.import_options = nil
     end
     # validate the import options
     DeepImport.import_options = options
@@ -24,7 +26,7 @@ module DeepImport
 
     def initialize
       # otherwise the expectation is the :init status
-      raise "Calling DeepImport::Initialize when status != :init; #{DeepImport.status}" unless DeepImport.status == :init
+      raise "Calling DeepImport::Initialize when status != :init; status=#{DeepImport.status}" unless DeepImport.status == :init
       case false # failure case 
       when parse_config
         failure! "Parsing Config"

@@ -6,6 +6,16 @@ module DeepImport
 		# all model saving logic should be within one transaction
 		# to help with database locking between multiple processes
 		# and to provide roll back support on error
+
+    # Check if nothing to commit
+	  noop = DeepImport::Config.importable.all? do |base_class|
+		  DeepImport::ModelsCache.cached_instances(base_class).empty?
+    end
+    if noop
+		  DeepImport.logger.warn "- DeepImport.commit! no instances loaded to import"
+      return
+    end
+
 		ActiveRecord::Base.transaction do
 			Commit.new
 		end

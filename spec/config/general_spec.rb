@@ -1,49 +1,32 @@
 require 'spec_helper'
 
 describe 'DeepImport::Config - General API' do
-	before( :all ) do
-		# print out a fresh simple config 
-		# for Parents, Children, and GrandChildren
-		ConfigHelper.new.valid_config 
-		# and parse the config so it's defs are loaded for testing
-	end
+  # before :all
+  #   ConfigHelper.new.valid_config 
 
-	it "should be a valid config when initialized" do
+  it "is valid when loaded" do
 		DeepImport::Config.new.should be_valid
 	end
 
-	describe "DeepImport::Config.models" do
-		let(:models){ DeepImport::Config.models }
+  let!(:config) do
+    DeepImport::Config.new
+    DeepImport::Config
+  end
 
-		let(:expected_models){
-			# return a Hash of ModelClass to Hash of :belongs_to => Array of ClassName
-			{
-				Parent => { :belongs_to => Hash.new },
-				Child => { :belongs_to => { Parent => true } },
-				GrandChild => { :belongs_to => { Child => true } }
-			}
-		}
-
-		describe "expected models" do
-
-			it "should have the same keys" do
-				models.keys.should =~ expected_models.keys
-			end
-
-			it "should have the same values" do
-				models.values.should =~ expected_models.values
-			end
-
-			it "should have Child belongs_to Parent" do
-				models[Child][:belongs_to].keys.should =~ expected_models[Child][:belongs_to].keys
-			end
-
-			it "should have GrandChild belongs_to Child" do
-				models[GrandChild][:belongs_to].keys.should =~ expected_models[GrandChild][:belongs_to].keys
-			end
-
-		end
-
+	it "importable class list" do
+		config.importable.should =~ [Parent, Child, GrandChild]
 	end
+
+	it "belongs_to relations" do
+    config.belongs_to(Child).should =~ [:parent]
+    config.belongs_to(GrandChild).should =~ [:child]
+    config.belongs_to(Parent).should =~ []
+	end
+
+  it "has_many relations" do
+    config.has_many(Parent).should =~ [:children]
+    config.has_many(Child).should =~ [:grand_children]
+    expect(config.has_many(GrandChild)).to be_nil # TODO: []
+  end
 
 end
