@@ -1,9 +1,6 @@
 require 'spec_helper'
 
 describe 'DeepImport::Config - General API' do
-  # before :all
-  #   ConfigHelper.new.valid_config 
-
   it "is valid when loaded" do
 		DeepImport::Config.new.should be_valid
 	end

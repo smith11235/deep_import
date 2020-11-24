@@ -3,10 +3,9 @@ require 'spec_helper'
 describe 'DeepImport.import - General API' do
 
 	before( :all ){ 
-		ConfigHelper.new.valid_config
-		DeepImport.initialize!
+		DeepImport.initialize! reset: true
 	}
-	before( :each ){ delete_models }
+	before( :each ){ delete_models } # TODO: remove
 	after( :each ){ 
 		DeepImport.mark_ready_for_import! 
 		delete_models

@@ -4,7 +4,6 @@ require 'digest/md5'
 describe "rake deep_import:setup", manual: true do
 
 	before( :all ) {
-		ConfigHelper.new.valid_config
 		DeepImport::Config.new 
 	}
 

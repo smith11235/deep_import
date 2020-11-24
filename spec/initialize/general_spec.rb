@@ -1,9 +1,8 @@
 require 'spec_helper'
 
 describe 'DeepImport.initialize! - General API' do
-	before( :all ){ 
-		ConfigHelper.new.valid_config
-		DeepImport.initialize! 
+	before(:all){ 
+		DeepImport.initialize! reset: true
 	}
 
 	it "should have [Parent, Child, GrandChild] as keys in DeepImport::Config.models" do

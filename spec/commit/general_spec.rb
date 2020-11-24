@@ -5,44 +5,34 @@ describe "DeepImport.commit!" do
 	# this is not super granular to commit as it is relying on import/models_cache, etc
 
 	before(:all) {
-		ConfigHelper.new.valid_config
-		DeepImport.initialize! 
-		delete_models
-		DeepImport.import do
+		delete_models # Needed? should be automatic
+		DeepImport.import reset: true do
 			%w(a b).each do |parent_name|
-				parent = Parent.new :name => parent_name
-
+				parent = Parent.new name: parent_name
 				(0..1).each do |child_number|
-					child = Child.new :name => parent_name
-					child.parent = parent
+					child = parent.children.build name: parent_name #[parent_name, child_number].join("+")
 					(0..1).each do |grand_child_number|
-						grand_child = GrandChild.new :name => parent_name
-						grand_child.child = child
+						grand_child = child.grand_children.build name: parent_name #[parent_name, child_number, grand_child_number].join("+")
 					end
 				end
 			end
-
 		end
 	}
 
 	after(:all){
-		delete_models
+		delete_models # TODO: remove 
 	}
 
 	describe "Base Model Tracking" do
 
-		let( :parent_names ){ Parent.pluck(:name) }
-		let( :child_names ){ Child.pluck(:name) }
-		let( :grand_child_names ){ GrandChild.pluck(:name) }
-
 		it "should have 2 parents in it named a and b" do
-			parent_names.should =~ %w(a b)
+			Parent.pluck(:name).should =~ %w(a b)
 		end
 		it "should have 4 children in it named a, a, b, b" do
-			child_names.should =~ %w(a a b b)
+		  Child.pluck(:name).should =~ %w(a a b b)
 		end
 		it "should have 8 grand_children in it named a, a, a, a, b, b, b, b" do
-			grand_child_names.should =~ %w(a a a a b b b b)
+		  GrandChild.pluck(:name).should =~ %w(a a a a b b b b)
 		end
 
 	end

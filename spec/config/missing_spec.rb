@@ -4,6 +4,7 @@ describe 'DeepImport::Config - Missing API' do
 
 	before( :all ) do
 		DeepImport.logger ||= DeepImport.default_logger # TODO: this needed here?
+    DeepImport.initialize! reset: true
 	end
   after(:all) do
     $deep_import_config = nil
@@ -23,7 +24,7 @@ describe 'DeepImport::Config - Missing API' do
 		expect(c.models.empty?).to be true
   end
 
-  it "allows execution - but no special logic" do 
+  it "allows execution - no special logic" do 
     expect(Parent.create.id).to be_present
   end
 
