@@ -13,10 +13,12 @@ describe 'DeepImport.import - General API' do
 
 	it "should track new models" do
 		DeepImport.import { 
+		  expect(Parent.count).to eq(0) # REMOVE
       p = Parent.new 
       expect(p.deep_import_id).to be_present
+		  expect(Parent.count).to eq(0)
     }
-		Parent.all.count.should == 1 
+		expect(Parent.count).to eq(1)
 	end
 
 	it "should set deep_import_id to nil after commit" do

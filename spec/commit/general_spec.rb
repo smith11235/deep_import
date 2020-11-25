@@ -4,7 +4,7 @@ describe "DeepImport.commit!" do
 	# basically going to check that the resultant models are all aligned correctly
 	# this is not super granular to commit as it is relying on import/models_cache, etc
 
-	before(:all) {
+	before(:each) {
 		DeepImport.import do
 			%w(a b).each do |parent_name|
 				parent = Parent.new name: parent_name

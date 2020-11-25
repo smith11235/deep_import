@@ -29,11 +29,11 @@ RSpec.configure do |config|
 
   # TODO: simplify/whats missing with DatabaseCleaner/etc
   config.use_transactional_fixtures = true
-  config.before(:suite) do
+  config.before(:each) do
     clean_db
   end
-  config.after(:each) do
-    clean_db
-  end
+  #config.after(:each) do
+  #  clean_db
+  #end
 
 end
