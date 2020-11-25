@@ -1,7 +1,0 @@
-<% if @file %>
-	<%= "Parsing: #{@file}" %>
-	<br />
-	<%= markdown File.open( @file, "r" ).readlines.join("\n") %>
-<% else %>
-	end url with ?file=FILE_YOU_WANT_TO_OPEN.md
-<% end %>
