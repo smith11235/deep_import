@@ -36,7 +36,8 @@ RSpec.configure do |config|
   config.order = "random"
 
   config.before(:suite) do
-    DeepImport.logger.level = ENV["DEEP_IMPORT_LOG_LEVEL"] || "FATAL" # not verbose by default
+    ENV["DEEP_IMPORT_LOG_LEVEL"] ||= "FATAL"
+    DeepImport.initialize! # uses config/deep_import.rb - use: $deep_import_config
 
     # TODO: make this ENV[DATABASE_URL] var
     ActiveRecord::Base.establish_connection(
