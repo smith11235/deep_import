@@ -14,6 +14,12 @@ require 'rspec/rails'
 require 'deep_import'
 require 'rspec_candy/all'
 
+def clean_db
+  GrandChild.delete_all
+  Child.delete_all
+  Parent.delete_all
+end
+
 RSpec.configure do |config|
   # Until better setup - do not run Setup/Teardown
   config.filter_run_excluding manual: true 
@@ -21,8 +27,13 @@ RSpec.configure do |config|
   # Execute specific seed: --seed 1234
   config.order = "random"
 
+  # TODO: simplify/whats missing with DatabaseCleaner/etc
   config.use_transactional_fixtures = true
   config.before(:suite) do
-    DatabaseCleaner.clean_with(:truncation)
+    clean_db
   end
+  config.after(:each) do
+    clean_db
+  end
+
 end

@@ -4,9 +4,11 @@ describe 'DeepImport::Config - Missing API' do
 
   after(:all) do
     $deep_import_config = nil
+    ENV["DEEP_IMPORT_CONFIG"] = nil
   end
 
   it "missing file" do
+    $deep_import_config = nil
     ENV["DEEP_IMPORT_CONFIG"] = "fake_file.yml"
 	  c = DeepImport::Config.new
 		expect(c.valid?).to be false
@@ -14,6 +16,7 @@ describe 'DeepImport::Config - Missing API' do
   end
 
   it "bad config classes" do
+    ENV["DEEP_IMPORT_CONFIG"] = nil
     $deep_import_config = [ Parent, Child, GrandChild ]
 	  c = DeepImport::Config.new
 		expect(c.valid?).to be false
