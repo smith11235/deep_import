@@ -15,7 +15,6 @@ module DeepImport
 	mattr_accessor :logger
 
   @@logger = DeepImport.default_logger # stdout by default
-  @@logger.level = ENV["DEEP_IMPORT_LOG_LEVEL"] || "INFO" # verbose by default
 
 	private 
 

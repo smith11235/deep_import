@@ -4,6 +4,7 @@ module DeepImport
   # Called from Railtie/boot in Rails
   # Otherwise, needs to be called by developer
   def self.initialize!( options = {} )
+    DeepImport.logger.level = ENV["DEEP_IMPORT_LOG_LEVEL"] || "INFO" # verbose by default
     Initialize.new
   end
 

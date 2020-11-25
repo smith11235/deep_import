@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe 'DeepImport::ModelLogic (on Child)' do
+  let(:error_msg){
+    "DeepImport: commit method called within import block - change code or pass 'on_save: :noop'"
+  }
+
   describe "DeepImport Module Includes" do
 
     it "includes ModelLogic" do
@@ -50,13 +54,13 @@ describe 'DeepImport::ModelLogic (on Child)' do
           DeepImport.import do 
             Child.new.save 
           end
-        }.to raise_error
+        }.to raise_error(error_msg)
 
         expect { 
           DeepImport.import do 
             Child.new.save! 
           end
-        }.to raise_error
+        }.to raise_error(error_msg)
 
         expect(Child.count).to eq(0)
       end
@@ -96,13 +100,13 @@ describe 'DeepImport::ModelLogic (on Child)' do
             c = Child.new 
             c.create_parent
           end
-        }.to raise_error
+        }.to raise_error(error_msg)
         expect { 
           DeepImport.import do 
             c = Child.new 
             c.create_parent!
           end
-        }.to raise_error
+        }.to raise_error(error_msg)
         expect(Child.count).to eq(0)
         expect(Parent.count).to eq(0)
       end
@@ -151,13 +155,13 @@ describe 'DeepImport::ModelLogic (on Child)' do
             c = Child.new 
             c.grand_children.create
           end
-        }.to raise_error
+        }.to raise_error(error_msg)
         expect { 
           DeepImport.import do 
             c = Child.new 
             c.grand_children.create!
           end
-        }.to raise_error
+        }.to raise_error(error_msg)
         expect(Child.count).to eq(0)
         expect(GrandChild.count).to eq(0)
       end
