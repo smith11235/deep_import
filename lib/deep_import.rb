@@ -6,11 +6,15 @@ module DeepImport
 
 	deep_import_dir = File.join( File.dirname( File.expand_path( __FILE__ ) ), "deep_import" )
 
-	%w( default_logger config initialize setup teardown import_options model_logic models_cache commit railtie import ).each do |file|
+	%w( default_logger config initialize setup teardown import_options model_logic models_cache commit import ).each do |file|
 		require File.join( deep_import_dir, file )
 	end
 
+  require 'deep_import/railtie' if defined?(Rails)
+
 	mattr_accessor :logger
+
+  @@logger = DeepImport.default_logger # stdout by default
 
 	private 
 

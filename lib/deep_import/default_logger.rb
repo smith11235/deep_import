@@ -1,8 +1,9 @@
 module DeepImport
 	def self.default_logger_path
     # TODO: env var override
-		"log/deep_import_#{Rails.env}.log"
+		"log/deep_import_#{ENV["RAILS_ENV"]}.log"
 	end
+
 	def self.default_logger
     # TODO: make param/config option
     output = STDOUT # default_logger_path
