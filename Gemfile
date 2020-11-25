@@ -10,7 +10,7 @@ gem 'rails'#, '~> 4.2.11.3'
 gem 'pg' # TODO - best case
 
 group :development, :test do
-  gem 'rspec-rails'
+  gem 'rspec-rails' # TODO: just 'rspec'
   gem 'rspec_candy' 
   gem 'database_cleaner-active_record'
 end

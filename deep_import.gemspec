@@ -11,8 +11,8 @@ Gem::Specification.new do |s|
 	s.add_dependency "colorize"
 	s.add_dependency "activerecord-import"
 	s.add_dependency "activerecord"
-	s.add_dependency "rails"
-  # one of pg, mysql2, sqlite3
+  s.add_dependency "activesupport"
+  # one of mysql2 / pg
 
 	s.files        = Dir.glob("lib/deep_import/*") + %w(lib/deep_import.rb)
 	s.require_path = 'lib'

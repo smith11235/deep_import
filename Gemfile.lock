@@ -11,8 +11,8 @@ PATH
     deep_import (0.0.1)
       activerecord
       activerecord-import
+      activesupport
       colorize
-      rails
 
 GEM
   remote: https://rubygems.org/

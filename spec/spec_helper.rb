@@ -1,53 +1,27 @@
-# Logic to be reused by various tests that support deep_import
-require 'config_helper'
+#require 'bundler/setup'
+#Bundler.setup
 
-# for repointing models to new connections
-def change_database_connection( config_name )
-	puts "Setting db to #{config_name}"
-	ActiveRecord::Base.establish_connection( config_name )
-end
+# Switch from PG to MYSQL / ETC
+#def change_database_connection( config_name )
+#	puts "Setting db to #{config_name}"
+#	ActiveRecord::Base.establish_connection( config_name )
+#end
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
-require 'rspec/autorun'
+require 'deep_import'
 require 'rspec_candy/all'
 
-
-# Requires supporting ruby files with custom matchers and macros, etc,
-# in spec/support/ and its subdirectories.
-Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
-
 RSpec.configure do |config|
-  config.filter_run_excluding manual: true # block Setup/Teardown for now
-  # ## Mock Framework
-  #
-  # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
-  #
-  # config.mock_with :mocha
-  # config.mock_with :flexmock
-  # config.mock_with :rr
+  # Until better setup - do not run Setup/Teardown
+  config.filter_run_excluding manual: true 
 
-  # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.fixture_path = "#{::Rails.root}/spec/fixtures"
-
-  # If you're not using ActiveRecord, or you'd prefer not to run each of your
-  # examples within a transaction, remove the following line or assign false
-  # instead of true.
-  config.use_transactional_fixtures = true
-
-  # If true, the base class of anonymous controllers will be inferred
-  # automatically. This will be the default behavior in future versions of
-  # rspec-rails.
-  config.infer_base_class_for_anonymous_controllers = false
-
-  # Run specs in random order to surface order dependencies. If you find an
-  # order dependency and want to debug it, you can fix the order by providing
-  # the seed, which is printed after each run.
-  #     --seed 1234
+  # Execute specific seed: --seed 1234
   config.order = "random"
 
+  config.use_transactional_fixtures = true
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
   end

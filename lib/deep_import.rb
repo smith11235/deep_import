@@ -1,6 +1,7 @@
 module DeepImport
 
 	require 'colorize'
+  require 'active_support'
 	require 'activerecord-import'
 
 	deep_import_dir = File.join( File.dirname( File.expand_path( __FILE__ ) ), "deep_import" )
