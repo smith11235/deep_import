@@ -26,16 +26,18 @@ def clean_db
   Parent.delete_all
 end
 
-
-
 RSpec.configure do |config|
   # Until better setup - do not run Setup/Teardown
-  config.filter_run_excluding manual: true 
+  # rspec --tag manual
+  # rspec --tag timing
+  config.filter_run_excluding manual: true, timing: true
 
   # Execute specific seed: --seed 1234
   config.order = "random"
 
   config.before(:suite) do
+    DeepImport.logger.level = ENV["DEEP_IMPORT_LOG_LEVEL"] || "FATAL" # not verbose by default
+
     # TODO: make this ENV[DATABASE_URL] var
     ActiveRecord::Base.establish_connection(
       adapter: 'postgresql',

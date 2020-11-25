@@ -1,7 +1,8 @@
 module DeepImport
   # TODO: clean this up
 
-  # TODO: move initialize
+  # Called from Railtie/boot in Rails
+  # Otherwise, needs to be called by developer
   def self.initialize!( options = {} )
     Initialize.new
   end

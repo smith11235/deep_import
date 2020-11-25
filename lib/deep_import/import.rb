@@ -29,10 +29,8 @@ module DeepImport
 				raise "Cannot DeepImport.import, check the log".red
 			end
 
-      puts "Done Initializing".red
 			DeepImport.mark_importing!
-      puts "Importing!".red
-  		import = Import.new # TODO: do we need this?
+  		import = Import.new # TODO: do we need this? - overkill
   		import.enable_logic import_block # run the import/build logic
   		DeepImport.commit! # commit all models from the cache into the database
 			DeepImport.mark_ready_for_import!
@@ -40,8 +38,6 @@ module DeepImport
       DeepImport.status = :error
       raise e
     end
-
-		puts "DeepImport.import successful.  Check the log for what happened (default: #{DeepImport.default_logger_path})".green
 
 		end_time = Time.now
 		DeepImport.logger.info "==========================================================="

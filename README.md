@@ -38,23 +38,48 @@ What this means is:
 
 ## Setup / Usage
 
-* Add gem: 
+#### With Rails
+
+* Add gem to bundle
   * `gem deep_import`
-* Add config file defining importable models and relationships:
-  * Example config: [config/deep_import.yml](config/deep_import.yml)
-* Generate and execute database migration (from config file)
+* Add `config/deep_import.yml` file defining import models and relationships:
+  * [Example config](config/deep_import.yml)
+* Generate and execute database migration 
   * `rake deep_import:setup`
-* If not Rails, add initialization call to startup:
-  * `DeepImport.initialize! on_save: :noop`
-    * conditionally include it only within worker processes
-    * not needed from within rails server process
 * Start running imports
+
+#### Without Rails
+_TODO: requires testing_
+
+* Add gem, and require it:
+  * `gem deep_import`
+  * `require deep_import` if not using Bundler
+* Specify config for models
+  * Can use a yaml file: `ENV["DEEP_IMPORT_CONFIG"]`
+  * Can use a global hash: `$deep_import_config = {...}`
+* Generate and execute database migration: `rake deep_import:setup`
+* On process startup `DeepImport.initialize!`
+* Start running imports
+
+#### Logging
+Logging is enabled by default.
+
+* Location: STDOUT
+  * override with: `ENV["DEEP_IMPORT_LOG_FILE"]` 
+* Level: INFO (verbose)
+  * override with: `ENV["DEEP_IMPORT_LOG_LEVEL"]`
 
 ## Data Loading Code Example
 
-Full code example: [lib/tasks/example.rake](lib/tasks/example.rake)
+Full code example: [spec/import/timing_spec.rb](spec/import/timing_spec.rb)
 
-Breakdown of code example shown below.
+To execute it (while developing gem)
+
+```
+rspec --tag timing
+```
+
+Breakdown of example code shown below.
 
 #### 3 Nested Model Classes
 
@@ -72,18 +97,15 @@ GrandChild
 
 #### 1 block of code: w/ and w/out DeepImport
 
-Two rake tasks, to build the same data, via the same code block.
-
-* `rake example:normal` 
-* `rake example:deep_import`
+Two example tasks to build the same data, via the same code block.
 
 ```
-  task :normal do
-    make_random_nested_data
+  # Normal
+  make_random_nested_data
 
-  task :deep_import
-    DeepImport.import do 
-      make_random_nested_data
+  # Deep Import
+  DeepImport.import do 
+    make_random_nested_data
 ```
 
 The `make_random_nested_code` method takes a LIMIT parameter, 
@@ -108,7 +130,9 @@ For any value of {LIMIT}, the code builds:
 
 #### Execution Time Comparison
 
-Executed from a server against a remove Postgres database.
+Executed from a server against a remove Postgres database. 
+Timing varies per execution. Records loaded are minimal shells, no data parsing/computed.
+The timing difference is primarily network/query call overhead.
 
 | LIMIT | Total Records | Normal Timing | DeepImport Timing |
 | ----- | ------------- | ------------- | ----------------- |
@@ -283,3 +307,10 @@ For multi-machine safety:
 #### The Cost
 
 _Write out the math - for time + space_
+
+## To Develop Gem
+Clone Repo.
+
+Specify `ENV["DATABASE_URL"]`.
+
+Rely and improve on RSPEC tests.

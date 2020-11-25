@@ -6,7 +6,7 @@ module DeepImport
 
 	def self.default_logger
     # TODO: make param/config option
-    output = STDOUT # default_logger_path
+    output = ENV["DEEP_IMPORT_LOG_FILE"] || STDOUT # default_logger_path
 		ActiveSupport::TaggedLogging.new(Logger.new(output))
 	end
 end
