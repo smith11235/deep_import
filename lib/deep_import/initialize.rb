@@ -1,11 +1,16 @@
 module DeepImport
-  # TODO: clean this up
 
   # Called from Railtie/boot in Rails
-  # Otherwise, needs to be called by developer
-  def self.initialize!( options = {} )
+  # Otherwise: called by developer somewhere
+
+  def self.initialize!
+    if DeepImport.status != :uninitialized
+      DeepImport.logger.warn "DeepImport already initialized - skipping initialize! call"
+      return true 
+    end
     DeepImport.logger.level = ENV["DEEP_IMPORT_LOG_LEVEL"] || "INFO" # verbose by default
     Initialize.new
+    true
   end
 
   private 
@@ -18,7 +23,6 @@ module DeepImport
 
     def initialize
       # otherwise the expectation is the :init status
-      raise "Calling DeepImport::Initialize when status != :init; status=#{DeepImport.status}" unless DeepImport.status == :init
       case false # failure case 
       when parse_config
         failure! "Parsing Config"
@@ -70,6 +74,7 @@ module DeepImport
           Class.new(ActiveRecord::Base)
         )
       end
+      true
     end
 
   end

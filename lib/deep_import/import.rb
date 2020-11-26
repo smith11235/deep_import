@@ -1,37 +1,30 @@
 module DeepImport
 
-	def self.import( options = {}, &import_block )
+	def self.import(options = {}, &import_block)
 		start_time = Time.now
-		DeepImport.logger.info "" 
-		DeepImport.logger.info "" 
-		DeepImport.logger.info "==========================================================="
-		DeepImport.logger.info "Starting Import At #{start_time}"
-		DeepImport.logger.info "==========================================================="
-		DeepImport.logger.info "Running with adapter #{ActiveRecord::Base.connection_config[:adapter]}"
+
+    # TODO: move options to one time initialize call
     reset = options.has_key?(:reset) ? options.delete(:reset) : ENV["RAILS_ENV"] == "test"
-    if reset
-      DeepImport.status = :init
-      DeepImport.import_options = nil
-    end
+    DeepImport.import_options = nil if reset
     DeepImport.import_options = options
 
-    # check if deep import is setup on modules
-
-		DeepImport.logger.info "#{'DeepImport.import:'.green}             #{'(in seconds)     user     system      total        real'.black.on_yellow}"
-		# initialize the deep import environment modifications
+    # Header Row
+		DeepImport.logger.info "#{'DeepImport.import:'.green}                       #{'(in seconds)     user     system      total        real'.black.on_yellow}"
 
     begin
-			# DeepImport.status is used to enable/disable activerecord enhancements
-		  DeepImport.logger.info "#{'DeepImport.initialize!:'.green}              TIME: #{Benchmark.measure { DeepImport.initialize! options }}"
-      # TODO: take in options here - work as overrides
+      DeepImport.log_time("initialize!") {DeepImport.initialize!}
+
 			if !DeepImport.ready_for_import?
-				DeepImport.logger.error "Error: While invoking DeepImport.import, DeepImport.status = #{DeepImport.status}".red
-				raise "Cannot DeepImport.import, check the log".red
+				DeepImport.logger.fatal "Error: DeepImport.import - status not ready for import: status=#{DeepImport.status}".red
+				raise "Cannot DeepImport.import, check the log"
 			end
 
 			DeepImport.mark_importing!
-  		import = Import.new # TODO: do we need this? - overkill
-  		import.enable_logic import_block # run the import/build logic
+
+	    DeepImport::ModelsCache.reset # renew the background models cache
+
+      DeepImport.log_time("import_block", &import_block)
+
   		DeepImport.commit! # commit all models from the cache into the database
 			DeepImport.mark_ready_for_import!
     rescue Exception => e
@@ -40,26 +33,12 @@ module DeepImport
     end
 
 		end_time = Time.now
-		DeepImport.logger.info "==========================================================="
-		DeepImport.logger.info "Import Ended At #{end_time}, with a duration of #{end_time - start_time} seconds"
+		DeepImport.logger.info "Import Ended At #{end_time}: Total Duration: #{end_time - start_time} seconds"
 		DeepImport.logger.info "==========================================================="
 	end
 
-	private
 
-	class Import
-		def initialize
-			DeepImport::ModelsCache.reset # renew the background models cache
-		end
 
-		def enable_logic( import_block )
-			# call the users block
-			DeepImport.logger.info "#{'DeepImport.import:'.green} building data"
-        # TODO: better formating all around
-			  DeepImport.logger.info "                                     TIME: #{Benchmark.measure { import_block.call }}"
 
-		end
-
-	end
 
 end

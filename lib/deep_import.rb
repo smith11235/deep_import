@@ -16,10 +16,20 @@ module DeepImport
 
   @@logger = DeepImport.default_logger # stdout by default
 
+  def self.log_time(method, &block)
+    # TODO: make fixed width output for spacing
+    timing_at = 37
+    prefix = "DeepImport.#{method}:"
+    prefix = prefix.truncate(47)
+    spacer = " " * (47 - prefix.size)
+		DeepImport.logger.info "#{prefix.green}#{spacer}TIME: #{Benchmark.measure &block}"
+  end
+
 	private 
 
 	mattr_reader :status
-	@@status = :init
+
+	@@status = :uninitialized
 	def self.status=( value )
 		@@status = value
 	end
