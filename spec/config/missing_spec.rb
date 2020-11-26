@@ -4,7 +4,7 @@ describe 'DeepImport::Config - Missing API' do
 
   after(:all) do
     $deep_import_config = nil
-    ENV["DEEP_IMPORT_CONFIG"] = nil
+    ENV["DEEP_IMPORT_CONFIG"] = DEEP_IMPORT_CONFIG
   end
 
   it "missing file" do

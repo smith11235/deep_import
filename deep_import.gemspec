@@ -9,10 +9,14 @@ Gem::Specification.new do |s|
 
 	s.add_development_dependency "rspec"
 	s.add_dependency "colorize"
+
 	s.add_dependency "activerecord-import"
-	s.add_dependency "activerecord"
+  s.add_dependency "rake"
   s.add_dependency "activesupport"
-  # one of mysql2 / pg
+
+  # for database handling
+	s.add_dependency "activerecord"
+  # one of mysql2 / pg - currently does not support sqlite
 
 	s.files        = Dir.glob("lib/deep_import/*") + %w(lib/deep_import.rb)
 	s.require_path = 'lib'

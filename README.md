@@ -42,8 +42,8 @@ What this means is:
 
 * Add gem to bundle
   * `gem deep_import`
-* Add `config/deep_import.yml` file defining import models and relationships:
-  * [Example config](config/deep_import.yml)
+* Add `config/deep_import.yml` file to define importable models and associations
+  * [Example config](spec/support/config/deep_import.yml)
 * Generate and execute database migration 
   * `rake deep_import:setup`
 * Start running imports
@@ -51,14 +51,13 @@ What this means is:
 #### Without Rails
 _TODO: requires testing_
 
-* Add gem, and require it:
+* Add gem to bundle and require it in application
   * `gem deep_import`
-  * `require deep_import` if not using Bundler
+  * `require deep_import` 
 * Specify config for models
-  * Can use a yaml file: `ENV["DEEP_IMPORT_CONFIG"]`
+  * Can use a yaml file, located at: `ENV["DEEP_IMPORT_CONFIG"]`
   * Can use a global hash: `$deep_import_config = {...}`
 * Generate and execute database migration: `rake deep_import:setup`
-* On process startup `DeepImport.initialize!`
 * Start running imports
 
 #### Logging
