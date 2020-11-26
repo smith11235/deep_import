@@ -26,6 +26,8 @@ module DeepImport
         failure! "ActiveRecord::Import unavailable"
       when modify_target_models
         failure! "Setting up models"
+      when add_deep_import_models
+        failure! "Unable to add deep import models"
       end
       DeepImport.mark_ready_for_import! 
     end
@@ -58,6 +60,16 @@ module DeepImport
         model_class.class_eval { include DeepImport::ModelLogic }
       end
       true
+    end
+
+    def add_deep_import_models
+      DeepImport::Config.importable.each do |model_class|
+        deep_model_class = "DeepImport#{model_class}"
+        Object.const_set(
+          deep_model_class, 
+          Class.new(ActiveRecord::Base)
+        )
+      end
     end
 
   end

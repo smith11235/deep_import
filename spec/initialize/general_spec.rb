@@ -1,9 +1,6 @@
 require 'spec_helper'
 
 describe 'DeepImport.initialize!' do
-  # executed through railtie
-  # alternatively: DeepImport.initialize!
-  # driven by: config/deep_import.yml
 
 	it "should have Parent, Child, GrandChild as keys in DeepImport::Config.models" do
 		DeepImport::Config.importable.should =~ [Parent,Child,GrandChild]
@@ -20,6 +17,15 @@ describe 'DeepImport.initialize!' do
 	it "should add DeepImport::ModelLogic to GrandChild" do
 		GrandChild.included_modules.should include( DeepImport::ModelLogic )
 	end
+
+  it "should define DeepImport models" do
+    expect(Object.const_defined?("DeepImportParent")).to be true
+    expect(Object.const_defined?("DeepImportChild")).to be true
+    expect(Object.const_defined?("DeepImportGrandChild")).to be true
+    expect(DeepImportParent.ancestors.include?(ActiveRecord::Base)).to be true
+    expect(DeepImportChild.ancestors.include?(ActiveRecord::Base)).to be true
+    expect(DeepImportGrandChild.ancestors.include?(ActiveRecord::Base)).to be true
+  end
 
   # TODO: move this to import_options, import
 	it "should raise an error if called again with different options" do
