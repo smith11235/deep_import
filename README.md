@@ -49,7 +49,7 @@ What this means is:
 * Start running imports
 
 #### Without Rails
-_TODO: requires testing_
+_TODO: requires testing/fleshing out_
 
 * Add gem to bundle and require it in application
   * `gem deep_import`
@@ -58,6 +58,10 @@ _TODO: requires testing_
   * Can use a yaml file, located at: `ENV["DEEP_IMPORT_CONFIG"]`
   * Can use a global hash: `$deep_import_config = {...}`
 * Generate and execute database migration: `rake deep_import:setup`
+  * Define `ENV["DEEP_IMPORT_DB_DIR"]`
+    * expects to have:
+      * `schema.rb`
+      * `/migrate` directory for migration
 * Start running imports
 
 #### Logging
@@ -310,6 +314,18 @@ _Write out the math - for time + space_
 ## To Develop Gem
 Clone Repo.
 
-Specify `ENV["DATABASE_URL"]`.
+Specify database connection details in `./database.yml` (root of project).
+
+```
+adapter: postgresql
+database: deep_import_test
+username: username
+password: password
+host: "xyz.us-east-1.rds.amazonaws.com"
+port: 5432
+```
+
 
 Rely and improve on RSPEC tests.
+
+* [ ] TODO: make it so db/create and db/migrate work (allow other developers/new database)

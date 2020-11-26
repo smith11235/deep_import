@@ -50,14 +50,13 @@ RSpec.configure do |config|
     DeepImport.initialize! # uses config/deep_import.rb - use: $deep_import_config
 
     # TODO: make this ENV[DATABASE_URL] var
-    ActiveRecord::Base.establish_connection(
-      adapter: 'postgresql',
-      database: :deep_import_test,
-      username: :railsapp,
-      password: '5aed99058d873716ebec7111b2e679dc',
-      host: "dri9edszt4r0qb.carwfspvbpap.us-east-1.rds.amazonaws.com",
-      port: 5432
-    )
+    config = YAML.load_file("database.yml") # from root project directory
+    puts config.to_yaml.red
+    conn = {}
+    config.each do |k, v|
+      conn[k.to_sym] = v
+    end
+    ActiveRecord::Base.establish_connection(conn)
   end
 
   config.before(:each) do
