@@ -38,6 +38,8 @@ What this means is:
 
 ## Setup / Usage
 
+**Warning:** Only works (currently) for mysql and postgres.
+
 #### With Rails
 
 * Add gem to bundle
