@@ -1,5 +1,6 @@
 module DeepImport
 
+  # TODO: Do I need to require these here? Or does bundler handle it
 	require 'colorize'
   require 'active_support'
 	require 'activerecord-import'
@@ -56,4 +57,15 @@ module DeepImport
 	def self.importing?
 		DeepImport.status == DeepImport.settings[:enable_import_logic_status] 
 	end
+
+  def self.db_settings_for_development
+    conn = {}
+    YAML.load_file("database.yml").each {|k, v| conn[k.to_sym] = v}
+    conn[:migrations_paths] = ["spec/support/db/migrate"]
+    conn
+  end
+
+  def self.set_db_connection_for_development!
+    ActiveRecord::Base.establish_connection(db_settings_for_development)
+  end
 end

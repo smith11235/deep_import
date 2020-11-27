@@ -48,10 +48,7 @@ RSpec.configure do |config|
     ENV["DEEP_IMPORT_CONFIG"] ||= DEEP_IMPORT_CONFIG
     ENV["DEEP_IMPORT_LOG_LEVEL"] ||= "FATAL"
     DeepImport.initialize! # uses config/deep_import.rb - use: $deep_import_config
-
-    conn = {}
-    YAML.load_file("database.yml").each {|k, v| conn[k.to_sym] = v}
-    ActiveRecord::Base.establish_connection(conn)
+    DeepImport.set_db_connection_for_development!
   end
 
   config.before(:each) do

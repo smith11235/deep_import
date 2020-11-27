@@ -321,11 +321,15 @@ adapter: postgresql
 database: deep_import_test
 username: username
 password: password
-host: "xyz.us-east-1.rds.amazonaws.com"
+host: "hostname.com"
 port: 5432
 ```
 
+Run db create:
 
-Rely and improve on RSPEC tests.
+```
+rake deep_import_development:db:create
+rake deep_import_development:db:migrate
+```
 
-* [ ] TODO: make it so db/create and db/migrate work (allow other developers/new database)
+Use RSPEC tests.
