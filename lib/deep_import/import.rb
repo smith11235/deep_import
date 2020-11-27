@@ -5,7 +5,10 @@ module DeepImport
 
     # TODO: move options to one time initialize call
     reset = options.has_key?(:reset) ? options.delete(:reset) : ENV["RAILS_ENV"] == "test"
-    DeepImport.import_options = nil if reset
+    if reset
+      DeepImport.import_options = nil 
+      DeepImport.status = DeepImport::READY
+    end
     DeepImport.import_options = options
 
     # Header Row

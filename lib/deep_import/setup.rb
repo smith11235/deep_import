@@ -6,16 +6,15 @@ module DeepImport
 		def initialize
 			config = DeepImport::Config.new
 			raise "Cannot run setup, invalid config file" unless config.valid?
-			@models = Config.models
+			@models = Config.importable
 
 			# populate these
-			@migration_name = DeepImport.settings[ :migration_name ]
+			@migration_name = DeepImport::MIGRATION_NAME
 			@migration_logic = Array.new
 			@generated_files = Array.new
 
 			add_source_model_schema_changes
 			add_deep_import_model_schema_changes
-			add_deep_import_model_definitions
 
 			create_migration
 
@@ -28,7 +27,7 @@ module DeepImport
 		end
 
 		def add_source_model_schema_changes
-			@models.each do |model_class,info|
+			@models.each do |model_class|
 				table_name = ":#{model_class.to_s.underscore.pluralize}"
 				@migration_logic << "add_column #{table_name}, :deep_import_id, :string, :references => false"
 
@@ -38,52 +37,29 @@ module DeepImport
 		end
 
 		def add_deep_import_model_schema_changes
-			@models.each do |model_class,info|
-				add_deep_import_model_migration( model_class, info )
+			@models.each do |model_class|
+				add_deep_import_model_migration(model_class, Config.belongs_to(model_class))
 			end
 		end
 
-		def add_deep_import_model_migration( model_class, info )
+		def add_deep_import_model_migration( model_class, belongs_to )
 			plural_name = model_class.to_s.pluralize
 			table_name = ":deep_import_#{plural_name.underscore}"
 			@migration_logic <<  "create_table #{table_name} do |t|"
 			@migration_logic <<  "  t.string :deep_import_id, :references => false"
 			@migration_logic <<  "  t.datetime :parsed_at"
 			@migration_logic <<  "  t.timestamps"
-			info[:belongs_to].keys.each do |belongs_to|
-				@migration_logic <<  "  t.string :deep_import_#{belongs_to.to_s.underscore}_id, :references => false"
+			belongs_to.each do |belongs|
+				@migration_logic <<  "  t.string :deep_import_#{belongs.to_s.underscore}_id, :references => false"
 			end
 			@migration_logic <<  "end"
-			info[:belongs_to].keys.each do |belongs_to|
-				hash_of_source_target = md5( "#{table_name}_#{belongs_to}" )
+			belongs_to.each do |belongs|
+				hash_of_source_target = md5( "#{table_name}_#{belongs}" )
 				# hash is for postgres index name uniqueness requirements
-				index_name = "di_#{belongs_to.to_s.underscore}_#{hash_of_source_target}"
-				@migration_logic <<  "add_index #{table_name}, [:deep_import_id, :deep_import_#{belongs_to.to_s.underscore}_id], :name => '#{index_name}'"
+				index_name = "di_#{belongs.to_s.underscore}_#{hash_of_source_target}"
+				@migration_logic <<  "add_index #{table_name}, [:deep_import_id, :deep_import_#{belongs.to_s.underscore}_id], :name => '#{index_name}'"
 			end
 		end
-
-		def add_deep_import_model_definitions
-			@models.each do |model_class,info|
-				generate_deep_import_model_definition( model_class, info )
-			end
-		end
-
-		def generate_deep_import_model_definition( model_class, info )
-			model_file = File.join( Rails.root, "app/models/deep_import_#{model_class.to_s.underscore}.rb" )
-			raise "Model File Already Exists: #{model_file}" if File.file? model_file
-			File.open( model_file, "w" ) do |f|
-				f.puts "class DeepImport#{model_class} < ActiveRecord::Base"
-				#f.puts "  attr_accessible :deep_import_id, :parsed_at"
-				info[:belongs_to].keys.each do |belongs_to|
-          low_name = belongs_to.to_s.underscore
-					#f.puts "  attr_accessible :deep_import_#{belongs_to.to_s.underscore}_id"
-          f.puts "  belongs_to :deep_import_#{low_name}"
-				end
-				f.puts "end"
-			end
-			@generated_files << model_file
-		end
-
 
 		def create_migration
 			raise "Already a migration named: #{@migration_name}, run deep_import:teardown" if Dir.glob( "db/migrate/*_#{@migration_name.underscore}.rb" ).size > 0

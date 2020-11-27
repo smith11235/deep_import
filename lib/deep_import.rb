@@ -35,27 +35,24 @@ module DeepImport
 		@@status = value
 	end
 
-	mattr_accessor :settings 
-	@@settings = { 
-		:migration_name => "AddDeepImportEnhancements", 
-		:required_status_for_import => :ready_to_import, 
-		:enable_import_logic_status => :importing  
-	}
+	MIGRATION_NAME= "AddDeepImportEnhancements"
+  READY=:ready_to_import
+  IMPORTING=:importing
 
 	def self.mark_ready_for_import!
-		DeepImport.status = DeepImport.settings[:required_status_for_import]
+		DeepImport.status = READY
 	end
 
 	def self.ready_for_import?
-		DeepImport.status == DeepImport.settings[:required_status_for_import]
+		DeepImport.status == READY
 	end
 
 	def self.mark_importing!
-		DeepImport.status = DeepImport.settings[:enable_import_logic_status] 
+		DeepImport.status = IMPORTING
 	end
 
 	def self.importing?
-		DeepImport.status == DeepImport.settings[:enable_import_logic_status] 
+		DeepImport.status == IMPORTING
 	end
 
   def self.db_settings_for_development
