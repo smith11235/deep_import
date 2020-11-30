@@ -30,7 +30,7 @@ This is as important as the speed boost provided to bulk data loading.
 
 What this means is:
 * 0 code change required to adopt (or remove) DeepImport
-  * No lock in, no need to re-write code (add gem, get benefit 1)
+  * No lock in, no need to re-write code (add gem, get "Benefit 1")
 * Any coder can intuitively, immediately, understand the code
   * Future maintainer or new hire out of college
 * Debugging can be done, on a single instance, with or without DeepImport
@@ -38,7 +38,7 @@ What this means is:
 
 ## Setup / Usage
 
-**Warning:** Only works (currently) for mysql and postgres.
+**Warning:** Only works currently with postgres (mysql pending).
 
 #### With Rails
 
@@ -51,7 +51,7 @@ What this means is:
 * Start running imports
 
 #### Without Rails
-_TODO: requires testing/fleshing out_
+_TODO: requires more testing/fleshing out_
 
 * Add gem to bundle and require it in application
   * `gem deep_import`
@@ -67,10 +67,10 @@ _TODO: requires testing/fleshing out_
 * Start running imports
 
 #### Logging
-Logging is enabled by default.
+Logging is verbose by default. With easy overrides.
 
 * Location: STDOUT
-  * override with: `ENV["DEEP_IMPORT_LOG_FILE"]` 
+  * override with: `ENV["DEEP_IMPORT_LOG_FILE"]` or `DeepImport.logger = Rails.logger`
 * Level: INFO (verbose)
   * override with: `ENV["DEEP_IMPORT_LOG_LEVEL"]`
 
@@ -278,6 +278,7 @@ deep_import_children
 ```
 
 When the "children" are bulk inserted, they all have null parent.
+
 Each child record has an index record, that has recorded the parent relation via a relative deep import id. Post import, the foreign key relations ("children.parent_id" field) are set via an update/joins query through the deep import index tables.
 
 #### Batch Relative IDs
