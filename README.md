@@ -3,11 +3,9 @@ with the same ActiveRecord code you already have.
 
 ### README Overview
 
-* [Benefits: Why use it](#benefits)
+* [Benefits: Why use it](#benefits) _(And example code timing comparison)_
 * [Setup Instructions - How to use it](#setup-and-usage)
 * [Data Loading Code Example](#data-loading-code-example)
-  * [Example timing comparison between standard code and DeepImport](#execution-time-comparison)
-  * Along with link to rspec usage examples
 * [The Magic - algorithm explanation and breakdown](#the-magic-aka-the-algorithm)
 
 # Benefits
@@ -33,6 +31,18 @@ And more specifically, solves for multiple associated models seamlessly.
 > EX: belongs_to, has_many, has_one, polymorphic relationships
 
 This is done via a small algorithm, portable to any language.
+
+#### Execution Time Comparison 
+From Code Eample shown below.
+
+Executed from a server against a remove Postgres database. 
+Timing varies per execution. Records loaded are minimal shells, no data parsing/computed values.
+The timing difference is primarily network/query call overhead being removed.
+
+| LIMIT | Total Records | Normal Timing | DeepImport Timing |
+| ----- | ------------- | ------------- | ----------------- |
+|  10   |   ~1,500      |   10 seconds  |   1 second        |
+|  29   |   ~28,000     |  214 seconds  |   32 seconds      |
 
 ### Benefit 2: Same Code
 The same standard ActiveRecord code can be used between DeepImport data loading, and normal execution.
@@ -143,16 +153,7 @@ For any value of {LIMIT}, the code builds:
         child.grand_children.create! 
 ```
 
-#### Execution Time Comparison
 
-Executed from a server against a remove Postgres database. 
-Timing varies per execution. Records loaded are minimal shells, no data parsing/computed.
-The timing difference is primarily network/query call overhead.
-
-| LIMIT | Total Records | Normal Timing | DeepImport Timing |
-| ----- | ------------- | ------------- | ----------------- |
-|  10   |   ~1,500      |   10 seconds  |   1 second        |
-|  29   |   ~28,000     |  214 seconds  |   32 seconds      |
 
 ## The Magic (AKA: The Algorithm)
 
@@ -202,7 +203,7 @@ children = []
 (0..10).each do
   parents << Parent.new # build all models in memory, limited by server memory
   (0..10).each do
-    children = parent.children.build 
+    children = parents.last.children.build 
   end
 end
 Parent.import parents # 1 bulk insert call executed
