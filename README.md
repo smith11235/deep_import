@@ -1,7 +1,16 @@
 A rubygem to enable efficient/fast bulk data loading of nested data models, 
 with the same ActiveRecord code you already have.
 
-An execution timing example, and explanation of the algorithm can be found further down.
+### README Overview
+
+* Benefits: Why use it
+* Setup Instructions - How to use it
+* Code Example - And link to rspec data loading comparison tasks
+  * **With example timing difference between standard code and deep import**
+* The Magic - algorithm explanation and breakdown
+
+# Benefits
+Two core reasons.
 
 ### Benefit 1: Bulk Data Loading Speed Boost
 
