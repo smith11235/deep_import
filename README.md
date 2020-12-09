@@ -39,10 +39,10 @@ Executed from a server against a remove Postgres database.
 Timing varies per execution. Records loaded are minimal shells, no data parsing/computed values.
 The timing difference is primarily network/query call overhead being removed.
 
-| LIMIT | Total Records | Normal Timing | DeepImport Timing |
-| ----- | ------------- | ------------- | ----------------- |
-|  10   |   ~1,500      |   10 seconds  |   1 second        |
-|  29   |   ~28,000     |  214 seconds  |   32 seconds      |
+| Total Records | Normal Timing | DeepImport Timing |
+| ------------- | ------------- | ----------------- |
+|   ~1,500      |   10 seconds  |   1 second        |
+|   ~28,000     |  214 seconds  |   32 seconds      |
 
 ### Benefit 2: Same Code
 The same standard ActiveRecord code can be used between DeepImport data loading, and normal execution.
