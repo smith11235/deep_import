@@ -3,11 +3,12 @@ with the same ActiveRecord code you already have.
 
 ### README Overview
 
-* Benefits: Why use it
-* Setup Instructions - How to use it
-* Code Example - And link to rspec data loading comparison tasks
-  * **With example timing difference between standard code and deep import**
-* The Magic - algorithm explanation and breakdown
+* [Benefits: Why use it](#benefits)
+* [Setup Instructions - How to use it](#setup-and-usage)
+* [Data Loading Code Example](#data-loading-code-example)
+  * [Example timing comparison between standard code and DeepImport](#execution-time-comparison)
+  * Along with link to rspec usage examples
+* [The Magic - algorithm explanation and breakdown](#the-magic-aka-the-algorithm)
 
 # Benefits
 Two core reasons.
@@ -45,7 +46,7 @@ What this means is:
 * Debugging can be done, on a single instance, with or without DeepImport
   * No need to re-write code to confirm functionality or parity
 
-## Setup / Usage
+## Setup and Usage
 
 **Warning:** Only works currently with postgres (mysql pending).
 
