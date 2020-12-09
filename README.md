@@ -56,6 +56,8 @@ What this means is:
 * Debugging can be done, on a single instance, with or without DeepImport
   * No need to re-write code to confirm functionality or parity
 
+See the data loading code example below for proof of this, along with the rspec examples.
+
 ## Setup and Usage
 
 **Warning:** Only works currently with postgres (mysql pending).
