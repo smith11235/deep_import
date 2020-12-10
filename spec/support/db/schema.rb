@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_15_172609) do
+ActiveRecord::Schema.define(version: 2020_12_10_015111) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,6 +60,16 @@ ActiveRecord::Schema.define(version: 2020_11_15_172609) do
     t.string "deep_import_id"
     t.index ["child_id"], name: "index_grand_children_on_child_id"
     t.index ["deep_import_id", "id"], name: "di_id_4b28a2b058ab07f15071d1402d5590e0"
+  end
+
+  create_table "in_laws", force: :cascade do |t|
+    t.string "name"
+    t.json "data"
+    t.string "parent_type"
+    t.bigint "parent_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_type", "parent_id"], name: "index_in_laws_on_parent_type_and_parent_id"
   end
 
   create_table "parents", force: :cascade do |t|
