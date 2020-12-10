@@ -1,47 +1,52 @@
 namespace :deep_import do 
+  def migrate_command(direction) # up or down
+    task = []
+    gem_development = DeepImport.db_root_path.start_with?("spec/support") # Development?
+    task << "deep_import_development" if gem_development
+    task << "db:migrate"
 
-	desc "Create/Refresh DeepImport model and database modifications based on config/deep_import.yml"
-	task :setup => :teardown do 
-		ENV["deep_import_disable_railtie"] = "1"
-		DeepImport::Setup.new
+    version = deep_import_migration_version # get the file we want to remove 
+    task << "#{direction} VERSION=#{version}" if direction == 'down'
 
-		if set_target_migration_version # get the file we just generated
-			Rake::Task['db:migrate:up'].reenable
-			Rake::Task['db:migrate:up'].invoke
-		else
-			raise "Error: Migration file not generated".red
-		end
-	end
+    task = task.join(":")
+    "rake #{task}"
+  end
 
-	desc "Remove DeepImport model and database modifications"
-	task :teardown => :environment do 
-		if set_target_migration_version # get the file we want to remove 
-			Rake::Task['db:migrate:down'].reenable
-			Rake::Task['db:migrate:down'].invoke
-		else
-			puts "No prior migration file to remove".green
-		end
+  desc "Create/Refresh DeepImport model and database modifications based on config/deep_import.yml"
+  task :setup do 
+    ENV["deep_import_disable_railtie"] = "1" # TODO: necessary? can this be removed
+    DeepImport::Setup.new
+    DeepImport.logger.info "DeepImport: Setup: Load Schema Changes:\nRun: '#{migrate_command('up')}'".green
+  end
 
-		DeepImport::Teardown.new # removes generated files
-	end
+  desc "Remove DeepImport model and database modifications"
+  task :teardown do 
+    version = deep_import_migration_version # get the file we want to remove 
+    if version.nil?
+      DeepImport.logger.info "DeepImport: Teardown: No migration file to remove.".green
+      exit
+    end
+    DeepImport.logger.info "DeepImport: Teardown: Removing migration version: #{version}".yellow
 
-	# define migration removal tasks that teardown must run before within rake
-	def set_target_migration_version
-		migration_name = DeepImport::MIGRATION_NAME
-		migration_file_name = migration_name.underscore
-		migration_files = Dir.glob( "db/migrate/*_#{migration_file_name}.rb" )
-		raise "Error: too many migration files found, do something better: #{migration_files.to_yaml}".red if migration_files.size > 1 
+    # Confirm deep import db components removed before removing migration file
+    still_in_db = File.foreach(DeepImport.db_schema_file).grep(/\s"deep_import_.+/) 
+    # TODO: check if migration is in database still...
+    # - requires db connection - more complicated, maybe only if rails
+    # - ActiveRecord::SchemaMigration.where(version: version).exists?
+    if still_in_db
+      raise "DeepImport: Schema changes still in DB, cannot remove migration file.\nRun: '#{migrate_command('down')}'".red
+      # TODO: add development migrate:down task
+      # otherwise, for development
+      # drop, delete schema, then teardown, setup, migrate - messy
+    end
 
-		if migration_files.size == 1  		
-			migration_file = migration_files[0] 
-			migration_date = migration_file[/\d{14}/] # get the timestamp of this migration
-			puts "Setting Migration VERSION=#{migration_date}".red.on_green
-			ENV['VERSION'] = migration_date # set a specific migration to apply in ENV variable
-			# ^^^ this is used by db:migrate:[up|down]
-			true
-		else
-			nil
-		end
-	end
+    DeepImport::Teardown.new # removes generated files
+  end
+
+  def deep_import_migration_version
+    migration = DeepImport.current_migration_file
+    return nil if migration.nil?
+    migration[/\d{14}/] # get the timestamp of this migration
+  end
 
 end

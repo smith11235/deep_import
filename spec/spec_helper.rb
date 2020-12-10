@@ -20,9 +20,6 @@ require "support/models"
 
 ENV["RAILS_ENV"] = "test"
 
-support_dir = File.join( File.dirname( File.expand_path( __FILE__ ) ), "support" )
-DEEP_IMPORT_CONFIG = ENV["DEEP_IMPORT_CONFIG"] || File.join(support_dir, "config/deep_import.yml")
-
 def clean_db
   GrandChild.delete_all
   Child.delete_all
@@ -44,9 +41,7 @@ RSpec.configure do |config|
   config.order = "random"
 
   config.before(:suite) do
-    support_dir = File.join( File.dirname( File.expand_path( __FILE__ ) ), "support" )
-    ENV["DEEP_IMPORT_CONFIG"] ||= DEEP_IMPORT_CONFIG
-    ENV["DEEP_IMPORT_LOG_LEVEL"] ||= "FATAL"
+    ENV["DEEP_IMPORT_LOG_LEVEL"] ||= "FATAL" # minimal log output by default
     DeepImport.initialize! # uses config/deep_import.rb - use: $deep_import_config
     DeepImport.set_db_connection_for_development!
   end

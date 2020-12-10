@@ -8,6 +8,9 @@ def connect!
   DeepImport.set_db_connection_for_development!
 end
 
+
+Rake.add_rakelib 'lib/deep_import' # tasks needed by consumers (aka rails app) for setup/teardown
+
 namespace :deep_import_development do 
   namespace :db do
     desc "Create the database"
@@ -36,6 +39,7 @@ namespace :deep_import_development do
                    else
                      ActiveRecord::Migrator.migrations # TODO: TEST OLDER VERSION
                    end
+
       ActiveRecord::Migrator.new(:up, migrations, nil).migrate
  
       #ActiveRecord::Migrator.migrate("spec/support/db/migrate/")

@@ -55,10 +55,43 @@ module DeepImport
 		DeepImport.status == IMPORTING
 	end
 
+  def self.config_file
+    if db_root_path.start_with?("spec/support") # gem development
+      "spec/support/config/deep_import.yml"
+    else
+      ENV["DEEP_IMPORT_CONFIG"] || "config/deep_import.yml" # custom location or rails config dir
+    end
+  end
+
+  def self.db_root_path
+    if defined?(Rails)
+      "db"
+    else
+      ENV["DB_ROOT_PATH"] || # Non Rails Usage
+        "spec/support/db" # gem development
+    end
+  end
+
+  def self.db_schema_file
+    File.join(db_root_path, "schema.rb")
+  end
+
+  def self.db_migrations_path
+    File.join(db_root_path, "migrate")
+  end
+
+  def self.migration_file_search
+    File.join(db_migrations_path, "*_#{MIGRATION_NAME.underscore}.rb")
+  end
+
+  def self.current_migration_file
+    Dir.glob(migration_file_search).first
+  end
+
   def self.db_settings_for_development
     conn = {}
     YAML.load_file("database.yml").each {|k, v| conn[k.to_sym] = v}
-    conn[:migrations_paths] = ["spec/support/db/migrate"]
+    conn[:migrations_paths] = [db_migrations_path] 
     conn
   end
 

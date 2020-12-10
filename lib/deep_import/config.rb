@@ -26,9 +26,13 @@ module DeepImport
         parse_models # from config
         @status = :valid
       rescue Exception => e
-				DeepImport.logger.error "DeepImport: Failed to parse models."
-				DeepImport.logger.error "DeepImport: Config: \n#{@config.to_yaml}"
-				DeepImport.logger.error "DeepImport: Unable to initialize."
+				DeepImport.logger.error "DeepImport: Config Failure"
+				DeepImport.logger.error "DeepImport: Config: file: #{config_file}"
+				DeepImport.logger.error "DeepImport: Config: content: #{@config.to_yaml}"
+				DeepImport.logger.error "Exception: #{e.message}"
+				DeepImport.logger.error "Exception: #{e.backtrace[0, 10].to_yaml}"
+
+
         @models = {} # reset to empty - if invalid config - do nothing
         #raise e # dont raise - allow rails to work normally/prevents hard crashes from bad configs
       end
@@ -72,17 +76,19 @@ module DeepImport
       if $deep_import_config.present? # Testing Helper/In Memory
         @config = $deep_import_config
       else # File based
-        cf = ENV["DEEP_IMPORT_CONFIG"] || File.join(".", "config", "deep_import.yml")
-        parse_config_file(cf)
+        parse_config_file
       end
     end
 
-		def parse_config_file(config_file)
+    def config_file
+      DeepImport.config_file
+    end
+
+		def parse_config_file
 			begin
         raise "Missing config file: #{config_file}" unless File.file?(config_file)
         @config = YAML.load_file config_file
 			rescue Exception => e
-				DeepImport.logger.error "DeepImport: Failed to parse config: #{config_file}"
         raise e
 			end
 		end
@@ -142,7 +148,13 @@ module DeepImport
 
 		def class_for( model_name )
 			raise "Model Name Not A String: #{model_name.class}, #{model_name}" unless model_name.is_a? String
-			model_class = model_name.to_s.singularize.classify.constantize
+
+      # for Setup and Teardown, application Models are not loaded/available
+      # for actual Imports, application Models are available
+
+			model_class = model_name.to_s.singularize.classify #.constantize TODO
+
+
 			raise "Model not in singular class name form: Parsed(#{model_name}) vs Expected(#{model_class})" if model_name != model_class.to_s
 			model_class
 		end
