@@ -16,9 +16,10 @@ module DeepImport
     end
 
 
-		def initialize
-      # Driven by file config
-      # TODO: orrrrr, drive off info in models
+		def initialize(setup: false)
+      @setup = setup
+
+      # Driven by file config or global hash object
 
 			@models = Hash.new
       begin
@@ -31,7 +32,7 @@ module DeepImport
 				DeepImport.logger.error "DeepImport: Config: content: #{@config.to_yaml}"
 				DeepImport.logger.error "Exception: #{e.message}"
 				DeepImport.logger.error "Exception: #{e.backtrace[0, 10].to_yaml}"
-
+        raise e if @setup
 
         @models = {} # reset to empty - if invalid config - do nothing
         #raise e # dont raise - allow rails to work normally/prevents hard crashes from bad configs
@@ -150,9 +151,10 @@ module DeepImport
 			raise "Model Name Not A String: #{model_name.class}, #{model_name}" unless model_name.is_a? String
 
       # for Setup and Teardown, application Models are not loaded/available
-      # for actual Imports, application Models are available
-
-			model_class = model_name.to_s.singularize.classify #.constantize TODO
+      # for actual Imports, application Models are available and should be used
+			model_class = model_name.to_s.singularize.classify 
+      model_class = model_class.constantize unless @setup
+      # TODO: a little ugly, but makes sure all models are correctly named
 
 
 			raise "Model not in singular class name form: Parsed(#{model_name}) vs Expected(#{model_class})" if model_name != model_class.to_s

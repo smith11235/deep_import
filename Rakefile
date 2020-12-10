@@ -9,7 +9,9 @@ def connect!
 end
 
 
-Rake.add_rakelib 'lib/deep_import' # tasks needed by consumers (aka rails app) for setup/teardown
+Rake.add_rakelib 'lib/deep_import' 
+# ^ tasks needed by consumers (aka rails app) for setup/teardown
+# - also needed for development of gem and test schema changes
 
 namespace :deep_import_development do 
   namespace :db do

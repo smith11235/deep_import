@@ -4,7 +4,7 @@ module DeepImport
   class Setup
 
     def initialize
-      config = DeepImport::Config.new
+      config = DeepImport::Config.new(setup: true)
       @models = Config.importable
 
       @migration_name = DeepImport::MIGRATION_NAME
