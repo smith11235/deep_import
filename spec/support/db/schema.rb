@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_10_170122) do
+ActiveRecord::Schema.define(version: 2020_12_10_212824) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,17 @@ ActiveRecord::Schema.define(version: 2020_12_10_170122) do
     t.index ["deep_import_id", "deep_import_child_id"], name: "di_child_68c870732d51b24b0fa476536d9b20d4"
   end
 
+  create_table "deep_import_in_laws", force: :cascade do |t|
+    t.string "deep_import_id"
+    t.datetime "parsed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "deep_import_relation_id"
+    t.string "deep_import_relation_type"
+    t.index ["deep_import_id", "deep_import_relation_type", "deep_import_relation_id"], name: "di_relation_9adaf4e4e674802642cc46939a5f06f7"
+    t.index ["deep_import_relation_type"], name: "di_relation_9adaf4e4e674802642cc46939a5f06f7_type"
+  end
+
   create_table "deep_import_parents", force: :cascade do |t|
     t.string "deep_import_id"
     t.datetime "parsed_at"
@@ -65,11 +76,13 @@ ActiveRecord::Schema.define(version: 2020_12_10_170122) do
   create_table "in_laws", force: :cascade do |t|
     t.string "name"
     t.json "data"
-    t.string "parent_type"
-    t.bigint "parent_id"
+    t.string "relation_type"
+    t.bigint "relation_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["parent_type", "parent_id"], name: "index_in_laws_on_parent_type_and_parent_id"
+    t.string "deep_import_id"
+    t.index ["deep_import_id", "id"], name: "di_id_c404c405099779e386ddcbe82ee64f09"
+    t.index ["relation_type", "relation_id"], name: "index_in_laws_on_relation_type_and_relation_id"
   end
 
   create_table "parents", force: :cascade do |t|

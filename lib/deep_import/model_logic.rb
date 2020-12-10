@@ -17,16 +17,28 @@ module DeepImport
 
   # Common safety guard for Save methods vs No-Op option 
 
+  # TODO: need to add deepimport to model defs
+  # Parent
+  #   include DeepImport::Importable
+  #   has_many :children, extend: DeepImport::HasMany
+  #   has_many :in_laws, as: :relation, extend: DeepImport::HasMany
+  # InLaw
+  #   include DeepImport::Importable
+  #   belongs_to :relation, polymorphic: true, extend: DeepImport::BelongsTo
+  # 
+
   module ModelLogic
 
     def self.included(base) # :nodoc:
       # TODO: already initialized safety check
       base.class_eval do
 
+
         prepend Saveable # override model.save and model.save!
 
         belongs = DeepImport::Config.belongs_to(self)
         if belongs.size > 0
+          # TODO: migrate this to: belongs_to:
           prepend BelongsTo 
           belongs.each do |other_name|
             BelongsTo.define_assigns other_name # self.other=
@@ -38,8 +50,11 @@ module DeepImport
         has_many = DeepImport::Config.has_many(self)
         if has_many && has_many.size > 0
           has_many.each do |other_name|
+            # TODO: this eliminates prior settings
+            # like: as: :relation, for polymorphism
+            # TODO: may require explicit code configuration
+            # has_many :children, extend: DeepImport::HasMany
             has_many other_name.to_s.pluralize.to_sym, extend: HasMany
-            # TODO: does this eliminate prior settings
           end
         end
 

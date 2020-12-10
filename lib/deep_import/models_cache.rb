@@ -53,20 +53,39 @@ module DeepImport
 			end
 
 			def set_association_on( instance, belongs_to_instance )
-				model_class = instance.class
+				model_class = instance.class # aka: Child
 				deep_import_id = instance.deep_import_id
 
 				deep_import_model_class = "DeepImport#{model_class}".constantize
 				deep_instance = @model_instance_cache[ deep_import_model_class ][ deep_import_id ]
 				raise "#{deep_import_model_class} missing for deep_import_id=#{deep_import_id}" if deep_instance.nil?
 
-				deep_import_belongs_to_field_setter = "deep_import_#{belongs_to_instance.class.to_s.underscore}_id="
+        belongs_to_class = belongs_to_instance.class.to_s # aka: Parent 
+        polymorph_as = nil
+        if alt_name = DeepImport::Config.polymorphic(model_class)
+          # TODO: set_association_on needs to be sent explicitly with an 3rd param of "belongs_to_field"
+          # - to support a model with multiple polymorphic fields
+          # - might need to ditch config file, or replicate other options like
+          # - User: belongs_to Manager, class_name: User # non standard table name references
+          # - or, ditch the multiple deep import tables (1 per model) in favor of
+          # - - DeepImportInstances, DeepImportLinks tables - update queries to run for each belongs_to_type
+          belongs_to_class = alt_name.first 
+          polymorph_as = belongs_to_class.class.to_s
+        end
+
+				deep_import_belongs_to_field_setter = "deep_import_#{belongs_to_class.underscore}_id="
 				raise "Error: #{deep_instance} doesnt respond to #{deep_import_belongs_to_field_setter}" unless deep_instance.respond_to? deep_import_belongs_to_field_setter.to_sym
 
 				belongs_to_deep_import_id = belongs_to_instance.deep_import_id
 				raise "Invalid belongs_to_deep_import_id for #{belongs_to_instance.to_yaml}" unless belongs_to_deep_import_id =~ /\d+/
 
 				deep_instance.send( deep_import_belongs_to_field_setter, belongs_to_deep_import_id )
+        if polymorph_as
+          # TODO: as with above alternate schema idea, always save type?
+				  deep_import_belongs_to_field_setter = "deep_import_#{belongs_to_class.underscore}_type="
+				  deep_instance.send(deep_import_belongs_to_field_setter, polymorph_as) # save Parent class type
+          puts "Saving polymorph type! #{polymorph_as}".red
+        end
 			end
 
 			def add( model_instance )

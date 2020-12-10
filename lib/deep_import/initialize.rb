@@ -18,7 +18,9 @@ module DeepImport
   class Initialize
 
     def failure!(msg)
-      DeepImport.logger.error "DeepImport: Initialize Failed: #{msg}".red
+      Array.wrap(msg).each do |m|
+        DeepImport.logger.error "DeepImport: Initialize Failed: #{m}".red
+      end
     end
 
     def initialize
@@ -39,9 +41,11 @@ module DeepImport
     def check_activerecord_import_gem
       DeepImport::Config.importable.each do |model_class|
         if ! model_class.respond_to? :import
-          DeepImport.logger.error "#{model_class} does not respond_to? :import"
-          DeepImport.logger.error "this method should exist from deep imports gem dependency on 'activerecord-import'"
-          DeepImport.logger.error "Try adding: gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git' to your Gemfile"
+          failure!([
+            "#{model_class} does not respond_to? :import",
+            "This method should exist from deep imports gem dependency on 'activerecord-import'",
+            "Try adding: gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git' to your Gemfile",
+          ])
           return false
         end
       end

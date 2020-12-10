@@ -1,7 +1,18 @@
 ---
 Parent: 
+  has_many: 
+  - InLaws
 Child:
-  belongs_to: Parent
+  belongs_to: 
+  - Parent
+  has_many: 
+  - InLaws
 GrandChild:
   belongs_to:
   - Child
+  has_many: 
+  - InLaws
+InLaw:
+  polymorphic:
+  - Relation
+

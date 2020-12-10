@@ -8,11 +8,15 @@ module DeepImport
     end
 
     def self.belongs_to(base)
-      @@belongs_to[base]
+      @@belongs_to[base] || []
     end
 
     def self.has_many(base)
-      @@has_many[base]
+      @@has_many[base] || []
+    end
+
+    def self.polymorphic(base)
+      @@polymorphic[base] || []
     end
 
 
@@ -38,23 +42,60 @@ module DeepImport
         #raise e # dont raise - allow rails to work normally/prevents hard crashes from bad configs
       end
 
-      @@importable = @models.keys
+      @@importable = @models.keys.collect{|c| constant(c)}
       @@belongs_to = {}
       @@has_many = {}
+      @@polymorphic = {}
 
       # fill in has_many/belongs_to
       @models.each do |base, relations|
-        @@belongs_to[base] = relations[:belongs_to].keys.collect do |belongs| 
-
-          # TODO: presume all associations are has_many - add config option for has_one
+        base = constant(base)
+        rels = (relations[:belongs_to] || {}).keys
+        @@belongs_to[base] = rels.collect do |belongs| 
+          # TODO: add config option for has_one, has_many is default assumption currently
+          belongs = constant(belongs)
+          # Consider removing has_many here, and expect explicit defs from config
           @@has_many[belongs] ||= []
-          @@has_many[belongs] << base.to_s.underscore.pluralize.to_sym
+          @@has_many[belongs] << rel_name(base, plural: true)
+          rel_name(belongs)
+        end
 
-          belongs.to_s.underscore.to_sym
+        # TODO: implement it
+
+        rels = (relations[:has_many] || {}).keys
+        rels.each do |rel_class|
+          @@has_many[base] ||= []
+          rel_plural = rel_name(rel_class, plural: true)
+          next if @@has_many[base].include?(rel_plural)
+          @@has_many[base] << rel_plural
+        end
+
+        rels = (relations[:polymorphic] || {}).keys
+        rels.each do |rel_class|
+          rel = rel_name(rel_class)
+          @@belongs_to[base] ||= []
+          @@belongs_to[base] << rel
+          @@polymorphic[base] ||= []
+          @@polymorphic[base] << rel
         end
       end
 
 		end
+
+    def rel_name(class_s, plural: false)
+      rel = class_s.to_s.singularize.underscore
+      rel = rel.pluralize if plural
+      rel.to_sym
+    end
+
+    def constant(class_s)
+      class_s = class_s.to_s.singularize
+      if @setup
+        class_s
+      else # live usage - use class constants
+        class_s.constantize
+      end
+    end
 
     def print_config
       puts "DeepImport Config =================".green
@@ -119,7 +160,7 @@ module DeepImport
 
 		def associations
       # Note: has_one/many, we only need to worry about the belongs
-			[ :belongs_to ]
+			[ :belongs_to, :has_many, :polymorphic ]
 		end
 
 		def association_symbol( association_string )
@@ -150,14 +191,13 @@ module DeepImport
 		def class_for( model_name )
 			raise "Model Name Not A String: #{model_name.class}, #{model_name}" unless model_name.is_a? String
 
-      # for Setup and Teardown, application Models are not loaded/available
-      # for actual Imports, application Models are available and should be used
 			model_class = model_name.to_s.singularize.classify 
-      model_class = model_class.constantize unless @setup
-      # TODO: a little ugly, but makes sure all models are correctly named
+      # TODO: update code to use Strings everywhere for this
+      # Setup/Teardown do not have access to Models
+      # confirm all models are valid in Initialize class
 
-
-			raise "Model not in singular class name form: Parsed(#{model_name}) vs Expected(#{model_class})" if model_name != model_class.to_s
+      # TODO: should we guarantee singular form in config file, or allow either?
+			# raise "Model not in singular class name form: Parsed(#{model_name}) vs Expected(#{model_class})" if model_name != model_class.to_s
 			model_class
 		end
 

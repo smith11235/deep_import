@@ -3,7 +3,7 @@ class CreateInLaws < ActiveRecord::Migration[5.2]
     create_table :in_laws do |t|
       t.string :name
       t.json :data
-      t.references :parent, polymorphic: true, index: true
+      t.references :relation, polymorphic: true, index: true
 
       t.timestamps
     end
