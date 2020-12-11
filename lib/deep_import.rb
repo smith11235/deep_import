@@ -7,7 +7,7 @@ module DeepImport
 
 	deep_import_dir = File.join( File.dirname( File.expand_path( __FILE__ ) ), "deep_import" )
 
-	%w( default_logger config initialize setup teardown import_options model_logic models_cache commit import ).each do |file|
+	%w( default_logger config initialize setup teardown import_options models_cache commit import importable saveable has_many belongs_to).each do |file|
 		require File.join( deep_import_dir, file )
 	end
 
@@ -16,6 +16,7 @@ module DeepImport
 	mattr_accessor :logger
 
   @@logger = DeepImport.default_logger # stdout by default
+  DeepImport.logger.level = ENV["DEEP_IMPORT_LOG_LEVEL"] || "INFO" # verbose by default
 
   def self.log_time(method, &block)
     # TODO: make fixed width output for spacing

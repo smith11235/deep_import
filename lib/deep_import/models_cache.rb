@@ -1,8 +1,10 @@
 module DeepImport 
 
 	module ModelsCache
+	  @@cache = nil
+
 		def self.reset
-			@@cache = Cache.new
+	    @@cache = Cache.new
 		end
 
 		def self.add( model_instance )
@@ -20,7 +22,13 @@ module DeepImport
 		end
 
 		def self.empty?
-			ModelsCache.stats.values.uniq =~ [0]
+      return true if @@cache.nil?
+			vals = ModelsCache.stats.values.uniq 
+      if vals.nil? || vals =~ [0]
+        true
+      else
+        false
+      end
 		end
 
 		def self.stats
@@ -61,8 +69,10 @@ module DeepImport
 				raise "#{deep_import_model_class} missing for deep_import_id=#{deep_import_id}" if deep_instance.nil?
 
         belongs_to_class = belongs_to_instance.class.to_s # aka: Parent 
+
         polymorph_as = nil
-        if alt_name = DeepImport::Config.polymorphic(model_class)
+        alt_names = DeepImport::Config.polymorphic(model_class)
+        unless alt_names.empty?
           # TODO: set_association_on needs to be sent explicitly with an 3rd param of "belongs_to_field"
           # - to support a model with multiple polymorphic fields
           # - might need to ditch config file, or replicate other options like
@@ -84,7 +94,6 @@ module DeepImport
           # TODO: as with above alternate schema idea, always save type?
 				  deep_import_belongs_to_field_setter = "deep_import_#{belongs_to_class.underscore}_type="
 				  deep_instance.send(deep_import_belongs_to_field_setter, polymorph_as) # save Parent class type
-          puts "Saving polymorph type! #{polymorph_as}".red
         end
 			end
 

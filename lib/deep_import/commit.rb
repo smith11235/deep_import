@@ -24,6 +24,7 @@ module DeepImport
 
 	class Commit
 		def initialize
+      @imported = {} # track which model types were loaded, skip empty ones
       DeepImport.log_time("commit.import_models") { import_models }
       DeepImport.log_time("commit.set_associations") { set_associations }
       DeepImport.log_time("commit.validate") { validate_associations }
@@ -33,6 +34,8 @@ module DeepImport
 
 		def validate_associations
       Config.importable.each do |model_class|
+        next unless @imported[model_class]
+
 			  belongs = Config.belongs_to(model_class)
 				belongs.each do |belongs_to_class|
 					deep_distribution = get_deep_import_id_distribution model_class, belongs_to_class
@@ -121,6 +124,8 @@ module DeepImport
 		def set_associations
       # TODO: use joins/active record code here
       Config.importable.each do |model_class|
+        next unless @imported[model_class]
+
 			  belongs = Config.belongs_to(model_class)
 				belongs.each do |parent_class|
 					names = model_names( model_class, parent_class )
@@ -206,6 +211,9 @@ module DeepImport
 			DeepImport::Config.importable.each do |base_class|
 				[ base_class, "DeepImport#{base_class}".constantize ].each do |model_class|
 					instances = DeepImport::ModelsCache.cached_instances( model_class )
+          next if instances.empty?
+          @imported[model_class] = true
+
 					raise "#{model_class} does not respond to import" unless model_class.respond_to? :import, true # somewhat unnecessary safety check
 					results = nil
           DeepImport.log_time("commit.import(#{model_class})") { results = model_class.import(instances) }

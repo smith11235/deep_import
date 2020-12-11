@@ -1,6 +1,7 @@
 # Test Models: AKA: From User App/Rails
 class InLaw < ActiveRecord::Base
   include DeepImport::Importable
+  include DeepImport::BelongsTo
   belongs_to :relation, polymorphic: true
 end
 
@@ -12,6 +13,7 @@ end
 
 class Child < ActiveRecord::Base
   include DeepImport::Importable
+  include DeepImport::BelongsTo
   belongs_to :parent
   has_many :grand_children, extend: DeepImport::HasMany
   has_many :in_laws, as: :relation, extend: DeepImport::HasMany
@@ -19,6 +21,7 @@ end
 
 class GrandChild < ActiveRecord::Base
   include DeepImport::Importable
+  include DeepImport::BelongsTo
   belongs_to :child
   has_many :in_laws, as: :relation, extend: DeepImport::HasMany
 end

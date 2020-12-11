@@ -17,9 +17,16 @@ module DeepImport
   module Importable
     def self.included(base) 
       base.class_eval do
-        prepend Saveable # override model.save and model.save!
+        prepend DeepImport::Saveable # override model.save and model.save!
         after_initialize :deep_import_after_initialize_add_to_cache
       end
+
+      # Define index class for deep import tracking/relative ids
+      deep_model_class = "DeepImport#{base}"
+      Object.const_set(
+        deep_model_class, 
+        Class.new(ActiveRecord::Base)
+      )
     end
 
     def deep_import_after_initialize_add_to_cache

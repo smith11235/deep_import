@@ -11,6 +11,8 @@ Gem::Specification.new do |s|
 	s.add_dependency "colorize"
 
 	s.add_dependency "activerecord-import"
+  # gem 'activerecord-import', :git => 'git://github.com/zdennis/activerecord-import.git' to your Gemfile" 
+
   s.add_dependency "rake"
   s.add_dependency "activesupport"
 
