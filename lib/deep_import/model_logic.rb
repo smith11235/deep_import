@@ -32,10 +32,7 @@ module DeepImport
     def self.included(base) # :nodoc:
       # TODO: already initialized safety check
       base.class_eval do
-
-
-        prepend Saveable # override model.save and model.save!
-
+        # TODO: migrate this to extend: o
         belongs = DeepImport::Config.belongs_to(self)
         if belongs.size > 0
           # TODO: migrate this to: belongs_to:
@@ -46,66 +43,7 @@ module DeepImport
             BelongsTo.define_create other_name  # self.create_other[!](attrs)
           end
         end
-
-        has_many = DeepImport::Config.has_many(self)
-        if has_many && has_many.size > 0
-          has_many.each do |other_name|
-            # TODO: this eliminates prior settings
-            # like: as: :relation, for polymorphism
-            # TODO: may require explicit code configuration
-            # has_many :children, extend: DeepImport::HasMany
-            has_many other_name.to_s.pluralize.to_sym, extend: HasMany
-          end
-        end
-
-        # TODO: add belongs_to DeepImport{self} - Use it to improve commit logic/no SQL
-        after_initialize :deep_import_after_initialize # For all tracked classes
       end
-    end
-
-    def deep_import_after_initialize
-      # For all trackable classes
-      return unless DeepImport.importing? # only during imports
-      return unless self.new_record? # must be a new record, other wise ignore
-      return unless self.deep_import_id.nil? # must not have been setup already for tracking
-
-      DeepImport::ModelsCache.add(self) # add to cache/set new import id
-
-      # Track associations passed into constructor, track them
-      belongs = DeepImport::Config.belongs_to(self.class)
-      belongs.each do |other_name|
-        other_instance = self.send(other_name)
-        next unless other_instance
-        DeepImport::ModelsCache.set_association_on(self, other_instance) 
-      end
-    end
-
-    module HasMany
-
-      def create(attributes = {})
-        if DeepImport.allow_commit?
-          super(attributes)
-        else
-          build(attributes)
-        end
-      end
-
-      def create!(attributes = {})
-        if DeepImport.allow_commit?
-          super(attributes)
-        else
-          build(attributes)
-        end
-      end
-
-      def build(attributes = {})
-        other_instance = super(attributes)
-        if DeepImport.importing?
-          DeepImport::ModelsCache.set_association_on(other_instance, proxy_association.owner) 
-        end
-        other_instance 
-      end
-
     end
 
     module BelongsTo
@@ -149,40 +87,6 @@ module DeepImport
           end
         end
       end
-    end
-
-    module Saveable
-      def save(opts = {})
-        if DeepImport.allow_commit?
-          super(opts)
-        else 
-          true
-        end
-      end
-
-      def save!(opts = {})
-        if DeepImport.allow_commit?
-          super(opts) 
-        else
-          true
-        end
-      end
-
-    end
-  end
-
-  def self.allow_commit?
-    # True = make normal save calls
-    # False = noop (save) or redirect (create => build)
-    # Error = if importing and raise error
-    if DeepImport.importing?
-      if DeepImport.raise_error? 
-        raise "DeepImport: commit method called within import block - change code or pass 'on_save: :noop'"
-      else
-        false
-      end
-    else
-      true
     end
   end
 

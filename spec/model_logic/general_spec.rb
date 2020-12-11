@@ -1,4 +1,5 @@
 require 'spec_helper'
+# TODO: remove/deprecated
 
 describe 'DeepImport::ModelLogic (on Child)' do
   let(:error_msg){
