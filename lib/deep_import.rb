@@ -27,6 +27,11 @@ module DeepImport
 		DeepImport.logger.info "#{prefix.green}#{spacer}TIME: #{Benchmark.measure &block}"
   end
 
+  def self.reset!
+    status = READY
+    DeepImport.import_options = nil 
+  end
+
 	private 
 
 	MIGRATION_NAME= "AddDeepImportEnhancements"

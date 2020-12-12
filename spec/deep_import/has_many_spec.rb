@@ -4,6 +4,9 @@ describe "HasMany" do
   let(:error_msg){
     "DeepImport: commit method called within import block - change code or pass 'on_save: :noop'"
   }
+  before :each do
+    DeepImport.reset!
+  end
 
   describe "normal execution" do
     it "ignores tracking" do
@@ -49,7 +52,7 @@ describe "HasMany" do
     end
 
     it "ignores saves if option set" do 
-      DeepImport.import reset: true, on_save: :noop do 
+      DeepImport.import on_save: :noop do 
         p = Parent.new
         expect { 
           p.children.create
@@ -63,7 +66,6 @@ describe "HasMany" do
       expect(Parent.count).to eq(1)
       expect(Child.count).to eq(2)
       expect(Parent.first.children.count).to eq(2)
-      DeepImport.import(reset: true) {}
     end
   end
 end

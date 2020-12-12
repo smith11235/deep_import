@@ -5,7 +5,7 @@ describe "Importable" do
     "DeepImport: commit method called within import block - change code or pass 'on_save: :noop'"
   }
   before :each do 
-    DeepImport.import(reset: true) {} # clear options back to none
+    DeepImport.reset!
   end
 
   describe "allow_commit?" do
@@ -62,7 +62,7 @@ describe "Importable" do
     end
 
     it "no-ops saves if option set" do
-      DeepImport.import reset: true, on_save: :noop do 
+      DeepImport.import on_save: :noop do 
         expect { Parent.new.save }.to_not raise_error
         expect { Parent.new.save! }.to_not raise_error
         expect(Parent.count).to eq(0)

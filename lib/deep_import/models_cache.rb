@@ -82,7 +82,7 @@ module DeepImport
           # - User: belongs_to Manager, class_name: User # non standard table name references
           # - or, ditch the multiple deep import tables (1 per model) in favor of
           # - - DeepImportInstances, DeepImportLinks tables - update queries to run for each belongs_to_type
-          belongs_to_class = alt_name.first 
+          belongs_to_class = alt_names.first 
           polymorph_as = belongs_to_class.class.to_s
         end
 
