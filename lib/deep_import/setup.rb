@@ -4,72 +4,69 @@ module DeepImport
   class Setup
 
     def initialize
-      config = DeepImport::Config.new(setup: true)
       @models = Config.importable
 
-      @migration_name = DeepImport::MIGRATION_NAME
-      requires_setup!
+      no_current_migration_file! # TODO: Migration helper
 
-      # populate these
-      @migration_logic = Array.new
-      @generated_files = Array.new
+      @lines = []
+      base_model_changes
+      add_deep_import_models
 
-      add_source_model_schema_changes
-      add_deep_import_model_schema_changes
+      write_migration_file
 
-      create_migration
-
-      DeepImport.logger.info "DeepImport: Generated File: #{@generated_files.first}".green
-      DeepImport.logger.info "DeepImport: ^ Add to revision control.".green
+      DeepImport.logger.info "DeepImport: Created: #{migration_file}".green
+      DeepImport.logger.info "DeepImport: ^ Add file to revision control.".green
     end
 
-    def requires_setup!
-      migration = DeepImport.current_migration_file
+    private
+
+    def no_current_migration_file! 
+      migration = DeepImport::Migration.current_file
       return unless migration
-      raise "DeepImport: Migration already exists.\nMigration: #{migration}\nTo reset run: 'rake deep_import:teardown'".red
+      DeepImport.logger.fatal "Deep Import Migration Found: #{migration}\nTo reset/remove run: 'rake deep_import:teardown'".red
+      # ^ TODO: run command should be dependent on if Rails defined
+      raise "DeepImport: Migration already exists."
     end
 
-    def md5( input )
-      Digest::MD5.hexdigest( input )
+    def md5(input)
+      Digest::MD5.hexdigest(input)
     end
 
-    def add_source_model_schema_changes
+    def base_model_changes
       @models.each do |model_class|
-        table_name = ":#{model_class.to_s.underscore.pluralize}"
-        @migration_logic << "add_column #{table_name}, :deep_import_id, :string, :references => false"
-
-        # hash is for postgres index name uniqueness requirements
-        @migration_logic << "add_index #{table_name}, [:deep_import_id, :id], :name => 'di_id_#{md5(table_name)}'"
+        table_name = table_name_for(model_class)
+        @lines << "add_column #{table_name}, :deep_import_id, :string, references: false"
+        # hash is for postgres index name uniqueness requirements, and within max length limit
+        @lines << "add_index #{table_name}, [:deep_import_id, :id], name: 'di_id_#{md5(table_name)}'"
       end
     end
 
-    def add_deep_import_model_schema_changes
+    def add_deep_import_models
       @models.each do |model_class|
-        add_deep_import_model_migration(model_class, Config.belongs_to(model_class))
+        add_deep_import_table(model_class, Config.belongs_to(model_class))
       end
     end
 
-    def add_deep_import_model_migration( model_class, belongs_to )
-      plural_name = model_class.to_s.pluralize.underscore
-      table_name = ":deep_import_#{plural_name}"
-      @migration_logic <<  "create_table #{table_name} do |t|"
-      @migration_logic <<  "  t.string :deep_import_id, references: false"
-      @migration_logic <<  "  t.datetime :parsed_at"
-      @migration_logic <<  "  t.timestamps"
+    def add_deep_import_table( model_class, belongs_to )
+      table_name = table_name_for("DeepImport#{model_class}")
+      @lines <<  "create_table #{table_name} do |t|"
+      @lines <<  "  t.string :deep_import_id, references: false"
+      @lines <<  "  t.datetime :parsed_at"
+      @lines <<  "  t.timestamps"
 
       belongs_to.each do |belongs|
         rel = belongs.to_s.underscore.to_sym
 
         if Config.polymorphic(model_class).include?(rel)
-          @migration_logic <<  "  t.string :deep_import_#{rel}_id, references: false"
-          @migration_logic <<  "  t.string :deep_import_#{rel}_type, references: false"
+          @lines <<  "  t.string :deep_import_#{rel}_id, references: false"
+          @lines <<  "  t.string :deep_import_#{rel}_type, references: false"
         else # Standard, non polymorphic
-          @migration_logic <<  "  t.string :deep_import_#{rel}_id, references: false"
+          @lines <<  "  t.string :deep_import_#{rel}_id, references: false"
         end
 
       end
 
-      @migration_logic <<  "end"
+      @lines <<  "end"
 
       belongs_to.each do |belongs|
         rel = belongs.to_s.underscore.to_sym
@@ -77,31 +74,48 @@ module DeepImport
         # hash is for postgres index name uniqueness requirements
         index_name = "di_#{rel}_#{hash_of_source_target}"
         if Config.polymorphic(model_class).include?(rel)
-          @migration_logic <<  "add_index #{table_name}, [:deep_import_id, :deep_import_#{rel}_type, :deep_import_#{rel}_id], name: '#{index_name}'"
-          @migration_logic <<  "add_index #{table_name}, [:deep_import_#{rel}_type], name: '#{index_name}_type'"
+          @lines <<  "add_index #{table_name}, [:deep_import_id, :deep_import_#{rel}_type, :deep_import_#{rel}_id], name: '#{index_name}'"
+          @lines <<  "add_index #{table_name}, [:deep_import_#{rel}_type], name: '#{index_name}_type'"
         else
-          @migration_logic <<  "add_index #{table_name}, [:deep_import_id, :deep_import_#{rel}_id], name: '#{index_name}'"
+          @lines <<  "add_index #{table_name}, [:deep_import_id, :deep_import_#{rel}_id], name: '#{index_name}'"
         end
       end
     end
 
-    def create_migration
-      # TODO: what to do for non-rails
-      rails_version = defined?(Rails) ? Rails.version[/^\d.\d/] : "5.2"
-
-      migration_file = File.join(DeepImport.db_migrations_path, "#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_#{@migration_name.underscore}.rb")
-
-      File.open( migration_file, "w" ) do |f|
-        f.puts "class #{@migration_name} < ActiveRecord::Migration[#{rails_version}]"
+    def write_migration_file
+      File.open(migration_file, "w") do |f|
+        f.puts "class #{migration_name} < ActiveRecord::Migration#{rails_version}"
         f.puts "  def change"
-        @migration_logic.each do |line|
+        @lines.each do |line|
           f.puts "    #{line}"
         end
+
         f.puts "  end"
         f.puts "end"
       end
       raise "Failed to create migration file: #{migration_file}" unless File.file? migration_file
-      @generated_files << migration_file
+    end
+
+    def rails_version
+      # TODO: is this needed for non rails
+      rails_version = defined?(Rails) ? Rails.version[/^\d.\d/] : "5.2"
+      "[#{rails_version}]"
+    end
+
+    def table_name_for(model)
+      # TODO: tableize
+      ":#{model.to_s.underscore.pluralize}"
+    end
+
+    def migration_name
+      @migration_name ||= DeepImport::MIGRATION_NAME
+    end
+
+    def migration_file
+      @migration_file ||= File.join(
+        DeepImport.db_migrations_path, 
+        "#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_#{migration_name.underscore}.rb"
+      )
     end
 
   end

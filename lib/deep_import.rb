@@ -7,7 +7,7 @@ module DeepImport
 
 	deep_import_dir = File.join( File.dirname( File.expand_path( __FILE__ ) ), "deep_import" )
 
-	%w( default_logger config initialize setup teardown import_options models_cache commit import importable saveable has_many belongs_to).each do |file|
+	%w( default_logger config migration setup import_options models_cache commit import importable saveable has_many belongs_to).each do |file|
 		require File.join( deep_import_dir, file )
 	end
 
@@ -83,10 +83,6 @@ module DeepImport
 
   def self.migration_file_search
     File.join(db_migrations_path, "*_#{MIGRATION_NAME.underscore}.rb")
-  end
-
-  def self.current_migration_file
-    Dir.glob(migration_file_search).first
   end
 
   def self.db_settings_for_development
