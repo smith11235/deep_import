@@ -14,7 +14,29 @@ module DeepImport
     end
   end
 
+  def self.belongs_to(import_class, other_class, polymorphic: false)
+    # TODO: output warning if it is not perfect?
+    other_class = other_class.to_s.underscore.singularize # sanitize
+
+    import_class.class_eval do
+      # TODO: check if import class extends BelongsTo
+      # - if not, prepend it
+      # TODO: test this
+      unless self < DeepImport::BelongsTo
+        prepend BelongsTo
+      end
+    
+      # then setup association methods to override
+      BelongsTo.define_assigns other_class # self.other=
+      BelongsTo.define_build other_class   # self.build_other(attrs)
+      BelongsTo.define_create other_class  # self.create_other[!](attrs)
+    end
+
+    # TODO: add to Commit/ModelsCache belongs_to
+  end
+
   module Importable
+
     def self.included(base) 
       base.class_eval do
         prepend DeepImport::Saveable # override model.save and model.save!
