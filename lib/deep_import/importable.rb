@@ -32,7 +32,7 @@ module DeepImport
       BelongsTo.define_create other_class  # self.create_other[!](attrs)
     end
 
-    # TODO: add to Commit/ModelsCache belongs_to
+    DeepImport::Config.add_belongs_to import_class, other_class, polymorphic: polymorphic
   end
 
   module Importable
@@ -49,6 +49,8 @@ module DeepImport
         deep_model_class, 
         Class.new(ActiveRecord::Base)
       )
+       
+      DeepImport::Config.importable << base
     end
 
     def deep_import_after_initialize_add_to_cache

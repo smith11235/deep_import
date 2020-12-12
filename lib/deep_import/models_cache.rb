@@ -23,8 +23,11 @@ module DeepImport
 
 		def self.empty?
       return true if @@cache.nil?
-			vals = ModelsCache.stats.values.uniq 
-      if vals.nil? || vals =~ [0]
+      s = stats
+			vals = s.values
+      return true if vals.nil?
+      vals = vals.uniq
+      if vals.size == 1 && vals.first == 0
         true
       else
         false
