@@ -15,11 +15,9 @@ module DeepImport
 		DeepImport.logger.info "#{'DeepImport.import:'.green}                       #{'(in seconds)     user     system      total        real'.black.on_yellow}"
 
     begin
-      DeepImport.log_time("initialize!") {DeepImport.initialize!}
-
 			if !DeepImport.ready_for_import?
 				DeepImport.logger.fatal "Error: DeepImport.import - status not ready for import: status=#{DeepImport.status}".red
-				raise "Cannot DeepImport.import, check the log"
+				raise "Cannot DeepImport.import"
 			end
 
 			DeepImport.mark_importing!

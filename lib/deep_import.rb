@@ -29,16 +29,16 @@ module DeepImport
 
 	private 
 
-	mattr_reader :status
-
-	@@status = :uninitialized
-	def self.status=( value )
-		@@status = value
-	end
-
 	MIGRATION_NAME= "AddDeepImportEnhancements"
   READY=:ready_to_import
   IMPORTING=:importing
+
+	mattr_reader :status
+
+	@@status = READY 
+	def self.status=( value )
+		@@status = value
+	end
 
 	def self.mark_ready_for_import!
 		DeepImport.status = READY
