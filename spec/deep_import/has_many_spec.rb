@@ -41,6 +41,7 @@ describe "HasMany" do
           p.children.create
         end
       }.to raise_error(error_msg)
+      DeepImport.reset!
       expect { 
         DeepImport.import do 
           p = Parent.new 

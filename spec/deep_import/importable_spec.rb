@@ -52,6 +52,7 @@ describe "Importable" do
           Parent.new.save
         end
       }.to raise_error(error_msg)
+      DeepImport.reset!
       expect {
         DeepImport.import do
           Parent.new.save!

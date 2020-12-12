@@ -27,9 +27,10 @@ module DeepImport
 		DeepImport.logger.info "#{prefix.green}#{spacer}TIME: #{Benchmark.measure &block}"
   end
 
-  def self.reset!
-    status = READY
-    DeepImport.import_options = nil 
+  def self.reset! # RSPEC helper
+    import_options = nil 
+    mark_ready_for_import!
+	  DeepImport::ModelsCache.reset 
   end
 
 	private 

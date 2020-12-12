@@ -10,6 +10,7 @@ require "support/models"
 
 def clean_db
   # TODO: use DatabaseCleaner
+  InLaw.delete_all
   GrandChild.delete_all
   Child.delete_all
   Parent.delete_all

@@ -49,6 +49,7 @@ describe "BelongsTo" do
           c.create_parent
         end
       }.to raise_error(error_msg)
+      DeepImport.reset!
       expect { 
         DeepImport.import do 
           c = Child.new 
