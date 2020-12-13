@@ -97,8 +97,8 @@ module DeepImport
     end
 
     def rails_version
-      # TODO: is this needed for non rails
-      rails_version = defined?(Rails) ? Rails.version[/^\d.\d/] : "5.2"
+      # TODO: is this needed for non rails, leave it blank?
+      rails_version = DeepImport.rails? ? Rails.version[/^\d.\d/] : "5.2"
       "[#{rails_version}]"
     end
 

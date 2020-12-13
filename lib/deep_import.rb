@@ -11,7 +11,11 @@ module DeepImport
 		require File.join( deep_import_dir, file )
 	end
 
-  require 'deep_import/railtie' if defined?(Rails)
+  def self.rails?
+    defined?(Rails)
+  end
+
+  require 'deep_import/railtie' if rails?
 
 	mattr_accessor :logger
 
@@ -71,7 +75,7 @@ module DeepImport
   end
 
   def self.db_root_path
-    if defined?(Rails)
+    if rails?
       "db"
     else
       ENV["DB_ROOT_PATH"] || # Non Rails Usage
