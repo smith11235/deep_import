@@ -11,12 +11,8 @@ describe "Migration", migration: true do
     FileUtils.rm_f Dir.glob("tmp/migrate/*")
   end
 
-  before :each do
-    reset
-  end
-  after :each do
-    reset
-  end
+  before(:each) { reset }
+  after(:each) { reset }
 
   describe "helper_methods" do
     describe "current_file" do

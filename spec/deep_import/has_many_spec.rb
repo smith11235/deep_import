@@ -4,9 +4,6 @@ describe "HasMany" do
   let(:error_msg){
     "DeepImport: commit method called within import block - change code or pass 'on_save: :noop'"
   }
-  before :each do
-    DeepImport.reset!
-  end
 
   describe "normal execution" do
     it "ignores tracking" do

@@ -4,100 +4,58 @@ require 'digest/md5'
 describe "DB Setup" do
   # This tests configured, migrated, database
 
-  describe "changes for: parents" do
-    let( :table_name ) { "parents" }	
-    it "should have parents.deep_import_id column" do
-      ActiveRecord::Base.connection.should be_column_exists( table_name, :deep_import_id, :string )
+  let!(:conn) {ActiveRecord::Base.connection}
+
+  def base_table_importable(table_name)
+    # "has deep_import_id" 
+    expect(conn.column_exists?(table_name, :deep_import_id, :string)).to be true
+    # "has deep_import_id index" 
+    index_name = "di_id_#{Digest::MD5.hexdigest(":#{table_name}")}"
+    expect(conn.index_exists?(table_name, [:deep_import_id, :id], name: index_name)).to be true
+  end
+
+  def deep_table(table_name)
+    # "has table" 
+    expect(conn.table_exists?(table_name)).to be true
+    # "has deep_import_id" do
+    expect(conn.column_exists?(table_name, :deep_import_id, :string)).to be true
+  end
+
+  def deep_table_belongs(table_name, reference)
+    association_field = "deep_import_#{reference}_id".to_sym
+    # "has reference field"
+    expect(conn.column_exists?(table_name, association_field, :string)).to be true
+    # "has index for reference" 
+    # TODO: remove refernece from name
+    index_name = "di_#{reference}_#{Digest::MD5.hexdigest( ":#{table_name}_#{reference}" )}"
+    expect(conn.index_exists?(table_name, [:deep_import_id, association_field], name: index_name)).to be true
+  end
+
+
+  describe "importable model setup" do
+    it "parents" do
+      base_table_importable("parents")
     end
-    let( :index_name ) { "di_id_#{Digest::MD5.hexdigest(':parents')}" }
-    it "should have an index on parents.deep_import_id" do
-      ActiveRecord::Base.connection.should be_index_exists( table_name, [:deep_import_id, :id], :name => index_name )
+    it "children" do
+      base_table_importable("children")
+    end
+    it "grand_children" do
+      base_table_importable("grand_children")
     end
   end
 
-  describe "changes for: children" do
-    let( :table_name ){ "children"	}
-    it "should have children.deep_import_id column" do
-      ActiveRecord::Base.connection.should be_column_exists( table_name, :deep_import_id, :string )
+  describe "deep import model tables" do
+    it "Child" do
+      deep_table("deep_import_children")
+      deep_table_belongs("deep_import_children", "parent")
     end
-    let( :index_name ) { "di_id_#{Digest::MD5.hexdigest(':children')}" }
-    it "should have an index on children.deep_import_id" do
-      ActiveRecord::Base.connection.should be_index_exists( table_name.to_sym, [:deep_import_id, :id], :name => index_name )
-    end
-  end
-  describe "changes for: grand_children" do
-    let( :table_name ){ "grand_children"	}
-    it "should have grand_children.deep_import_id column" do
-      ActiveRecord::Base.connection.should be_column_exists( table_name, :deep_import_id, :string )
-    end
-    let( :index_name ) { "di_id_#{Digest::MD5.hexdigest(':grand_children')}" }
-    it "should have an index on grand_children.deep_import_id" do
-      ActiveRecord::Base.connection.should be_index_exists( table_name, [:deep_import_id, :id], :name => index_name )
-    end
-  end
-
-  model_class = Child 
-  describe "Generated Model: DeepImport#{model_class}" do
-    let( :deep_model_class ){ "DeepImport#{model_class}".constantize }
-    it "should expose deep_import_id" do
-      deep_model_class.column_names.should include( 'deep_import_id' )
-    end
-    let( :deep_model_table ){ "DeepImport#{model_class}".tableize }
-    it "should have a table" do
-      ActiveRecord::Base.connection.should be_table_exists( deep_model_table )
-    end
-    it "should have a 'deep_import_id' column in it's table" do
-      ActiveRecord::Base.connection.should be_column_exists( deep_model_table, :deep_import_id, :string )
-    end
-    describe "tracks #{Parent}" do
-      let( :deep_model_class ){ "DeepImport#{model_class}".constantize }
-      let( :association_field ){ "deep_import_#{Parent.to_s.underscore}_id".to_sym }
-      it "should have a reference field in it's table" do
-        ActiveRecord::Base.connection.should be_column_exists( deep_model_table, association_field, :string )
-      end
-
-      let( :index_name ){ 
-        hash_of_source_target = Digest::MD5.hexdigest( ":deep_import_children_parent" )
-        "di_parent_#{hash_of_source_target}"
-      }
-
-      it "should have an index for this reference in it's table" do
-        ActiveRecord::Base.connection.should be_index_exists( deep_model_table, [:deep_import_id, association_field], :name => index_name )
-      end
-
-      it "should expose this reference field to it's model class" do
-        deep_model_class.column_names.should include( association_field.to_s )
-      end
-
-    end
-  end
-
-  describe "Generated Model: DeepImport#{GrandChild}" do
-    let( :deep_model_class ){ "DeepImportGrandChild".constantize }
-    it "should expose deep_import_id" do
-      deep_model_class.column_names.should include( 'deep_import_id' )
-    end
-    let( :deep_model_table ){ "DeepImport#{GrandChild}".tableize }
-    it "should have a table" do
-      ActiveRecord::Base.connection.should be_table_exists( deep_model_table )
-    end
-    it "should have a 'deep_import_id' column in it's table" do
-      ActiveRecord::Base.connection.should be_column_exists( deep_model_table, :deep_import_id, :string )
+    it "GrandChild" do
+      deep_table("deep_import_grand_children")
+      deep_table_belongs("deep_import_grand_children", "child")
     end
 
-
-    describe "tracks Child" do
-      let( :association_field ){ "deep_import_#{Child.to_s.underscore}_id".to_sym }
-      it "should have a reference field in it's table" do
-        ActiveRecord::Base.connection.should be_column_exists( deep_model_table, association_field, :string )
-      end
-      let( :index_name ){ 
-        hash_of_source_target = Digest::MD5.hexdigest( ":deep_import_grand_children_child" )
-        "di_child_#{hash_of_source_target}"
-      }
-      it "should have an index for this reference in it's table" do
-        ActiveRecord::Base.connection.should be_index_exists( deep_model_table, [:deep_import_id, association_field], :name => index_name )
-      end
+    describe "InLaws Polymorphic Relation" do
+      it "has two reference fields, and 2 indexes"
     end
   end
 end

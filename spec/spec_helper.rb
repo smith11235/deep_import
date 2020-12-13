@@ -14,6 +14,8 @@ def clean_db
   GrandChild.delete_all
   Child.delete_all
   Parent.delete_all
+
+  DeepImport.reset!
 end
 
 RSpec.configure do |config|
