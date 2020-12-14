@@ -75,7 +75,7 @@ module DeepImport
 
         belongs_to_class = belongs_to_class.to_s.underscore.singularize
         polymorphic = belongs_to_class != belongs_to_instance.class.to_s.underscore.singularize
-        puts "Polymorphic: #{belongs_to_class} != #{belongs_to_instance.class.to_s.underscore.singularize}".red
+        #puts "Polymorphic: #{belongs_to_class} != #{belongs_to_instance.class.to_s.underscore.singularize}".red
 
 				deep_import_belongs_to_field_setter = "deep_import_#{belongs_to_class}_id="
 				raise "Error: #{deep_instance} doesnt respond to #{deep_import_belongs_to_field_setter}" unless deep_instance.respond_to? deep_import_belongs_to_field_setter.to_sym

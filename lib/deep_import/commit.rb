@@ -38,6 +38,12 @@ module DeepImport
 
 			  belongs = Config.belongs_to(model_class)
 				belongs.each do |belongs_to_class|
+          polymorphic = polymorphic?(model_class, belongs_to_class)
+          if polymorphic
+            puts "UNIMPLEMENTED POLYMORPHIC VALIDATION: #{model_class} => #{belongs_to_class}".red
+            next
+          end
+
 					deep_distribution = get_deep_import_id_distribution model_class, belongs_to_class
 
 					source_distribution = get_source_id_distribution model_class, belongs_to_class
@@ -98,7 +104,7 @@ module DeepImport
 		end
 
 		def field_not_null( field )
-			case ActiveRecord::Base.connection_config[:adapter]
+			case adapter
 			when "postgresql"
 				"#{field} NOTNULL"
 			when "mysql2"
@@ -121,6 +127,11 @@ module DeepImport
 			end
 		end
 
+    def polymorphic?(child_class, parent_class)
+      Config.polymorphic(child_class).include?(parent_class)
+    end
+
+
 		def set_associations
       # TODO: use joins/active record code here
       Config.importable.each do |model_class|
@@ -128,14 +139,74 @@ module DeepImport
 
 			  belongs = Config.belongs_to(model_class)
 				belongs.each do |parent_class|
-					names = model_names( model_class, parent_class )
-
-          # setting target_table.{associated}_id
+          # setting {model_class}_table.{parent_class}_id
           # joining through deep import index, to associated table
-          target_table = names[:target_table] # of model_class
-          index_table = names[:deep_import_target_table]
-          associated = names[:association_table]
+          polymorphic = polymorphic?(model_class, parent_class)
 
+          if polymorphic # alternate routine
+            type_field = "#{parent_class.underscore.singularize}_type"
+            filled = {
+              :deep_import_id => nil,
+              type_field => nil
+            }
+            empty = { "#{parent_class.underscore.singularize}_id": nil }
+            types = model_class.where.not(filled).where(empty).select("DISTINCT(#{type_field})").collect{|i| i.send(type_field)}
+            types.each do |parent_type|
+              sql = polymorphic_belongs_to_association_sql(model_class, parent_class, parent_type)
+              execute(sql)
+            end
+          else
+            sql = belongs_to_association_sql(model_class, parent_class)
+            execute(sql)
+          end
+				end
+			end
+		end
+
+    def polymorphic_belongs_to_association_sql(child_class, ref_name, parent_type)
+      # InLaw, relation, Parent
+      case adapter
+      when "postgresql"
+        polymorphic_belongs_to_sql(child_class, ref_name, parent_type)
+      when "mysql2"
+        raise "TODO: mysql2 set polymorphic association query"
+      else
+      	raise "unhandled database adapter: #{adapter}"
+      end
+    end
+
+    def polymorphic_belongs_to_sql(child_class, ref_name, parent_type)
+      child_table = child_class.to_s.tableize
+      "
+				UPDATE 
+					#{child_table} AS child_table
+				SET
+					#{ref_name}_id = parent_table.id
+				FROM
+					deep_import_#{child_table} AS index_table,
+					#{parent_type.tableize} AS parent_table 
+				WHERE
+          child_table.#{ref_name}_type = '#{parent_type}'
+        AND
+					child_table.deep_import_id = index_table.deep_import_id 
+				AND
+					index_table.deep_import_#{ref_name}_id = parent_table.deep_import_id
+				AND
+					child_table.deep_import_id NOTNULL
+      "
+    end
+
+    def belongs_to_association_sql(child_class, parent_class)
+      # TODO: change model_names to be child/parent/index consistently
+			names = model_names(child_class, parent_class)
+      case adapter
+      when "postgresql"
+      	postgresql_association_logic names
+      when "mysql2"
+      	mysql2_association_logic names
+      else
+      	raise "unhandled database adapter: #{adapter}"
+      end
 =begin
 # TODO: why doesnt this work
           model_class. 
@@ -148,53 +219,43 @@ module DeepImport
               "#{target_table}.#{names[:target_association_id_field]} = #{associated}.id"
             )
 =end
-          adapter = ActiveRecord::Base.connection_config[:adapter]
-					case adapter
-					when "postgresql"
-						execute_postgresql_association_logic names
-					when "mysql2"
-						execute_mysql2_association_logic names
-					else
-						raise "unhandled database adapter: #{adapter}"
-					end
-				end
-			end
-		end
+    end
 
-		def execute_mysql2_association_logic( names )
-			ActiveRecord::Base.connection.execute( "
+		def mysql2_association_logic( names )
+      "
 				UPDATE
-																						#{names[:target_table]} AS target_table
+					#{names[:target_table]} AS target_table
 				JOIN 
-																						#{names[:deep_import_target_table]} AS deep_import_index
+					#{names[:deep_import_target_table]} AS deep_import_index
 				ON 
 					target_table.deep_import_id = deep_import_index.deep_import_id 
 				AND
 					NOT ISNULL(target_table.deep_import_id)
 				JOIN 
-																						#{names[:association_table]} AS belongs_to_table
+					#{names[:association_table]} AS belongs_to_table
 				ON 
 					deep_import_index.#{names[:deep_import_target_association_id_field]} = belongs_to_table.deep_import_id
 				SET
 					target_table.#{names[:target_association_id_field]} = belongs_to_table.id
-																						" )
+      "
 		end
 
-		def execute_postgresql_association_logic( names )
-			ActiveRecord::Base.connection.execute( "
+		def postgresql_association_logic( names )
+      "
 				UPDATE 
-																						#{names[:target_table]} AS target_table
+					#{names[:target_table]} AS target_table
 				SET
-																						#{names[:target_association_id_field]} = belongs_to_table.id
+					#{names[:target_association_id_field]} = belongs_to_table.id
 				FROM
-																						#{names[:deep_import_target_table]} AS deep_import_index,
-																						#{names[:association_table]} AS belongs_to_table 
+					#{names[:deep_import_target_table]} AS deep_import_index,
+					#{names[:association_table]} AS belongs_to_table 
 				WHERE
 					target_table.deep_import_id = deep_import_index.deep_import_id 
 				AND
 					deep_import_index.#{names[:deep_import_target_association_id_field]} = belongs_to_table.deep_import_id
 				AND
-					target_table.deep_import_id NOTNULL" )
+					target_table.deep_import_id NOTNULL
+      "
 		end
 
 		def model_names( model_class, parent_class )
@@ -206,6 +267,14 @@ module DeepImport
 				:deep_import_target_table => "deep_import_#{model_class}".underscore.pluralize
 			}
 		end
+
+    def execute(sql)
+			ActiveRecord::Base.connection.execute(sql)
+    end
+
+    def adapter
+      @adapter ||= ActiveRecord::Base.connection_config[:adapter]
+    end
 
 		def import_models
 			DeepImport::Config.importable.each do |base_class|

@@ -26,8 +26,6 @@ module DeepImport
         as = proxy_association.reflection.options[:as] || proxy_association.owner.class
         # TODO: do we need to check for other options like :class_name
 
-        puts "HasMany: On: #{other_instance.class} belongs to '#{as}' for #{proxy_association.owner.class}".red
-
         DeepImport::ModelsCache.set_association_on(other_instance, proxy_association.owner, as)
       end
       other_instance 

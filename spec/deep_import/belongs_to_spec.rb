@@ -73,45 +73,4 @@ describe "BelongsTo" do
       expect(Parent.count).to eq(2)
     end
   end
-
-  describe "polymorphic" do
-    # TODO: move this to new spec/deep_import/polymorphic_spec.rb
-    it "handles multiple polymorphic belongs to successfully"
-    it "creates normally if not importing" do
-      p = Parent.create!
-      p.in_laws.create!
-      c = Child.create!
-      InLaw.new(relation: c).save!
-      expect(InLaw.count).to eq(2)
-      expect(InLaw.where(relation_id: nil).count).to eq(0)
-      expect(InLaw.pluck(:relation_type).uniq.compact.size).to eq(2)
-    end
-    describe "importing tracks varying types" do
-      it "tracks type and id" do
-        # 3x ways to set association 
-        # TODO: break each out to own example
-        DeepImport.import do
-          parent = Parent.new 
-          parent.in_laws.build name: :parent_marriage # has_many helper
-
-          child = Child.new
-          il = InLaw.new name: :child_marriage
-          il.relation = child # belongs_to assignment helper
-
-          gc = GrandChild.new
-          InLaw.new name: :grand_child_marriage, relation: gc # belongs_to after-init 
-          expect(InLaw.count).to eq(0)
-        end
-
-        # InLaws created with Relations set correctly
-        expect(InLaw.count).to eq(3)
-        expect(InLaw.where(relation_id: nil).count).to eq(0)
-        expect(InLaw.pluck(:relation_type).uniq.compact.size).to eq(3)
-
-        expect(Parent.first.in_laws.first.name).to eq('parent_marriage')
-        expect(Child.first.in_laws.first.name).to eq('child_marriage')
-        expect(GrandChild.first.in_laws.first.name).to eq('grand_child_marriage')
-      end
-    end
-  end
 end

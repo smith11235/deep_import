@@ -69,7 +69,6 @@ module DeepImport
       belongs.each do |other_name|
         other_instance = self.send(other_name)
         next unless other_instance
-        puts "After Init: Belongs: On: '#{self.class}' found '#{other_name}' instance of '#{other_instance.class}'".red
         DeepImport::ModelsCache.set_association_on(self, other_instance, other_name) 
       end
     end
