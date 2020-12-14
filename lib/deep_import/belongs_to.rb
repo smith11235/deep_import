@@ -11,10 +11,20 @@ module DeepImport
         return other_instance if deep_import_id.nil? || !DeepImport.importing?
         # ^ bulk assignment calls 'other=', before deep import id is created....
         # ignore association tracking until an id has been assigned, then add tracking (from after_initialize)
-        DeepImport::ModelsCache.set_association_on(self, other_instance) 
+
+        # Note: other_class may be different than other_instance.class for polymorphic or alt named associations
+        other_class = __method__.to_s.gsub("=", '')
+        puts "Belongs: On: '#{self.class}' assigning '#{other_class}' to '#{other_instance.class}'".red
+        DeepImport::ModelsCache.set_association_on(self, other_instance, other_class)
+
+        # TODO: ^ add 'nil' handling for other_instance - clear the relation
         other_instance
       end
     end
+
+    # Build and Create methods
+    # - not used for polymorphic relations
+    # - TODO: add validation/raise error/alternate helpers?
   
     def self.define_build other_name
       # aka: child.build_parent(attrs)

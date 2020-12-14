@@ -75,6 +75,7 @@ describe "BelongsTo" do
   end
 
   describe "polymorphic" do
+    # TODO: move this to new spec/deep_import/polymorphic_spec.rb
     it "handles multiple polymorphic belongs to successfully"
     it "creates normally if not importing" do
       p = Parent.create!
@@ -87,15 +88,21 @@ describe "BelongsTo" do
     end
     describe "importing tracks varying types" do
       it "tracks type and id" do
+        # 3x ways to set association 
+        # TODO: break each out to own example
         DeepImport.import do
           parent = Parent.new 
-          parent.in_laws.build name: :parent_marriage
+          parent.in_laws.build name: :parent_marriage # has_many helper
+
           child = Child.new
-          child.in_laws.build name: :child_marriage
+          il = InLaw.new name: :child_marriage
+          il.relation = child # belongs_to assignment helper
+
           gc = GrandChild.new
-          InLaw.new name: :grand_child_marriage, relation: gc
+          InLaw.new name: :grand_child_marriage, relation: gc # belongs_to after-init 
           expect(InLaw.count).to eq(0)
         end
+
         # InLaws created with Relations set correctly
         expect(InLaw.count).to eq(3)
         expect(InLaw.where(relation_id: nil).count).to eq(0)

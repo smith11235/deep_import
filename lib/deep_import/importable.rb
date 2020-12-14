@@ -28,6 +28,8 @@ module DeepImport
     
       # then setup association methods to override
       BelongsTo.define_assigns other_class # self.other=
+
+      # TODO: if not polymorphic? should i have something else here?
       BelongsTo.define_build other_class   # self.build_other(attrs)
       BelongsTo.define_create other_class  # self.create_other[!](attrs)
     end
@@ -62,12 +64,13 @@ module DeepImport
       DeepImport::ModelsCache.add(self) # add to cache/set new import id
 
       # Track associations passed into constructor, track them
-      # TODO: can this be improved on? 
+      # TODO: can this be improved on? any existing call chain that could be used?
       belongs = DeepImport::Config.belongs_to(self.class)
       belongs.each do |other_name|
         other_instance = self.send(other_name)
         next unless other_instance
-        DeepImport::ModelsCache.set_association_on(self, other_instance) 
+        puts "After Init: Belongs: On: '#{self.class}' found '#{other_name}' instance of '#{other_instance.class}'".red
+        DeepImport::ModelsCache.set_association_on(self, other_instance, other_name) 
       end
     end
   end
