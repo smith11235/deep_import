@@ -57,11 +57,9 @@ module DeepImport
       belongs_to.each do |belongs|
         rel = belongs.to_s.underscore.to_sym
 
+        @lines <<  "  t.string :deep_import_#{rel}_id, references: false"
         if Config.polymorphic(model_class).include?(rel)
-          @lines <<  "  t.string :deep_import_#{rel}_id, references: false"
           @lines <<  "  t.string :deep_import_#{rel}_type, references: false"
-        else # Standard, non polymorphic
-          @lines <<  "  t.string :deep_import_#{rel}_id, references: false"
         end
 
       end
