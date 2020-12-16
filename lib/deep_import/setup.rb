@@ -56,12 +56,7 @@ module DeepImport
 
       belongs_to.each do |belongs|
         rel = belongs.to_s.underscore.to_sym
-
         @lines <<  "  t.string :deep_import_#{rel}_id, references: false"
-        if Config.polymorphic(model_class).include?(rel)
-          @lines <<  "  t.string :deep_import_#{rel}_type, references: false"
-        end
-
       end
 
       @lines <<  "end"
@@ -71,11 +66,12 @@ module DeepImport
         hash_of_source_target = md5( "#{table_name}_#{rel}" )
         # hash is for postgres index name uniqueness requirements
         index_name = "di_#{rel}_#{hash_of_source_target}"
+        @lines <<  "add_index #{table_name}, [:deep_import_id, :deep_import_#{rel}_id], name: '#{index_name}'"
+
         if Config.polymorphic(model_class).include?(rel)
-          @lines <<  "add_index #{table_name}, [:deep_import_id, :deep_import_#{rel}_type, :deep_import_#{rel}_id], name: '#{index_name}'"
-          @lines <<  "add_index #{table_name}, [:deep_import_#{rel}_type], name: '#{index_name}_type'"
-        else
-          @lines <<  "add_index #{table_name}, [:deep_import_id, :deep_import_#{rel}_id], name: '#{index_name}'"
+          # TODO: add name: ...
+          base_table = table_name.gsub('deep_import_', '')
+          @lines << "add_index #{base_table}, [:deep_import_id, :#{rel}_type]"
         end
       end
     end

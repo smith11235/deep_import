@@ -84,10 +84,6 @@ module DeepImport
 				raise "Invalid belongs_to_deep_import_id for #{belongs_to_instance.to_yaml}" unless belongs_to_deep_import_id =~ /\d+/
 
 				deep_instance.send( deep_import_belongs_to_field_setter, belongs_to_deep_import_id )
-        if polymorphic
-				  deep_import_belongs_to_field_setter = "deep_import_#{belongs_to_class}_type="
-				  deep_instance.send(deep_import_belongs_to_field_setter, belongs_to_instance.class.to_s) 
-        end
 			end
 
 			def add( model_instance )

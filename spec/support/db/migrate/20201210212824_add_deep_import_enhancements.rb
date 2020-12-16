@@ -32,9 +32,7 @@ class AddDeepImportEnhancements < ActiveRecord::Migration[5.2]
       t.datetime :parsed_at
       t.timestamps
       t.string :deep_import_relation_id, references: false
-      t.string :deep_import_relation_type, references: false
     end
-    add_index :deep_import_in_laws, [:deep_import_id, :deep_import_relation_type, :deep_import_relation_id], name: 'di_relation_9adaf4e4e674802642cc46939a5f06f7'
-    add_index :deep_import_in_laws, [:deep_import_relation_type], name: 'di_relation_9adaf4e4e674802642cc46939a5f06f7_type'
+    add_index :deep_import_in_laws, [:deep_import_id, :deep_import_relation_id], name: 'di_relation_9adaf4e4e674802642cc46939a5f06f7'
   end
 end

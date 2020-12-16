@@ -50,9 +50,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_212824) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "deep_import_relation_id"
-    t.string "deep_import_relation_type"
-    t.index ["deep_import_id", "deep_import_relation_type", "deep_import_relation_id"], name: "di_relation_9adaf4e4e674802642cc46939a5f06f7"
-    t.index ["deep_import_relation_type"], name: "di_relation_9adaf4e4e674802642cc46939a5f06f7_type"
+    t.index ["deep_import_id", "deep_import_relation_id"], name: "di_relation_9adaf4e4e674802642cc46939a5f06f7"
   end
 
   create_table "deep_import_parents", force: :cascade do |t|
