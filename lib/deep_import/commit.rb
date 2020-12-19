@@ -193,8 +193,7 @@ module DeepImport
     end
 
     def belongs_to_association_sql(child_class, parent_class)
-      # TODO: change model_names to be child/parent/index consistently
-			names = model_names(child_class, parent_class)
+      names = belongs_to_names(child_class, parent_class)
       case adapter
       when "postgresql"
       	postgresql_association_logic names
@@ -215,52 +214,50 @@ module DeepImport
 =end
     end
 
-		def mysql2_association_logic( names )
+		def mysql2_association_logic(names)
       "
 				UPDATE
-					#{names[:target_table]} AS target_table
+					#{names[:child_table]} AS child_table
 				JOIN 
-					#{names[:deep_import_target_table]} AS deep_import_index
+					deep_import_#{names[:child_table]} AS index_table
 				ON 
-					target_table.deep_import_id = deep_import_index.deep_import_id 
+					child_table.deep_import_id = index_table.deep_import_id 
 				AND
-					NOT ISNULL(target_table.deep_import_id)
+					NOT ISNULL(child_table.deep_import_id)
 				JOIN 
-					#{names[:association_table]} AS belongs_to_table
+					#{names[:parent_table]} AS parent_table
 				ON 
-					deep_import_index.#{names[:deep_import_target_association_id_field]} = belongs_to_table.deep_import_id
+					index_table.deep_import_#{names[:parent_field]}_id = parent_table.deep_import_id
 				SET
-					target_table.#{names[:target_association_id_field]} = belongs_to_table.id
+					child_table.#{names[:parent_field]}_id = parent_table.id
       "
 		end
 
-		def postgresql_association_logic( names )
+		def postgresql_association_logic(names)
       "
 				UPDATE 
-					#{names[:target_table]} AS target_table
+					#{names[:child_table]} AS child_table
 				SET
-					#{names[:target_association_id_field]} = belongs_to_table.id
+					#{names[:parent_field]}_id = parent_table.id
 				FROM
-					#{names[:deep_import_target_table]} AS deep_import_index,
-					#{names[:association_table]} AS belongs_to_table 
+					deep_import_#{names[:child_table]} AS index_table,
+					#{names[:parent_table]} AS parent_table 
 				WHERE
-					target_table.deep_import_id = deep_import_index.deep_import_id 
+					child_table.deep_import_id = index_table.deep_import_id 
 				AND
-					deep_import_index.#{names[:deep_import_target_association_id_field]} = belongs_to_table.deep_import_id
+					index_table.deep_import_#{names[:parent_field]}_id = parent_table.deep_import_id
 				AND
-					target_table.deep_import_id NOTNULL
+					child_table.deep_import_id NOTNULL
       "
 		end
 
-		def model_names( model_class, parent_class )
-			{
-				:target_table => model_class.to_s.underscore.pluralize,
-				:target_association_id_field => "#{parent_class}_id",
-				:deep_import_target_association_id_field => "deep_import_#{parent_class}_id",
-				:association_table => parent_class.to_s.pluralize,
-				:deep_import_target_table => "deep_import_#{model_class}".underscore.pluralize
-			}
-		end
+    def belongs_to_names(child_class, parent_class)
+      {
+        child_table: child_class.to_s.tableize,
+        parent_table: parent_class.to_s.tableize, 
+        parent_field: parent_class.to_s.underscore.singularize 
+      }
+    end
 
     def execute(sql)
 			ActiveRecord::Base.connection.execute(sql)
