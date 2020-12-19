@@ -27,7 +27,7 @@ module DeepImport
       @imported = {} # track which model types were loaded, skip empty ones
       DeepImport.log_time("commit.import_models") { import_models }
       DeepImport.log_time("commit.set_associations") { set_associations }
-      DeepImport.log_time("commit.validate") { validate_associations }
+      # DeepImport.log_time("commit.validate") { validate_associations } # TODO: is this necessary? if so, optional
       DeepImport.log_time("commit.deleting_index") { delete_deep_import_models }
       DeepImport.log_time("commit.nilify_ids") { nilify_deep_import_ids }
 		end
@@ -109,8 +109,6 @@ module DeepImport
 				"#{field} NOTNULL"
 			when "mysql2"
 				"#{field} IS NOT NULL"
-			else
-				raise "unhandled database adapter"
 			end
 		end
 
@@ -170,8 +168,6 @@ module DeepImport
         polymorphic_belongs_to_sql(child_class, ref_name, parent_type)
       when "mysql2"
         raise "TODO: mysql2 set polymorphic association query"
-      else
-      	raise "unhandled database adapter: #{adapter}"
       end
     end
 
@@ -204,8 +200,6 @@ module DeepImport
       	postgresql_association_logic names
       when "mysql2"
       	mysql2_association_logic names
-      else
-      	raise "unhandled database adapter: #{adapter}"
       end
 =begin
 # TODO: why doesnt this work

@@ -6,6 +6,12 @@ module DeepImport
     DeepImport.import_options = options
 
     begin
+      allowed_db = %w(postgresql) # mysql2)
+      db = ActiveRecord::Base.connection_config[:adapter]
+      unless allowed_db.include?(db)
+        raise "DeepImport currently only supports: #{allowed_db.join(", ")} (Current db: #{db})"
+      end
+
 			if !DeepImport.ready_for_import?
 				raise "Cannot DeepImport.import - not ready for import (#{DeepImport.status})"
 			end

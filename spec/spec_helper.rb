@@ -25,8 +25,7 @@ RSpec.configure do |config|
   # rspec --tag timing  # TODO: rename 'benchmark'
 
   # To test Setup/Teardown logic (add/remove db migrations)
-  # rspec --tag manual  # TODO: rename 'migration'
-  config.filter_run_excluding manual: true, timing: true
+  config.filter_run_excluding timing: true
 
   # Execute specific seed: --seed 1234
   config.order = "random"
