@@ -9,7 +9,11 @@ with the same ActiveRecord code you already have.
 * [The Magic - algorithm explanation and breakdown](#the-magic-aka-the-algorithm)
 
 # Benefits
+
 Two core reasons.
+
+* Bulk Data Loading Speed
+* Same code / _No code change required_
 
 ### Benefit 1: Bulk Data Loading Speed Boost
 
@@ -64,23 +68,62 @@ See the data loading code example below for proof of this, along with the rspec 
 
 #### With Rails
 
-* Add gem to bundle
-  * `gem deep_import`
-* Add `config/deep_import.yml` file to define importable models and associations
-  * [Example config](spec/support/config/deep_import.yml)
-* Generate and execute database migration 
-  * `rake deep_import:setup`
-* Start running imports
+##### Add gem to bundle
+
+`gem deep_import`
+
+##### Add include/extend directives to "importables"
+
+Within the class file of each model involved in the bulk import process, add directives for making it importable, and what associations to track for import (belongs_to, has_one, has_many).
+
+```
+# in each of your models:
+# app/models/your_model.rb
+
+class YourModel
+  # Enable import tracking
+  include DeepImport::Importable
+
+  # belongs_to 
+  belongs_to :parent
+  DeepImport.belongs_to(self, :parent) # added setup command
+
+  # has_many
+  has_many :children, extend: DeepImport::HasMany # added extension module
+
+  # polymorphic associations
+  # - for belongs to side
+  DeepImport.belongs_to(self, :relation, polymorphic: true)
+  # - for has_* side
+  has_many :in_laws, as: :relation, extend: DeepImport::HasMany
+```
+ 
+##### Generate/execute database migration 
+
+To make deep import run your code faster, more temporary disk space is required for a local index. 
+Database tables are required. 
+The tables are designed so that they can be setup and torndown independently the reset of the application, at any time. 
+
+`rake deep_import:setup`
+
+##### Run Imports
+
+```
+DeepImport.logger.level = "INFO" # to see a printout of results (did it work)
+DeepImport.import do
+  { your logic }
+end
+```
 
 #### Without Rails
+
 _TODO: requires more testing/fleshing out_
 
 * Add gem to bundle and require it in application
   * `gem deep_import`
   * `require deep_import` 
-* Specify config for models
-  * Can use a yaml file, located at: `ENV["DEEP_IMPORT_CONFIG"]`
-  * Can use a global hash: `$deep_import_config = {...}`
+* Add association directives to "importable models"
+  * see config notes in rails setup
 * Generate and execute database migration: `rake deep_import:setup`
   * Define `ENV["DEEP_IMPORT_DB_DIR"]`
     * expects to have:
@@ -98,7 +141,7 @@ Logging is verbose by default. With easy overrides.
 
 ## Data Loading Code Example
 
-Full code example: [spec/import/timing_spec.rb](spec/import/timing_spec.rb)
+Full code example: [spec/deep_import/timing_spec.rb](spec/deep_import/timing_spec.rb)
 
 To execute it (while developing gem)
 
@@ -108,18 +151,17 @@ rspec --tag timing
 
 Breakdown of example code shown below.
 
-#### 3 Nested Model Classes
+#### 4 Nested Model Classes
+See [spec/support/models.rb](spec/support/models.rb).
 
 ```
-Parent 
-  has_many :children
+Parent: has Children + InLaws(polymorphic)
 
-Child
-  belongs_to :parent
-  has_many :grand_children
+Child: belongs to Parent, has many GrandChildren and InLaws
 
-GrandChild
-  belongs_to :child
+GrandChild: belongs to Child, has many InLaws
+
+InLaws: belongs to relation
 ```
 
 #### 1 block of code: w/ and w/out DeepImport
